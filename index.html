@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Órbita Campanhas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  /* Estúdio de campanha: papel frio, tinta escura, cobalto como acção, âmbar como sinal. Layout: barra de etapas fixa no topo, painel por etapa, grelha de cartões. */
+  --bg:#EEF0ED;
+  --surface:#FFFFFF;
+  --surface-2:#F6F7F4;
+  --ink:#15181A;
+  --ink-2:#5B6168;
+  --line:#D6DAD4;
+  --accent:#1F3BE0;
+  --accent-ink:#FFFFFF;
+  --signal:#F2B33D;
+  --good:#1E8E5A;
+  --warn:#C9741A;
+  --bad:#C8352E;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",Menlo,Consolas,monospace;
+  --r:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121416;--surface:#1B1E21;--surface-2:#22262A;--ink:#ECEEEA;--ink-2:#9AA1A8;--line:#333940;
+    --accent:#6B86FF;--accent-ink:#0B1030;--signal:#F2B33D;--good:#4CC58A;--warn:#E8A14B;--bad:#F06A62;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121416;--surface:#1B1E21;--surface-2:#22262A;--ink:#ECEEEA;--ink-2:#9AA1A8;--line:#333940;
+  --accent:#6B86FF;--accent-ink:#0B1030;--signal:#F2B33D;--good:#4CC58A;--warn:#E8A14B;--bad:#F06A62;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:22px;font-weight:800;letter-spacing:-.01em}
+h2{font-size:26px;font-weight:800;letter-spacing:-.015em}
+h3{font-size:17px;font-weight:700}
+h4{font-size:14px;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+textarea{resize:vertical;min-height:72px}
+label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:500;color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+
+/* Topo */
+.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;gap:16px;padding:12px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .mark{width:28px;height:28px;border-radius:50%;border:3px solid var(--accent);position:relative}
+.brand .mark::after{content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:var(--signal);top:-5px;left:50%;transform:translateX(-50%)}
+.brand small{display:block;color:var(--ink-2);font-size:12px;font-weight:500}
+.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.steps{display:flex;gap:0;padding:0 20px;overflow-x:auto}
+.step{display:flex;align-items:center;gap:10px;padding:10px 16px 12px 0;margin-right:16px;border:0;background:none;border-bottom:3px solid transparent;color:var(--ink-2);white-space:nowrap}
+.step .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:12px}
+.step strong{font-family:var(--display);font-weight:700;font-size:15px;color:var(--ink)}
+.step span.s{font-size:12px}
+.step.active{border-bottom-color:var(--accent)}
+.step.active .n{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.step.done .n{background:var(--good);color:#fff;border-color:var(--good)}
+
+/* Layout */
+main{max-width:1240px;margin:0 auto;padding:24px 20px 80px}
+.panel{display:none}
+.panel.show{display:block}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.head p{color:var(--ink-2);max-width:62ch}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card h3{margin-bottom:10px}
+.card.flat{background:var(--surface-2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:12px}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.mono{font-family:var(--mono);font-size:12.5px}
+ul.clean{margin:0;padding-left:18px}
+ul.clean li{margin:3px 0}
+
+/* Botões e chips */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;font-weight:600;display:inline-flex;gap:8px;align-items:center;line-height:1.2}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.sm{padding:6px 10px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--surface-2)}
+.chip.good{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+.chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.chip.accent{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.chip.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;font-weight:500;font-size:14px}
+.toggle input{width:auto;margin:0}
+.toggle.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+
+/* Notas de estado */
+.note{padding:12px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.note.warn{border-color:color-mix(in srgb,var(--warn) 50%,transparent);background:color-mix(in srgb,var(--signal) 14%,var(--surface))}
+.note.err{border-color:color-mix(in srgb,var(--bad) 50%,transparent)}
+.thinking{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2);font-size:14px}
+.thinking::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.thinking::before{animation:none}}
+
+/* Descobrir */
+.swatches{display:flex;gap:6px;margin:8px 0}
+.swatch{flex:1;height:44px;border-radius:6px;border:1px solid rgba(0,0,0,.08);display:flex;align-items:flex-end;justify-content:center;font-family:var(--mono);font-size:10px;padding-bottom:3px;color:#fff;text-shadow:0 0 3px rgba(0,0,0,.6)}
+.words{display:flex;flex-wrap:wrap;gap:6px}
+.angle{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--surface);display:flex;gap:12px;cursor:pointer}
+.angle input{width:auto;margin-top:4px}
+.angle.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+.angle .pot{display:flex;gap:2px}
+.angle .pot i{width:10px;height:10px;border-radius:2px;background:var(--line)}
+.angle .pot i.f{background:var(--signal)}
+.quote{font-family:var(--display);font-weight:700;font-size:16px;margin:6px 0}
+
+/* Criar */
+.ads{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.ad{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.ad .cv{background:var(--surface-2);display:grid;place-items:center;padding:12px}
+.ad canvas{max-width:100%;height:auto;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.ad .meta{padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.ad .meta .t{font-weight:600}
+.ad .meta .actions{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:16px}
+.toolbar label{min-width:150px;flex:1}
+.toolbar .fmt{display:flex;gap:6px;flex-wrap:wrap}
+.toolbar .fmt .toggle{padding:6px 10px;font-size:13px}
+
+/* Tabelas */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--ink-2);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+td.r,th.r{text-align:right}
+.tbl{overflow-x:auto}
+tr.win td{background:color-mix(in srgb,var(--good) 9%,transparent)}
+
+/* Otimizar */
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.kpi .v{font-family:var(--display);font-size:26px;font-weight:800;letter-spacing:-.01em}
+.kpi .l{font-size:12.5px;color:var(--ink-2)}
+.chart{width:100%;height:220px;display:block}
+.checklist li{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.checklist li input{width:auto}
+.checklist{list-style:none;padding:0;margin:0}
+.status-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
+.iter{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line)}
+.lead h3{margin-bottom:2px}
+.lead .redes .chip{font-weight:500}
+.lead .chip.off{opacity:.55;text-decoration:line-through}
+.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.score{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px}
+.score .l{font-size:12px;color:var(--ink-2)}
+.score .b{display:flex;gap:3px;margin:4px 0}
+.score .b i{flex:1;height:8px;border-radius:2px;background:var(--line)}
+.score .b i.f{background:var(--accent)}
+.score .o{font-size:12.5px}
+.prio{font-family:var(--display);font-weight:800;font-size:22px}
+footer{max-width:1240px;margin:0 auto;padding:0 20px 30px;color:var(--ink-2);font-size:12.5px}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:20px;max-width:520px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+@media (max-width:640px){
+  .top-row{padding:10px 16px}
+  main{padding:16px 16px 60px}
+  h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-row">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"></div>
+      <div><h1>Órbita</h1><small>Campanhas em ciclo contínuo</small></div>
+    </div>
+    <div class="status-line" id="statusLine"></div>
+    <div class="top-actions">
+      <button class="btn sm" id="btnDemo" title="Carrega um projeto de exemplo completo">Carregar exemplo</button>
+      <button class="btn sm" id="btnReset">Novo projeto</button>
+      <button class="btn sm" id="btnImport">Importar</button><button class="btn sm" id="btnExport">Exportar projeto</button><button class="btn sm primary" id="btnSettings">Definições IA</button><input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+  </div>
+  <nav class="steps" id="steps" aria-label="Etapas">
+    <button class="step" data-step="4"><span class="n">P</span><div><strong>Prospectar</strong><br><span class="s">Leads por sector e local</span></div></button>
+    <button class="step" data-step="0"><span class="n">1</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button>
+    <button class="step" data-step="1"><span class="n">2</span><div><strong>Criar</strong><br><span class="s">Variações e formatos</span></div></button>
+    <button class="step" data-step="2"><span class="n">3</span><div><strong>Lançar</strong><br><span class="s">Plano de media</span></div></button>
+    <button class="step" data-step="3"><span class="n">4</span><div><strong>Otimizar</strong><br><span class="s">Resultados e aprendizagens</span></div></button>
+  </nav>
+</header>
+
+<main>
+  <div id="aiNote" class="note warn" hidden><span>⚠</span><span>Para usar a IA, introduza a sua chave da API da Anthropic em «Definições IA». A chave fica guardada apenas neste browser. Sem chave, use «Carregar exemplo» para ver o fluxo.</span></div>
+
+  <!-- P PROSPECTAR -->
+  <section class="panel" id="p4">
+    <div class="head">
+      <div><h2>Prospectar</h2><p>Pesquise pequenas e médias empresas por sector e localização. A IA pesquisa na web, lista as empresas encontradas e, a pedido, visita o site e as redes para avaliar logótipo, identidade visual, redes sociais e comunicação. Presença fraca = oportunidade forte.</p></div>
+    </div>
+    <div class="toolbar">
+      <label>Localização<input id="pr_local" placeholder="Ex.: Vila Nova de Gaia"></label>
+      <label>Sector de actividade<input id="pr_sector" list="sectores" placeholder="Ex.: restaurantes"></label>
+      <datalist id="sectores"><option>restaurantes</option><option>cafés e pastelarias</option><option>clínicas dentárias</option><option>ginásios e estúdios</option><option>cabeleireiros e barbearias</option><option>imobiliárias</option><option>oficinas automóveis</option><option>lojas de roupa</option><option>floristas</option><option>alojamento local e hotéis</option><option>escritórios de advogados</option><option>contabilidade</option><option>construção civil</option><option>carpintarias e marcenarias</option><option>vinhos e enoturismo</option><option>padarias</option><option>escolas de condução</option><option>clínicas veterinárias</option><option>óticas</option><option>lojas de decoração</option><option>clínicas de estética</option><option>empresas de limpeza</option></datalist>
+      <label>Nº de empresas<select id="pr_n"><option>5</option><option selected>8</option><option>12</option></select></label>
+      <button class="btn primary" id="btnProspect">Pesquisar empresas</button>
+    </div>
+    <div id="prStatus" class="small muted" style="margin-bottom:12px"></div>
+    <div class="card" style="margin-bottom:16px"><div class="row">
+      <label style="flex:1;min-width:140px">Sector<select id="pf_sector"><option value="">Todos</option></select></label>
+      <label style="flex:1;min-width:140px">Local<select id="pf_local"><option value="">Todos</option></select></label>
+      <label style="flex:1;min-width:140px">Estado<select id="pf_estado"><option value="">Todos</option><option value="novo">Novo</option><option value="analisado">Analisado</option><option value="contactado">Contactado</option><option value="cliente">Cliente</option><option value="descartado">Descartado</option></select></label>
+      <label style="flex:1;min-width:140px">Ordenar<select id="pf_ord"><option value="prio">Prioridade</option><option value="nome">Nome</option><option value="data">Mais recentes</option></select></label>
+      <label style="flex:2;min-width:160px">Procurar<input id="pf_q" placeholder="Nome ou morada"></label>
+      <div class="row" style="align-self:end"><span class="small muted" id="leadCount"></span><button class="btn sm" id="btnLeadsCsv">Copiar CSV</button></div>
+    </div></div>
+    <div id="leads" class="stack"></div>
+  </section>
+
+  <!-- 1 DESCOBRIR -->
+  <section class="panel" id="p0">
+    <div class="head">
+      <div><h2>Descobrir</h2><p>Escreva o brief do cliente. A IA devolve o retrato do público, tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
+    </div>
+    <div class="grid g2" style="grid-template-columns:minmax(300px,2fr) minmax(300px,3fr)">
+      <div class="card">
+        <h3>Brief</h3>
+        <div class="stack">
+          <div class="row" style="gap:12px">
+            <label style="flex:1">Marca<input id="b_marca" placeholder="Ex.: Café da Ribeira"></label>
+            <label style="flex:1">Setor<input id="b_setor" placeholder="Ex.: torrefação artesanal"></label>
+          </div>
+          <label>Produto ou serviço a promover<input id="b_produto" placeholder="Ex.: subscrição mensal de café em grão"></label>
+          <label>Objetivo da campanha
+            <select id="b_objetivo">
+              <option>Vendas online</option><option>Leads / pedidos de contacto</option><option>Notoriedade</option><option>Visitas à loja</option><option>Instalações de app</option><option>Reservas / marcações</option>
+            </select>
+          </label>
+          <label>Público-alvo<textarea id="b_publico" placeholder="Idades, zona, interesses, situação de vida…"></textarea></label>
+          <label>Diferenciais e provas (o que torna a oferta credível)<textarea id="b_diferenciais" placeholder="Prémios, origem, preço, prazos, testemunhos…"></textarea></label>
+          <div class="row" style="gap:12px">
+            <label style="flex:1">Tom de voz
+              <select id="b_tom"><option>Próximo e directo</option><option>Premium e sóbrio</option><option>Divertido</option><option>Técnico e informativo</option><option>Inspirador</option></select>
+            </label>
+            <label style="flex:1">Orçamento mensal (€)<input id="b_orcamento" type="number" min="50" step="50" value="600" class="num"></label>
+          </div>
+          <div>
+            <div class="small muted" style="margin-bottom:6px;font-weight:500">Canais</div>
+            <div class="row" id="b_canais">
+              <label class="toggle on"><input type="checkbox" value="meta" checked> Meta (Instagram/Facebook)</label>
+              <label class="toggle"><input type="checkbox" value="tiktok"> TikTok</label>
+              <label class="toggle on"><input type="checkbox" value="google" checked> Google Display</label>
+            </div>
+          </div>
+          <label>Notas da iteração anterior<textarea id="b_notas" placeholder="Preenchido automaticamente quando fecha um ciclo em Otimizar."></textarea></label>
+          <div class="row">
+            <button class="btn primary" id="btnDiscover">Pesquisar com IA</button>
+            <span id="discoverStatus" class="small muted"></span>
+          </div>
+        </div>
+      </div>
+      <div id="discoverOut" class="stack"></div>
+    </div>
+  </section>
+
+  <!-- 2 CRIAR -->
+  <section class="panel" id="p1">
+    <div class="head">
+      <div><h2>Criar</h2><p>Escolha os ângulos, o número de variações e os formatos. A IA escreve os textos e a app renderiza cada anúncio com o moodboard. Pode trocar o fundo por uma fotografia vossa.</p></div>
+    </div>
+    <div class="toolbar">
+      <label>Variações por ângulo<select id="c_n"><option>2</option><option selected>3</option><option>4</option></select></label>
+      <label>Modelo visual<select id="c_tpl"><option value="bloco">Bloco de cor</option><option value="foto">Fotografia com véu</option><option value="editorial">Editorial (fundo claro)</option></select></label>
+      <label>Fotografia de fundo (opcional)<input type="file" id="c_img" accept="image/*"></label>
+      <div style="flex:2;min-width:220px"><div class="small muted" style="margin-bottom:6px;font-weight:500">Formatos</div><div class="fmt" id="c_fmts"></div></div>
+      <button class="btn primary" id="btnCreate">Gerar variações</button>
+    </div>
+    <div id="createStatus" class="small muted" style="margin-bottom:12px"></div>
+    <div class="row" id="createActions" style="margin-bottom:14px" hidden>
+      <button class="btn sm" id="btnZip">Descarregar tudo (.zip)</button>
+      <button class="btn sm" id="btnCsv">Copiar textos (CSV)</button>
+      <span class="small muted" id="adCount"></span>
+    </div>
+    <div class="ads" id="ads"></div>
+  </section>
+
+  <!-- 3 LANÇAR -->
+  <section class="panel" id="p2">
+    <div class="head">
+      <div><h2>Lançar</h2><p>Plano de media a partir do orçamento e dos canais escolhidos. Nesta versão a publicação é simulada: a app prepara o plano e a lista de verificação; a submissão nas plataformas faz-se manualmente ou, numa versão futura, pela API de cada canal.</p></div>
+    </div>
+    <div id="launchOut" class="stack"></div>
+  </section>
+
+  <!-- 4 OTIMIZAR -->
+  <section class="panel" id="p3">
+    <div class="head">
+      <div><h2>Otimizar</h2><p>Resultados por variação. Nesta versão os números são simulados a partir do potencial de cada ângulo, para testar o ciclo; com as APIs ligadas, entram os dados reais. A IA lê a tabela, aponta o vencedor e propõe a próxima iteração.</p></div>
+    </div>
+    <div id="optOut" class="stack"></div>
+  </section>
+</main>
+<footer>Protótipo autónomo. O projeto fica guardado automaticamente neste browser; use «Exportar projeto» para guardar um ficheiro .json e «Importar» para o recuperar noutro computador. Os pedidos à IA vão directamente do seu browser para a API da Anthropic.</footer>
+
+<dialog id="dlg"><h3 id="dlgT"></h3><p id="dlgB" class="small" style="margin:10px 0 16px"></p><div class="row" style="justify-content:flex-end"><button class="btn sm" id="dlgNo">Cancelar</button><button class="btn sm primary" id="dlgYes">Confirmar</button></div></dialog>
+
+<script id="saved-state" type="application/json">null</script>
+
+<script>
+/* ===== Modelo (captura o documento antes de qualquer alteração, para o Guardar) ===== */
+
+
+const FORMATS = {
+  meta_feed:   {id:'meta_feed',   canal:'meta',   nome:'Meta Feed 1:1',     w:1080,h:1080},
+  meta_story:  {id:'meta_story',  canal:'meta',   nome:'Meta Stories 9:16', w:1080,h:1920},
+  tiktok:      {id:'tiktok',      canal:'tiktok', nome:'TikTok 9:16',       w:1080,h:1920},
+  gdn_land:    {id:'gdn_land',    canal:'google', nome:'Google 1200×628',   w:1200,h:628},
+  gdn_mrec:    {id:'gdn_mrec',    canal:'google', nome:'Google 300×250',    w:300,h:250},
+};
+const CANAIS = {meta:'Meta', tiktok:'TikTok', google:'Google Display'};
+
+const blank = () => ({
+  v:1, iteracao:1, etapa:0, estado:'rascunho',
+  brief:{marca:'',setor:'',produto:'',objetivo:'Vendas online',publico:'',diferenciais:'',tom:'Próximo e directo',orcamento:600,canais:['meta','google'],notas:''},
+  discover:null, angulosSel:[], criar:{n:3,tpl:'bloco',fmts:['meta_feed','meta_story','gdn_land']},
+  ads:[], plano:null, resultados:null, analise:null, historico:[],
+  prospect:{local:'',sector:'',n:8}, leads:[]
+});
+
+let S = blank();
+let IMG = null; // fotografia de fundo (não persistida)
+let sample=null, artifactCap=null, downloads=null;
+
+/* ===== Exemplo ===== */
+const DEMO = {
+  v:1, iteracao:1, etapa:0, estado:'ativa',
+  brief:{marca:'Café da Ribeira',setor:'torrefação artesanal',produto:'Subscrição mensal de café em grão (250 g ou 500 g), torrado na semana do envio',objetivo:'Vendas online',publico:'30–50 anos, Porto e Lisboa, trabalham a partir de casa pelo menos 2 dias por semana, já têm moinho ou máquina de espresso, valorizam origem e consistência mais do que preço.',diferenciais:'Torrefação no Porto desde 2016; lotes rastreáveis até à quinta; envio grátis acima de 25 €; primeira entrega com -20 %; 4,8★ em 310 avaliações.',tom:'Próximo e directo',orcamento:600,canais:['meta','google'],notas:''},
+  discover:{
+    publico:{resumo:'Profissionais em teletrabalho que já investiram em equipamento e sentem que o café de supermercado não lhe faz justiça. Compram por hábito, mudam por decepção.',dores:['Café que chega velho e sem data de torra','Ficar sem café a meio da semana','Não saber de onde vem o grão','Pagar 12 € por um pacote medíocre'],desejos:['Rotina de manhã que compense','Consistência chávena após chávena','Sentir que apoia um produtor local']},
+    mercado:{tendencias:['Subscrições com pausa livre e frequência ajustável','Transparência de origem como argumento principal','Conteúdo de bastidores (torra, cupping) a gerar mais confiança do que packshots'],concorrentes:[{nome:'Marcas de supermercado premium',angulo:'Preço e conveniência'},{nome:'Torrefações nacionais com loja online',angulo:'Origem e especialidade'},{nome:'Marketplaces de café',angulo:'Variedade e descoberta'}]},
+    angulos:[
+      {id:'a1',titulo:'Torrado esta semana',descricao:'A data de torra como prova de frescura. Contrasta com o café de prateleira.',gancho:'O seu café tem data de torra? O nosso tem a desta semana.',potencial:5},
+      {id:'a2',titulo:'Nunca mais sem café',descricao:'A subscrição resolve o esquecimento. Conveniência sem perder qualidade.',gancho:'Quarta-feira, 7h40, lata vazia. Não volta a acontecer.',potencial:4},
+      {id:'a3',titulo:'Da quinta ao seu moinho',descricao:'Rastreabilidade e relação com o produtor.',gancho:'Este lote veio da quinta da família Mendes. Sabemos o nome dela.',potencial:3},
+      {id:'a4',titulo:'Vale o equipamento',descricao:'Fala a quem comprou máquina boa e usa café mau.',gancho:'Comprou uma máquina de 400 €. Está a pôr-lhe café de 3 €.',potencial:4},
+      {id:'a5',titulo:'Primeira entrega -20 %',descricao:'Oferta de entrada, directa e sem rodeios.',gancho:'Experimente um mês. Nós pagamos os primeiros 20 %.',potencial:3}
+    ],
+    moodboard:{paleta:['#2B1D16','#C8742A','#F1E4D2','#5A7D5A','#FFFFFF'],palavras:['torra','frescura','manhã','grão','ritual','Porto'],estilo:'Fotografia quente de bancada, luz lateral, close-ups de grão e vapor; tipografia robusta, sem ornamento.',tipografia:'display'}
+  },
+  angulosSel:['a1','a2','a4'],
+  criar:{n:2,tpl:'bloco',fmts:['meta_feed','meta_story','gdn_land']},
+  ads:[
+    {id:'v1',angulo:'a1',titulo:'Torrado esta semana. Não este ano.',texto:'Café em grão torrado no Porto na semana em que é enviado, com a data no saco. Subscrição com pausa livre e envio grátis acima de 25 €.',cta:'Experimentar -20 %',gancho_video:'Saco de supermercado a ser virado: sem data de torra.'},
+    {id:'v2',angulo:'a1',titulo:'A data de torra está no saco.',texto:'Lotes rastreáveis até à quinta, torrados dias antes de chegarem a sua casa. Escolha 250 g ou 500 g por mês.',cta:'Ver subscrição',gancho_video:'Carimbo da data a bater no saco.'},
+    {id:'v3',angulo:'a2',titulo:'Quarta-feira. 7h40. Lata vazia.',texto:'Com a subscrição, o café chega antes de acabar. Ajuste a frequência quando quiser e pause sem perguntas.',cta:'Nunca mais sem café',gancho_video:'Mão a abanar uma lata vazia.'},
+    {id:'v4',angulo:'a2',titulo:'O café chega antes de acabar.',texto:'Torra fresca todos os meses, entregue em casa. Primeira entrega com 20 % de desconto.',cta:'Começar',gancho_video:'Calendário com o dia da entrega marcado.'},
+    {id:'v5',angulo:'a4',titulo:'Máquina de 400 €. Café de 3 €?',texto:'O equipamento está pronto. Dê-lhe grão torrado esta semana e prove a diferença na primeira chávena.',cta:'Provar a diferença',gancho_video:'Máquina de espresso brilhante, saco barato ao lado.'},
+    {id:'v6',angulo:'a4',titulo:'O seu espresso merece melhor grão.',texto:'Torrefação artesanal no Porto, lotes pequenos, envio grátis acima de 25 €. Primeira entrega -20 %.',cta:'Ver cafés',gancho_video:'Extração lenta em close-up.'}
+  ],
+  plano:null, resultados:null, analise:null, historico:[],
+  prospect:{local:'Vila Nova de Gaia',sector:'cafés e pastelarias',n:8},
+  leads:[
+    {id:'L1',nome:'Pastelaria Flor da Afurada (exemplo fictício)',site:'',morada:'Rua da Afurada, Vila Nova de Gaia',telefone:'',sector:'cafés e pastelarias',local:'Vila Nova de Gaia',descricao:'Pastelaria de bairro com fabrico próprio, aberta há 20 anos. Sem site; página de Facebook com publicações esporádicas.',redes:{instagram:null,facebook:'https://facebook.com/',linkedin:null,tiktok:null},estado:'analisado',criado:'2026-11-06',analise:{logo:{nota:1,obs:'Nome pintado na fachada, sem versão digital consistente.'},identidade:{nota:1,obs:'Sem paleta nem tipografia definidas; fotos de telemóvel sem edição.'},redes:{nota:2,obs:'Facebook com 3 publicações em 2026; sem Instagram.',encontradas:['facebook']},comunicacao:{nota:2,obs:'Horários e produtos só se descobrem presencialmente.'},site:{nota:0,obs:'Sem site; aparece no Google Maps com fotos de clientes.'},prioridade:5,oportunidades:['Logótipo e identidade mínima (fachada, embalagens, menu)','Instagram com fotografia de produto semanal','Ficha Google atualizada com horários e fotos profissionais'],abordagem:'Fazemos a vossa pastelaria aparecer tão bem online como o cheiro a pão cá fora. Um logótipo, fotografia e um mês de Instagram para começar.'}},
+    {id:'L2',nome:'Café Mirante do Douro (exemplo fictício)',site:'https://example.com',morada:'Av. Diogo Leite, Vila Nova de Gaia',telefone:'',sector:'cafés e pastelarias',local:'Vila Nova de Gaia',descricao:'Café com esplanada virada ao rio, forte em turistas. Site de template antigo e Instagram ativo mas inconsistente.',redes:{instagram:'https://instagram.com/',facebook:'https://facebook.com/',linkedin:null,tiktok:null},estado:'novo',criado:'2026-11-06',analise:null}
+  ]
+};
+
+/* ===== Utilitários ===== */
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur = n => new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+const eur2 = n => new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+const pct = n => (n*100).toFixed(2).replace('.',',')+' %';
+const int = n => new Intl.NumberFormat('pt-PT').format(Math.round(n));
+function hash(s){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){let a=seed||1;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function luminance(hex){const m=hex.replace('#','');if(m.length<6)return .5;const [r,g,b]=[0,2,4].map(i=>parseInt(m.substr(i,2),16)/255).map(c=>c<=.03928?c/12.92:((c+.055)/1.055)**2.4);return .2126*r+.7152*g+.0722*b}
+function dark(hex){return luminance(hex)<.4}
+function toast(msg,kind){const n=$('#toastArea')||(()=>{const d=document.createElement('div');d.id='toastArea';d.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:20;display:flex;flex-direction:column;gap:6px';document.body.append(d);return d})();const t=document.createElement('div');t.className='note'+(kind?' '+kind:'');t.style.boxShadow='0 6px 20px rgba(0,0,0,.18)';t.textContent=msg;n.append(t);setTimeout(()=>t.remove(),3800)}
+function confirmDlg(t,b){return new Promise(res=>{const d=$('#dlg');$('#dlgT').textContent=t;$('#dlgB').textContent=b;const y=$('#dlgYes'),n=$('#dlgNo');const done=v=>{d.close();y.onclick=n.onclick=null;res(v)};y.onclick=()=>done(true);n.onclick=()=>done(false);d.showModal()})}
+function aiCopy(code){return({not_granted:'Não autorizou esta página a usar o Claude.',rate_limited:'Demasiados pedidos. Tente daqui a pouco.',refused:'A IA recusou este pedido. Altere o brief.',invalid_json:'A resposta veio mal formatada. Tente outra vez.',session_expired:'Sessão expirada. Volte a iniciar sessão.',cancelled:''})[code]||'Falhou a ligação à IA. Tente outra vez.'}
+
+function persistLocal(){try{localStorage.setItem('orbita.v1',JSON.stringify(S))}catch(e){}}
+function loadLocal(){try{const j=localStorage.getItem('orbita.v1');return j?JSON.parse(j):null}catch(e){return null}}
+function commit(){persistLocal();renderStatus()}
+
+/* ===== Brief ===== */
+function readBrief(){
+  const b=S.brief;
+  b.marca=$('#b_marca').value.trim();b.setor=$('#b_setor').value.trim();b.produto=$('#b_produto').value.trim();
+  b.objetivo=$('#b_objetivo').value;b.publico=$('#b_publico').value.trim();b.diferenciais=$('#b_diferenciais').value.trim();
+  b.tom=$('#b_tom').value;b.orcamento=Math.max(50,Number($('#b_orcamento').value)||0);b.notas=$('#b_notas').value.trim();
+  b.canais=$$('#b_canais input:checked').map(i=>i.value);
+}
+function writeBrief(){
+  const b=S.brief;
+  $('#b_marca').value=b.marca;$('#b_setor').value=b.setor;$('#b_produto').value=b.produto;$('#b_objetivo').value=b.objetivo;
+  $('#b_publico').value=b.publico;$('#b_diferenciais').value=b.diferenciais;$('#b_tom').value=b.tom;$('#b_orcamento').value=b.orcamento;$('#b_notas').value=b.notas;
+  $$('#b_canais input').forEach(i=>{i.checked=b.canais.includes(i.value);i.closest('.toggle').classList.toggle('on',i.checked)});
+}
+function briefText(){
+  const b=S.brief;
+  return `Marca: ${b.marca}\nSetor: ${b.setor}\nProduto/serviço: ${b.produto}\nObjetivo: ${b.objetivo}\nPúblico-alvo: ${b.publico}\nDiferenciais e provas: ${b.diferenciais}\nTom de voz: ${b.tom}\nOrçamento mensal: ${b.orcamento} €\nCanais: ${b.canais.map(c=>CANAIS[c]).join(', ')}${b.notas?`\nAprendizagens da iteração anterior: ${b.notas}`:''}`;
+}
+
+/* ===== Navegação ===== */
+function go(n){S.etapa=n;$$('.panel').forEach(p=>p.classList.toggle('show',p.id==='p'+n));$$('.step').forEach(s=>{const i=Number(s.dataset.step);s.classList.toggle('active',i===n);s.classList.toggle('done',i<4&&i<n&&stepDone(i))});window.scrollTo({top:0});persistLocal()}
+function stepDone(i){return [!!S.discover,S.ads.length>0,!!S.plano,!!S.resultados][i]}
+function renderStatus(){
+  const el=$('#statusLine');const b=S.brief;
+  const est={rascunho:['Rascunho',''],ativa:['Campanha activa','good'],fechada:['Ciclo fechado','accent']}[S.estado]||['',''];
+  el.innerHTML=`${b.marca?`<strong style="color:var(--ink)">${esc(b.marca)}</strong>`:'<span>Sem brief</span>'}<span class="iter">iteração ${S.iteracao}</span>${est[0]?`<span class="chip ${est[1]}">${est[0]}</span>`:''}`;
+  $$('.step').forEach(s=>{const i=Number(s.dataset.step);s.classList.toggle('done',i<4&&i<S.etapa&&stepDone(i))});
+}
+
+/* ===== 1 DESCOBRIR ===== */
+async function discover(){
+  readBrief();
+  if(!S.brief.marca||!S.brief.produto){toast('Preencha pelo menos a marca e o produto.','warn');return}
+  if(!sample){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  const st=$('#discoverStatus');const btn=$('#btnDiscover');btn.disabled=true;st.innerHTML='<span class="thinking">A pesquisar público, mercado e ângulos…</span>';
+  const prompt=`És estratega numa agência de publicidade portuguesa. Lê o brief e devolve APENAS um objeto JSON (sem texto à volta), em português de Portugal, com esta forma exacta:
+{"publico":{"resumo":"2 frases","dores":["4 itens curtos"],"desejos":["3 itens curtos"]},
+ "mercado":{"tendencias":["3 tendências relevantes do sector"],"concorrentes":[{"nome":"tipo de concorrente (não inventes marcas reais)","angulo":"como comunica"}]},
+ "angulos":[{"id":"a1","titulo":"3-5 palavras","descricao":"1 frase: a ideia e porque funciona","gancho":"frase de abertura de anúncio, concreta, máx. 14 palavras","potencial":1}],
+ "moodboard":{"paleta":["#hex"],"palavras":["6 palavras-chave visuais"],"estilo":"1-2 frases sobre fotografia e grafismo","tipografia":"display"}}
+Regras: exactamente 5 ângulos com ids a1..a5, potencial inteiro de 1 a 5 (quão provável é ter melhor CTR para este objetivo), ângulos genuinamente diferentes entre si (prova, conveniência, identidade, oferta, objecção). Paleta com 5 cores hex: a primeira escura, a segunda a cor de destaque, a terceira clara. Sem markdown.
+
+BRIEF:
+${briefText()}`;
+  try{
+    const r=await sample.json(prompt,{modelTier:'default',cache:false});
+    if(!r||!Array.isArray(r.angulos)||!r.moodboard)throw{code:'invalid_json'};
+    r.angulos=r.angulos.slice(0,5).map((a,i)=>({id:'a'+(i+1),titulo:String(a.titulo||''),descricao:String(a.descricao||''),gancho:String(a.gancho||''),potencial:Math.min(5,Math.max(1,Number(a.potencial)||3))}));
+    r.moodboard.paleta=(r.moodboard.paleta||[]).filter(h=>/^#[0-9a-f]{6}$/i.test(h)).slice(0,5);
+    while(r.moodboard.paleta.length<5)r.moodboard.paleta.push(['#1B1B1B','#1F3BE0','#F2F2EE','#8A8F94','#FFFFFF'][r.moodboard.paleta.length]);
+    S.discover=r;S.angulosSel=r.angulos.filter(a=>a.potencial>=4).map(a=>a.id).slice(0,3);if(!S.angulosSel.length)S.angulosSel=[r.angulos[0].id];
+    S.ads=[];S.plano=null;S.resultados=null;S.analise=null;
+    commit();renderDiscover();st.textContent='Pronto. Escolha os ângulos e avance para Criar.';
+  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}</span>`}
+  finally{btn.disabled=false}
+}
+function renderDiscover(){
+  const out=$('#discoverOut');const d=S.discover;
+  if(!d){out.innerHTML=`<div class="card flat"><h3>Ainda sem pesquisa</h3><p class="muted">Preencha o brief e carregue em «Pesquisar com IA». Aparecem aqui o retrato do público, o mercado, cinco ângulos criativos e o moodboard.</p></div>`;return}
+  const m=d.moodboard;
+  out.innerHTML=`
+  <div class="grid g2">
+    <div class="card"><h3>Público</h3><p>${esc(d.publico.resumo)}</p>
+      <h4 style="margin-top:12px">Dores</h4><ul class="clean">${d.publico.dores.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+      <h4 style="margin-top:10px">Desejos</h4><ul class="clean">${d.publico.desejos.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div class="card"><h3>Mercado</h3><h4>Tendências</h4><ul class="clean">${d.mercado.tendencias.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+      <h4 style="margin-top:10px">Quem mais fala com este público</h4><ul class="clean">${d.mercado.concorrentes.map(c=>`<li><strong>${esc(c.nome)}</strong> <span class="muted">· ${esc(c.angulo)}</span></li>`).join('')}</ul></div>
+  </div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3>Ângulos criativos</h3><span class="small muted">Seleccionados: <strong id="selCount">${S.angulosSel.length}</strong></span></div>
+    <div class="grid g2" id="angles">${d.angulos.map(a=>`
+      <label class="angle ${S.angulosSel.includes(a.id)?'on':''}"><input type="checkbox" value="${a.id}" ${S.angulosSel.includes(a.id)?'checked':''}>
+        <div style="flex:1"><div class="row" style="justify-content:space-between"><h4>${esc(a.titulo)}</h4><span class="pot" title="Potencial ${a.potencial}/5">${[1,2,3,4,5].map(i=>`<i class="${i<=a.potencial?'f':''}"></i>`).join('')}</span></div>
+        <p class="small muted">${esc(a.descricao)}</p><p class="quote">«${esc(a.gancho)}»</p></div></label>`).join('')}</div>
+    <div class="row" style="margin-top:14px"><button class="btn primary" id="toCreate">Avançar para Criar →</button></div></div>
+  <div class="card"><h3>Moodboard</h3>
+    <div class="swatches">${m.paleta.map(h=>`<div class="swatch" style="background:${h};color:${dark(h)?'#fff':'#111'};text-shadow:none">${h}</div>`).join('')}</div>
+    <div class="words">${m.palavras.map(w=>`<span class="chip">${esc(w)}</span>`).join('')}</div>
+    <p class="small muted" style="margin-top:10px">${esc(m.estilo)}</p></div>`;
+  $$('#angles input').forEach(i=>i.onchange=()=>{i.closest('.angle').classList.toggle('on',i.checked);S.angulosSel=$$('#angles input:checked').map(x=>x.value);$('#selCount').textContent=S.angulosSel.length;persistLocal()});
+  $('#toCreate').onclick=()=>{if(!S.angulosSel.length){toast('Escolha pelo menos um ângulo.','warn');return}readBrief();persistLocal();renderCreateTools();go(1)};
+}
+
+/* ===== 2 CRIAR ===== */
+function renderCreateTools(){
+  const fm=$('#c_fmts');const canais=S.brief.canais;
+  const avail=Object.values(FORMATS).filter(f=>canais.includes(f.canal));
+  S.criar.fmts=S.criar.fmts.filter(id=>avail.some(f=>f.id===id));if(!S.criar.fmts.length)S.criar.fmts=avail.slice(0,2).map(f=>f.id);
+  fm.innerHTML=avail.map(f=>`<label class="toggle ${S.criar.fmts.includes(f.id)?'on':''}"><input type="checkbox" value="${f.id}" ${S.criar.fmts.includes(f.id)?'checked':''}> ${f.nome}</label>`).join('')||'<span class="small muted">Escolha canais no brief.</span>';
+  $$('#c_fmts input').forEach(i=>i.onchange=()=>{i.closest('.toggle').classList.toggle('on',i.checked);S.criar.fmts=$$('#c_fmts input:checked').map(x=>x.value);persistLocal();renderAds()});
+  $('#c_n').value=S.criar.n;$('#c_tpl').value=S.criar.tpl;
+}
+async function create(){
+  if(!S.discover){toast('Faça primeiro a pesquisa em Descobrir.','warn');go(0);return}
+  if(!S.angulosSel.length){toast('Escolha pelo menos um ângulo em Descobrir.','warn');go(0);return}
+  if(!sample){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  S.criar.n=Number($('#c_n').value);const st=$('#createStatus');const btn=$('#btnCreate');btn.disabled=true;st.innerHTML='<span class="thinking">A escrever variações…</span>';
+  const ang=S.discover.angulos.filter(a=>S.angulosSel.includes(a.id));
+  const prompt=`És copywriter de performance numa agência portuguesa. Escreve anúncios em português de Portugal (nunca do Brasil), no tom «${S.brief.tom}». Devolve APENAS um array JSON, sem markdown, com ${S.criar.n} variações para CADA ângulo (total ${ang.length*S.criar.n}), nesta forma:
+[{"angulo":"a1","titulo":"título do anúncio, máx. 42 caracteres, sem ponto final a não ser que seja uma frase completa","texto":"texto principal, 90 a 140 caracteres, concreto, com uma prova do brief","cta":"botão, máx. 20 caracteres","gancho_video":"o que se vê nos 3 primeiros segundos de um vídeo, 1 frase"}]
+Regras: as variações do mesmo ângulo devem abordar o ângulo de maneiras diferentes (pergunta, afirmação, cena concreta); evita superlativos vazios; usa os números e provas do brief; não inventes prémios nem preços que não estejam no brief.
+
+BRIEF:
+${briefText()}
+
+ÂNGULOS:
+${ang.map(a=>`${a.id} — ${a.titulo}: ${a.descricao} Gancho: «${a.gancho}»`).join('\n')}
+
+PÚBLICO: ${S.discover.publico.resumo} Dores: ${S.discover.publico.dores.join('; ')}`;
+  try{
+    let r=await sample.json(prompt,{modelTier:'default',cache:false});
+    if(!Array.isArray(r))throw{code:'invalid_json'};
+    r=r.filter(x=>x&&x.titulo).map((x,i)=>({id:'v'+(i+1),angulo:S.angulosSel.includes(x.angulo)?x.angulo:S.angulosSel[0],titulo:String(x.titulo).slice(0,60),texto:String(x.texto||'').slice(0,180),cta:String(x.cta||'Saber mais').slice(0,24),gancho_video:String(x.gancho_video||'')}));
+    if(!r.length)throw{code:'empty_completion'};
+    S.ads=r;S.plano=null;S.resultados=null;S.analise=null;S.estado='rascunho';commit();renderAds();st.textContent=`${r.length} variações geradas.`;
+  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}</span>`}
+  finally{btn.disabled=false}
+}
+
+/* --- Renderização de anúncios em canvas --- */
+function wrap(ctx,text,maxW){const words=text.split(/\s+/);const lines=[];let cur='';for(const w of words){const t=cur?cur+' '+w:w;if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t}if(cur)lines.push(cur);return lines}
+function fitFont(ctx,text,maxW,maxH,start,family,weight){let size=start;for(;size>=18;size-=2){ctx.font=`${weight} ${size}px ${family}`;const lines=wrap(ctx,text,maxW);if(lines.length*size*1.08<=maxH&&lines.every(l=>ctx.measureText(l).width<=maxW))return{size,lines}}ctx.font=`${weight} ${size}px ${family}`;return{size,lines:wrap(ctx,text,maxW)}}
+function drawCover(ctx,img,W,H){const r=Math.max(W/img.width,H/img.height);const w=img.width*r,h=img.height*r;ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h)}
+function drawAd(canvas,ad,fmt){
+  const W=fmt.w,H=fmt.h;canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');
+  const m=S.discover?S.discover.moodboard:{paleta:['#1B1B1B','#1F3BE0','#F2F2EE','#8A8F94','#FFFFFF']};
+  const [c0,c1,c2]=m.paleta;const tpl=S.criar.tpl;
+  const disp='"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif',body='"IBM Plex Sans","Segoe UI",sans-serif';
+  const small=W<=300;const pad=small?16:Math.round(Math.min(W,H)*0.075);
+  let bg=c0,fg='#FFFFFF',acc=c1;
+  if(tpl==='editorial'){bg=c2;fg=c0;acc=c1}
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  if(tpl==='foto'){
+    if(IMG){drawCover(ctx,IMG,W,H)}else{const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,c0);g.addColorStop(1,c1);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(255,255,255,.08)';for(let i=0;i<40;i++){ctx.beginPath();ctx.arc((i*97)%W,(i*181)%H,(i%5+1)*W/60,0,7);ctx.fill()}}
+    const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(0,0,0,.15)');g.addColorStop(.45,'rgba(0,0,0,.25)');g.addColorStop(1,'rgba(0,0,0,.78)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);fg='#FFFFFF';
+  }else if(tpl==='bloco'){ // faixa de destaque
+    ctx.fillStyle=acc;ctx.fillRect(0,0,Math.round(W*0.035),H);
+  }
+  // contraste da cor de destaque sobre o fundo
+  const accText=dark(acc)?'#FFFFFF':'#111111';
+  const tall=H/W>1.3,wide=W/H>1.5;
+  // marca
+  ctx.fillStyle=fg;ctx.globalAlpha=.85;ctx.font=`500 ${small?11:Math.round(W*0.028)}px ${body}`;ctx.textBaseline='top';
+  const brand=(S.brief.marca||'Marca').toUpperCase();ctx.fillText(brand,pad+(tpl==='bloco'?Math.round(W*0.035):0),pad);ctx.globalAlpha=1;
+  // título
+  const titleTop=tall?H*0.38:(wide?pad+(small?18:Math.round(W*0.06)):H*0.3);
+  const maxW=W-pad*2-(tpl==='bloco'?Math.round(W*0.035):0);const x=pad+(tpl==='bloco'?Math.round(W*0.035):0);
+  const ctaH=small?22:Math.round(W*0.062);const bodyRoom=small?0:(wide?H*0.2:H*0.18);
+  const titleRoom=H-titleTop-pad-ctaH-bodyRoom-(small?6:24);
+  const f=fitFont(ctx,ad.titulo,maxW,titleRoom,small?22:Math.round(W*(wide?0.075:0.095)),disp,800);
+  ctx.fillStyle=fg;let y=titleTop;for(const l of f.lines){ctx.fillText(l,x,y);y+=f.size*1.08}
+  // texto
+  if(!small){y+=Math.round(f.size*0.35);ctx.font=`400 ${Math.round(W*(wide?0.026:0.031))}px ${body}`;ctx.globalAlpha=.9;const bl=wrap(ctx,ad.texto,maxW).slice(0,wide?3:4);const bs=Math.round(W*(wide?0.026:0.031));for(const l of bl){if(y+bs>H-pad-ctaH-16)break;ctx.fillText(l,x,y);y+=bs*1.35}ctx.globalAlpha=1}
+  // CTA
+  ctx.font=`600 ${small?11:Math.round(W*0.03)}px ${body}`;const tw=ctx.measureText(ad.cta).width;const bw=tw+(small?18:Math.round(W*0.05)),bh=ctaH;const bx=x,by=H-pad-bh;
+  ctx.fillStyle=acc;ctx.beginPath();ctx.roundRect(bx,by,bw,bh,bh/2);ctx.fill();ctx.fillStyle=accText;ctx.textBaseline='middle';ctx.fillText(ad.cta,bx+(bw-tw)/2,by+bh/2+1);
+  // rodapé: formato
+  if(!small){ctx.textBaseline='bottom';ctx.font=`400 ${Math.round(W*0.02)}px ${body}`;ctx.fillStyle=fg;ctx.globalAlpha=.5;const ft=fmt.nome;ctx.fillText(ft,W-pad-ctx.measureText(ft).width,H-pad);ctx.globalAlpha=1}
+}
+function renderAds(){
+  const host=$('#ads');const fmts=S.criar.fmts.map(id=>FORMATS[id]).filter(Boolean);
+  $('#createActions').hidden=!S.ads.length;
+  if(!S.ads.length){host.innerHTML=`<div class="card flat" style="grid-column:1/-1"><h3>Sem variações</h3><p class="muted">Escolha os formatos e carregue em «Gerar variações». Cada texto é renderizado em todos os formatos seleccionados.</p></div>`;return}
+  const ang=id=>(S.discover?.angulos.find(a=>a.id===id)||{}).titulo||id;
+  host.innerHTML='';let count=0;
+  for(const ad of S.ads)for(const f of fmts){
+    count++;const el=document.createElement('article');el.className='ad';
+    el.innerHTML=`<div class="cv"><canvas style="width:${f.w>=f.h?'100%':'60%'}"></canvas></div><div class="meta"><div class="row" style="justify-content:space-between"><span class="chip accent">${esc(ang(ad.angulo))}</span><span class="mono muted">${ad.id} · ${f.w}×${f.h}</span></div><div class="t"></div><div class="small muted tx"></div><div class="small"><strong>Vídeo:</strong> <span class="gv"></span></div><div class="actions"><button class="btn sm" data-dl>PNG</button><button class="btn sm" data-edit>Editar texto</button></div></div>`;
+    $('.t',el).textContent=ad.titulo;$('.tx',el).textContent=ad.texto;$('.gv',el).textContent=ad.gancho_video;
+    const cv=$('canvas',el);drawAd(cv,ad,f);
+    $('[data-dl]',el).onclick=()=>savePng(cv,`${slug(S.brief.marca)}_${ad.id}_${f.id}.png`);
+    $('[data-edit]',el).onclick=()=>editAd(ad);
+    if(!downloads)$('[data-dl]',el).hidden=true;
+    host.append(el);
+  }
+  $('#adCount').textContent=`${S.ads.length} textos × ${fmts.length} formatos = ${count} peças`;
+}
+function slug(s){return (s||'campanha').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+function editAd(ad){
+  const d=$('#dlg');$('#dlgT').textContent='Editar variação '+ad.id;
+  $('#dlgB').innerHTML=`<div class="stack"><label>Título<input id="e_t"></label><label>Texto<textarea id="e_x"></textarea></label><label>CTA<input id="e_c"></label></div>`;
+  $('#e_t').value=ad.titulo;$('#e_x').value=ad.texto;$('#e_c').value=ad.cta;
+  const y=$('#dlgYes'),n=$('#dlgNo');const done=()=>{d.close();y.onclick=n.onclick=null};
+  y.onclick=()=>{ad.titulo=$('#e_t').value.trim()||ad.titulo;ad.texto=$('#e_x').value.trim();ad.cta=$('#e_c').value.trim()||ad.cta;done();commit();renderAds()};n.onclick=done;d.showModal();
+}
+async function savePng(cv,name){
+  if(!downloads)return;const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+  try{await downloads.save({filename:name,data:blob});toast('Guardado: '+name)}catch(e){if(e.code!=='declined')toast('Não foi possível descarregar ('+e.code+').','err')}
+}
+async function saveZip(){
+  if(!downloads){toast('Descarregar indisponível neste browser.','warn');return}
+  const zip=new JSZip();const fmts=S.criar.fmts.map(id=>FORMATS[id]);const off=document.createElement('canvas');
+  for(const ad of S.ads)for(const f of fmts){drawAd(off,ad,f);const b=await new Promise(r=>off.toBlob(r,'image/png'));zip.file(`${f.id}/${ad.id}_${slug(ad.titulo).slice(0,30)}.png`,b)}
+  zip.file('textos.csv',csvAds());
+  const blob=await zip.generateAsync({type:'blob'});
+  try{await downloads.save({filename:`${slug(S.brief.marca)}_criativos_it${S.iteracao}.zip`,data:blob});toast('Pacote de criativos guardado.')}catch(e){if(e.code!=='declined')toast('Não foi possível descarregar ('+e.code+').','err')}
+}
+function csvAds(){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';const ang=id=>(S.discover?.angulos.find(a=>a.id===id)||{}).titulo||id;return ['id;angulo;titulo;texto;cta;gancho_video',...S.ads.map(a=>[a.id,ang(a.angulo),a.titulo,a.texto,a.cta,a.gancho_video].map(q).join(';'))].join('\n')}
+
+/* ===== 3 LANÇAR ===== */
+function buildPlan(){
+  const b=S.brief;const canais=b.canais;const budget=b.orcamento;
+  const peso={meta:0.5,google:0.3,tiktok:0.35};const tot=canais.reduce((s,c)=>s+peso[c],0);
+  const cpm={meta:6.5,google:2.8,tiktok:5.2};
+  const inicio=new Date();inicio.setDate(inicio.getDate()+3);const fim=new Date(inicio);fim.setDate(fim.getDate()+30);
+  const linhas=canais.map(c=>{const v=Math.round(budget*peso[c]/tot);const fmts=S.criar.fmts.filter(f=>FORMATS[f].canal===c);return{canal:c,orcamento:v,diario:+(v/30).toFixed(2),formatos:fmts,pecas:fmts.length*S.ads.length,impressoes:Math.round(v/cpm[c]*1000),publico:c==='google'?'Afinidade: café, cozinha; remarketing visitantes 30 dias':c==='tiktok'?'Interesses: café, receitas; 25–44':'Interesses + lookalike 2 % de compradores; 30–50; Porto e Lisboa'}});
+  return{inicio:inicio.toISOString().slice(0,10),fim:fim.toISOString().slice(0,10),objetivo:b.objetivo,linhas,teste:'Teste A/B por ângulo: orçamento igual por variação nos primeiros 7 dias; depois 70 % para as 2 melhores por CTR e custo por resultado.',checklist:[`Pixel/Tag instalado e evento de «${b.objetivo}» a disparar`,'Página de destino verificada em telemóvel (tempo de carregamento < 3 s)','Textos revistos pelo cliente (ortografia PT-PT, preços, condições)','UTMs definidos por canal e variação','Exclusões: clientes actuais e colaboradores','Orçamento diário e datas confirmados','Aprovação final do cliente por escrito'],feito:[]};
+}
+function renderLaunch(){
+  const out=$('#launchOut');
+  if(!S.ads.length){out.innerHTML=`<div class="card flat"><h3>Ainda sem criativos</h3><p class="muted">Gere as variações em Criar. O plano de media usa o orçamento e os canais do brief.</p></div>`;return}
+  if(!S.plano)S.plano=buildPlan();
+  const p=S.plano;const tot=p.linhas.reduce((s,l)=>s+l.orcamento,0);
+  out.innerHTML=`
+  <div class="kpis">
+    <div class="kpi"><div class="v num">${eur(tot)}</div><div class="l">Orçamento do ciclo (30 dias)</div></div>
+    <div class="kpi"><div class="v num">${p.linhas.length}</div><div class="l">Canais</div></div>
+    <div class="kpi"><div class="v num">${p.linhas.reduce((s,l)=>s+l.pecas,0)}</div><div class="l">Peças a publicar</div></div>
+    <div class="kpi"><div class="v num">${int(p.linhas.reduce((s,l)=>s+l.impressoes,0))}</div><div class="l">Impressões estimadas</div></div>
+  </div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3>Plano de media</h3><span class="small muted">${p.inicio} → ${p.fim} · objetivo: ${esc(p.objetivo)}</span></div>
+    <div class="tbl"><table><thead><tr><th>Canal</th><th class="r">Orçamento</th><th class="r">Diário</th><th>Formatos</th><th class="r">Peças</th><th>Segmentação proposta</th></tr></thead><tbody>
+    ${p.linhas.map(l=>`<tr><td><strong>${CANAIS[l.canal]}</strong></td><td class="r num">${eur(l.orcamento)}</td><td class="r num">${eur2(l.diario)}</td><td>${l.formatos.map(f=>FORMATS[f].nome).join(', ')||'—'}</td><td class="r num">${l.pecas}</td><td class="small">${esc(l.publico)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="small muted" style="margin-top:10px"><strong>Estrutura de teste:</strong> ${esc(p.teste)}</p>
+    <div class="row" style="margin-top:12px"><button class="btn sm" id="btnPlanCsv">Copiar plano (CSV)</button>${downloads?'<button class="btn sm" id="btnPlanJson">Descarregar plano (.json)</button>':''}</div></div>
+  <div class="card"><h3>Lista de verificação antes de publicar</h3>
+    <ul class="checklist">${p.checklist.map((c,i)=>`<li><input type="checkbox" id="ck${i}" ${p.feito.includes(i)?'checked':''}><label for="ck${i}" style="flex-direction:row;color:var(--ink);font-weight:400">${esc(c)}</label></li>`).join('')}</ul>
+    <div class="row" style="margin-top:14px"><button class="btn primary" id="btnLaunch" ${S.estado==='ativa'?'disabled':''}>${S.estado==='ativa'?'Campanha activa':'Marcar como publicada'}</button><span class="small muted">A publicação real nas plataformas é manual nesta versão.</span></div></div>`;
+  $$('.checklist input').forEach((i,idx)=>i.onchange=()=>{p.feito=$$('.checklist input').map((x,k)=>x.checked?k:-1).filter(k=>k>=0);persistLocal()});
+  $('#btnPlanCsv').onclick=()=>{const q=s=>'"'+String(s).replace(/"/g,'""')+'"';const t=['canal;orcamento;diario;formatos;pecas;segmentacao',...p.linhas.map(l=>[CANAIS[l.canal],l.orcamento,l.diario,l.formatos.map(f=>FORMATS[f].nome).join(', '),l.pecas,l.publico].map(q).join(';'))].join('\n');copyText(t)};
+  const pj=$('#btnPlanJson');if(pj)pj.onclick=async()=>{try{await downloads.save({filename:`${slug(S.brief.marca)}_plano_it${S.iteracao}.json`,data:JSON.stringify({brief:S.brief,plano:p,ads:S.ads},null,2)})}catch(e){}};
+  $('#btnLaunch').onclick=async()=>{if(p.feito.length<p.checklist.length){const ok=await confirmDlg('Lista incompleta','Ainda há pontos por verificar. Marcar a campanha como publicada na mesma?');if(!ok)return}S.estado='ativa';S.resultados=null;S.analise=null;commit();renderLaunch();toast('Campanha marcada como activa. Veja os resultados em Otimizar.');go(3);renderOptimize()};
+}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copiado para a área de transferência.')}catch(e){toast('O browser não permitiu copiar.','err')}}
+
+/* ===== 4 OTIMIZAR ===== */
+function simulate(){
+  const p=S.plano;const res=[];const base={meta:{ctr:.012,cvr:.021},google:{ctr:.0055,cvr:.012},tiktok:{ctr:.009,cvr:.014}};
+  for(const l of p.linhas){
+    const adsHere=S.ads;const share=l.orcamento/adsHere.length;
+    for(const ad of adsHere){
+      const ang=S.discover?.angulos.find(a=>a.id===ad.angulo)||{potencial:3};
+      const r=rng(hash(ad.id+l.canal+S.iteracao+S.brief.marca));
+      const q=(ang.potencial-3)*0.18+(r()-0.5)*0.5; // potencial + ruído
+      const ctr=base[l.canal].ctr*(1+q);const cvr=base[l.canal].cvr*(1+q*0.6+(r()-0.5)*0.3);
+      const cpm=(l.canal==='meta'?6.5:l.canal==='google'?2.8:5.2)*(0.9+r()*0.25);
+      const imp=Math.round(share/cpm*1000);const cliques=Math.round(imp*ctr);const conv=Math.round(cliques*cvr);
+      res.push({ad:ad.id,canal:l.canal,gasto:+share.toFixed(2),impressoes:imp,cliques,ctr:cliques/imp,conversoes:conv,cpc:cliques?share/cliques:0,cpa:conv?share/conv:null});
+    }
+  }
+  return res;
+}
+function renderOptimize(){
+  const out=$('#optOut');
+  if(S.estado!=='ativa'&&!S.resultados){out.innerHTML=`<div class="card flat"><h3>Campanha ainda não publicada</h3><p class="muted">Marque a campanha como publicada em Lançar. Os resultados aparecem aqui por variação e canal.</p></div>`;return}
+  if(!S.resultados)S.resultados=simulate();
+  const R=S.resultados;const byAd={};for(const r of R){const a=byAd[r.ad]||(byAd[r.ad]={ad:r.ad,gasto:0,imp:0,cl:0,conv:0});a.gasto+=r.gasto;a.imp+=r.impressoes;a.cl+=r.cliques;a.conv+=r.conversoes}
+  const rows=Object.values(byAd).map(a=>({...a,ctr:a.cl/a.imp,cpa:a.conv?a.gasto/a.conv:null})).sort((x,y)=>(x.cpa??1e9)-(y.cpa??1e9)||y.ctr-x.ctr);
+  const tot=rows.reduce((s,a)=>({gasto:s.gasto+a.gasto,imp:s.imp+a.imp,cl:s.cl+a.cl,conv:s.conv+a.conv}),{gasto:0,imp:0,cl:0,conv:0});
+  const ang=id=>(S.discover?.angulos.find(a=>a.id===id)||{}).titulo||id;const adOf=id=>S.ads.find(a=>a.id===id)||{};
+  const win=rows[0];
+  out.innerHTML=`
+  <div class="kpis">
+    <div class="kpi"><div class="v num">${eur2(tot.gasto)}</div><div class="l">Investimento</div></div>
+    <div class="kpi"><div class="v num">${int(tot.imp)}</div><div class="l">Impressões</div></div>
+    <div class="kpi"><div class="v num">${pct(tot.cl/tot.imp)}</div><div class="l">CTR médio</div></div>
+    <div class="kpi"><div class="v num">${int(tot.conv)}</div><div class="l">Resultados (${esc(S.brief.objetivo)})</div></div>
+    <div class="kpi"><div class="v num">${tot.conv?eur2(tot.gasto/tot.conv):'—'}</div><div class="l">Custo por resultado</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>CTR por variação</h3><canvas class="chart" id="chart"></canvas></div>
+    <div class="card"><h3>Vencedora até agora</h3><span class="chip good">${win.ad} · ${esc(ang(adOf(win.ad).angulo))}</span><p class="quote">«${esc(adOf(win.ad).titulo)}»</p><p class="small muted">${esc(adOf(win.ad).texto)}</p>
+      <p class="small" style="margin-top:10px">CTR <strong class="num">${pct(win.ctr)}</strong> · custo por resultado <strong class="num">${win.cpa?eur2(win.cpa):'—'}</strong> · ${int(win.conv)} resultados</p></div>
+  </div>
+  <div class="card"><h3>Resultados por variação</h3><div class="tbl"><table><thead><tr><th>Variação</th><th>Ângulo</th><th class="r">Gasto</th><th class="r">Impressões</th><th class="r">Cliques</th><th class="r">CTR</th><th class="r">Resultados</th><th class="r">Custo/resultado</th></tr></thead><tbody>
+    ${rows.map((a,i)=>`<tr class="${i===0?'win':''}"><td><strong>${a.ad}</strong><div class="small muted">${esc(adOf(a.ad).titulo)}</div></td><td>${esc(ang(adOf(a.ad).angulo))}</td><td class="r num">${eur2(a.gasto)}</td><td class="r num">${int(a.imp)}</td><td class="r num">${int(a.cl)}</td><td class="r num">${pct(a.ctr)}</td><td class="r num">${int(a.conv)}</td><td class="r num">${a.cpa?eur2(a.cpa):'—'}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="row" style="margin-top:12px"><button class="btn sm" id="btnResCsv">Copiar resultados (CSV)</button><button class="btn sm" id="btnResim" title="Gera outra amostra simulada">Nova amostra simulada</button></div></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3>Análise e próxima iteração</h3><button class="btn primary" id="btnAnalyse" ${S.analise?'':''}>${S.analise?'Repetir análise':'Analisar com IA'}</button></div>
+    <div id="analysis" style="margin-top:10px">${S.analise?analysisHtml(S.analise):'<p class="muted small">A IA lê a tabela acima, identifica porque é que a vencedora ganhou e propõe o ângulo da próxima volta.</p>'}</div></div>`;
+  drawChart($('#chart'),rows);
+  $('#btnResCsv').onclick=()=>{const t=['variacao;angulo;gasto;impressoes;cliques;ctr;resultados;custo_resultado',...rows.map(a=>[a.ad,ang(adOf(a.ad).angulo),a.gasto.toFixed(2),a.imp,a.cl,(a.ctr*100).toFixed(2),a.conv,a.cpa?a.cpa.toFixed(2):''].join(';'))].join('\n');copyText(t)};
+  $('#btnResim').onclick=()=>{S.iteracao+=0;S.resultados=simulate().map(r=>({...r,impressoes:Math.round(r.impressoes*(0.9+Math.random()*0.2))}));S.analise=null;commit();renderOptimize()};
+  $('#btnAnalyse').onclick=()=>analyse(rows);
+}
+function drawChart(cv,rows){
+  const dpr=window.devicePixelRatio||1;const W=cv.clientWidth||600,H=220;cv.width=W*dpr;cv.height=H*dpr;const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  const cs=getComputedStyle(document.documentElement);const ink=cs.getPropertyValue('--ink').trim(),ink2=cs.getPropertyValue('--ink-2').trim(),line=cs.getPropertyValue('--line').trim(),acc=cs.getPropertyValue('--accent').trim(),good=cs.getPropertyValue('--good').trim();
+  const padL=44,padB=28,padT=12,padR=8;const max=Math.max(...rows.map(r=>r.ctr))*1.15;const n=rows.length;const bw=Math.min(56,(W-padL-padR)/n*0.6);const step=(W-padL-padR)/n;
+  ctx.font='11px '+cs.getPropertyValue('--mono');ctx.fillStyle=ink2;ctx.strokeStyle=line;
+  const ticks=4;for(let i=0;i<=ticks;i++){const v=max/ticks*i;const y=H-padB-(H-padB-padT)*(v/max);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText((v*100).toFixed(1)+'%',padL-6,y)}
+  rows.forEach((r,i)=>{const h=(H-padB-padT)*(r.ctr/max);const x=padL+step*i+(step-bw)/2;const y=H-padB-h;ctx.fillStyle=i===0?good:acc;ctx.fillRect(x,y,bw,h);ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(r.ad,x+bw/2,H-padB+6);ctx.fillStyle=ink2;ctx.textBaseline='bottom';ctx.fillText((r.ctr*100).toFixed(2)+'%',x+bw/2,y-2)});
+}
+function analysisHtml(a){return `<p>${esc(a.resumo)}</p><div class="grid g2" style="margin-top:12px"><div><h4>Aprendizagens</h4><ul class="clean">${(a.aprendizagens||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div><h4>Recomendações</h4><ul class="clean">${(a.recomendacoes||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>
+  <div class="note" style="margin-top:14px"><span>→</span><div><strong>Próximo ângulo:</strong> ${esc(a.proximo_angulo?.titulo||'')} <span class="muted">· ${esc(a.proximo_angulo?.descricao||'')}</span></div></div>
+  <div class="row" style="margin-top:14px"><button class="btn primary" id="btnNext">Fechar ciclo e iniciar iteração ${S.iteracao+1} →</button><span class="small muted">As aprendizagens passam para o brief; a vencedora fica no histórico.</span></div>`}
+async function analyse(rows){
+  if(!sample){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  const host=$('#analysis');host.innerHTML='<span class="thinking">A ler os resultados…</span>';
+  const ang=id=>(S.discover?.angulos.find(a=>a.id===id)||{}).titulo||id;const adOf=id=>S.ads.find(a=>a.id===id)||{};
+  const table=rows.map(a=>`${a.ad} | ângulo: ${ang(adOf(a.ad).angulo)} | título: «${adOf(a.ad).titulo}» | CTR ${(a.ctr*100).toFixed(2)}% | resultados ${a.conv} | custo/resultado ${a.cpa?a.cpa.toFixed(2)+' €':'n/a'} | gasto ${a.gasto.toFixed(2)} €`).join('\n');
+  const prompt=`És analista de performance numa agência portuguesa. Lê o brief e a tabela de resultados de uma campanha e devolve APENAS um objeto JSON em português de Portugal, sem markdown:
+{"resumo":"2-3 frases: o que aconteceu e porquê, com números","aprendizagens":["3-4 aprendizagens concretas sobre mensagem, ângulo ou formato"],"recomendacoes":["3 acções para a próxima iteração"],"proximo_angulo":{"titulo":"3-5 palavras","descricao":"1 frase"}}
+Sê específico: cita as variações pelo id. A tabela está ordenada da melhor para a pior por custo por resultado.
+
+BRIEF:
+${briefText()}
+
+RESULTADOS (30 dias, iteração ${S.iteracao}):
+${table}`;
+  try{const r=await sample.json(prompt,{modelTier:'default',cache:false});if(!r||!r.resumo)throw{code:'invalid_json'};S.analise=r;commit();host.innerHTML=analysisHtml(r);bindNext()}
+  catch(e){host.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}</span>`}
+}
+function bindNext(){const b=$('#btnNext');if(b)b.onclick=async()=>{
+  const ok=await confirmDlg('Fechar ciclo','Inicia a iteração '+(S.iteracao+1)+'. O brief recebe as aprendizagens e os criativos actuais passam ao histórico.');if(!ok)return;
+  const a=S.analise;S.historico.push({iteracao:S.iteracao,vencedora:S.ads[0]?.id,analise:a,ads:S.ads,resultados:S.resultados});
+  S.brief.notas=[`Iteração ${S.iteracao}: ${a.resumo}`,...(a.aprendizagens||[]).map(x=>'- '+x),`Próximo ângulo sugerido: ${a.proximo_angulo?.titulo} — ${a.proximo_angulo?.descricao}`].join('\n');
+  S.iteracao++;S.estado='rascunho';S.discover=null;S.angulosSel=[];S.ads=[];S.plano=null;S.resultados=null;S.analise=null;
+  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();go(0);toast('Iteração '+S.iteracao+' iniciada. Repita a pesquisa com as novas notas.')}}
+
+/* ===== IA directa (API Anthropic) ===== */
+const CFG_KEY='orbita.cfg';const API_URL='https://api.anthropic.com/v1/messages';
+function loadCfg(){try{return JSON.parse(localStorage.getItem(CFG_KEY))||{}}catch(e){return{}}}
+function saveCfg(c){try{localStorage.setItem(CFG_KEY,JSON.stringify(c))}catch(e){}}
+async function callAI(input,{tools,beta,maxTokens=6000,onRound}={}){
+  const cfg=loadCfg();if(!cfg.key)throw{code:'not_granted',message:'sem chave'};
+  const headers={'content-type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+  if(beta)headers['anthropic-beta']=beta;
+  let messages=typeof input==='string'?[{role:'user',content:input}]:input.slice();let text='';
+  for(let round=0;round<5;round++){
+    const body={model:cfg.model||'claude-sonnet-5-5',max_tokens:maxTokens,messages};if(tools)body.tools=tools;
+    let r;try{r=await fetch(API_URL,{method:'POST',headers,body:JSON.stringify(body)})}catch(e){throw{code:'upstream_error',message:String(e)}}
+    if(r.status===401||r.status===403)throw{code:'not_granted',message:'chave inválida'};
+    if(r.status===429)throw{code:'rate_limited'};
+    if(!r.ok){let m='';try{m=(await r.json()).error?.message||''}catch(e){}throw{code:'upstream_error',message:m}}
+    const d=await r.json();
+    text+=(d.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    if(onRound)onRound(round,d);
+    if(d.stop_reason==='pause_turn'){messages=[...messages,{role:'assistant',content:d.content}];continue}
+    if(!text.trim())throw{code:'empty_completion'};
+    return{text,truncated:d.stop_reason==='max_tokens'};
+  }
+  return{text,truncated:true};
+}
+function parseJson(text){
+  let t=text.trim();const fences=[...t.matchAll(/```(?:json)?\s*([\s\S]*?)```/g)];if(fences.length)t=fences[fences.length-1][1].trim();
+  try{return JSON.parse(t)}catch(e){}
+  const starts=[t.indexOf('{'),t.indexOf('[')].filter(x=>x>=0);const a=starts.length?Math.min(...starts):-1;const b=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));
+  if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1))}catch(e){}}
+  throw{code:'invalid_json',text};
+}
+function makeSample(){
+  if(!loadCfg().key)return null;
+  const call=(input,opts)=>callAI(input,{maxTokens:4000});
+  call.json=async(input,opts)=>{const {text}=await call(input,opts);return parseJson(text)};
+  return call;
+}
+const TOOL_SEARCH=(n,city)=>({type:'web_search_20250305',name:'web_search',max_uses:n,user_location:{type:'approximate',city:city||'Porto',country:'PT',timezone:'Europe/Lisbon'}});
+const TOOL_FETCH=n=>({type:'web_fetch_20250910',name:'web_fetch',max_uses:n});
+function openSettings(){
+  const cfg=loadCfg();const d=$('#dlg');$('#dlgT').textContent='Definições da IA';
+  $('#dlgB').innerHTML=`<div class="stack"><label>Chave da API da Anthropic<input id="s_key" type="password" placeholder="sk-ant-…" autocomplete="off"></label><label>Modelo<select id="s_model"><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (recomendado)</option><option value="claude-opus-5-5">Claude Opus 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5 (rápido)</option></select></label><p class="small muted">A chave fica guardada só neste browser (localStorage) e é enviada apenas para api.anthropic.com. Crie uma em console.anthropic.com. A prospecção usa a pesquisa web da API, cobrada por pesquisa além dos tokens.</p></div>`;
+  $('#s_key').value=cfg.key||'';$('#s_model').value=cfg.model||'claude-sonnet-5-5';
+  const y=$('#dlgYes'),n=$('#dlgNo');const done=()=>{d.close();y.onclick=n.onclick=null};
+  y.onclick=()=>{saveCfg({key:$('#s_key').value.trim(),model:$('#s_model').value});done();initAI();toast(loadCfg().key?'Chave guardada. A IA está activa.':'Sem chave: a IA fica desligada.')};n.onclick=done;d.showModal();
+}
+function aiCopyLocal(code){return code==='not_granted'?'Chave da API inválida ou em falta. Verifique em «Definições IA».':aiCopy(code)}
+function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample}
+
+/* ===== PROSPECTAR ===== */
+const REDES=['instagram','facebook','linkedin','tiktok'];
+const REDE_NOME={instagram:'Instagram',facebook:'Facebook',linkedin:'LinkedIn',tiktok:'TikTok'};
+function normUrl(u){if(!u||typeof u!=='string')return null;u=u.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;try{new URL(u);return u}catch(e){return null}}
+async function prospect(){
+  const local=$('#pr_local').value.trim(),sector=$('#pr_sector').value.trim(),n=Number($('#pr_n').value);
+  if(!local||!sector){toast('Indique a localização e o sector.','warn');return}
+  if(!loadCfg().key){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  S.prospect={local,sector,n};persistLocal();
+  const st=$('#prStatus'),btn=$('#btnProspect');btn.disabled=true;st.innerHTML=`<span class="thinking">A pesquisar ${esc(sector)} em ${esc(local)}…</span>`;
+  const known=S.leads.map(l=>l.nome).join('; ');
+  const prompt=`És responsável de prospecção comercial numa agência de design, fotografia e redes sociais em Portugal. Usa a pesquisa web para encontrar ${n} pequenas e médias empresas LOCAIS e INDEPENDENTES (não cadeias nem franchisings) do sector «${sector}» em «${local}», Portugal. Faz várias pesquisas diferentes (ex.: «${sector} ${local}», «${sector} ${local} instagram», «${sector} ${local} facebook», listagens locais) e cruza os resultados.
+Para cada empresa procura: site oficial, morada, telefone e ligações directas para Instagram, Facebook, LinkedIn e TikTok (só URLs que tenhas visto em resultados; se não encontrares, null).
+${known?`Ignora estas, já conhecidas: ${known}.`:''}
+No fim responde APENAS com um bloco \`\`\`json contendo um array:
+[{"nome":"","site":"url ou null","morada":"","telefone":"","descricao":"1-2 frases sobre o negócio e a sua presença online aparente","redes":{"instagram":null,"facebook":null,"linkedin":null,"tiktok":null},"fonte":"url onde encontraste"}]
+Em português de Portugal. Não inventes empresas nem URLs.`;
+  try{
+    const {text}=await callAI(prompt,{tools:[TOOL_SEARCH(10,local)],maxTokens:8000,onRound:(r)=>{st.innerHTML=`<span class="thinking">A cruzar resultados (ronda ${r+1})…</span>`}});
+    let arr=parseJson(text);if(!Array.isArray(arr))throw{code:'invalid_json',text};
+    const today=new Date().toISOString().slice(0,10);let added=0;
+    for(const x of arr){
+      if(!x||!x.nome)continue;const nome=String(x.nome).trim();
+      if(S.leads.some(l=>l.nome.toLowerCase()===nome.toLowerCase()))continue;
+      const redes={};for(const k of REDES)redes[k]=normUrl(x.redes?.[k]);
+      S.leads.unshift({id:'L'+(hash(nome+Date.now())%100000),nome,site:normUrl(x.site)||'',morada:String(x.morada||''),telefone:String(x.telefone||''),sector,local,descricao:String(x.descricao||''),fonte:normUrl(x.fonte)||'',redes,estado:'novo',criado:today,analise:null});added++;
+    }
+    commit();renderLeads();st.textContent=added?`${added} empresas adicionadas.`:'Nenhuma empresa nova encontrada. Tente outro sector ou localização.';
+  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
+  finally{btn.disabled=false}
+}
+async function analyseLead(lead,el){
+  if(!loadCfg().key){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  const box=$('.an',el);box.innerHTML='<span class="thinking">A visitar o site e as redes…</span>';
+  const links=[lead.site,...REDES.map(k=>lead.redes[k])].filter(Boolean);
+  const prompt=`És director criativo numa agência de design, fotografia e redes sociais. Avalia a presença digital e a marca da empresa «${lead.nome}» (${lead.sector}, ${lead.local}). Morada: ${lead.morada||'n/d'}.
+${links.length?`Visita com web_fetch estas páginas: ${links.join(' , ')}.`:'Não há site conhecido.'} Se faltar alguma rede social, faz 1-2 pesquisas web para confirmar se existe (ex.: «${lead.nome} instagram»). Não inventes o que não conseguires ver.
+Avalia de 0 (inexistente) a 5 (profissional e consistente) e responde APENAS com um bloco \`\`\`json:
+{"logo":{"nota":0,"obs":"1 frase"},"identidade":{"nota":0,"obs":"paleta, tipografia, consistência entre site e redes"},"redes":{"nota":0,"obs":"quais existem, frequência aparente, qualidade das fotos","encontradas":{"instagram":"url ou null","facebook":null,"linkedin":null,"tiktok":null}},"comunicacao":{"nota":0,"obs":"clareza da oferta, texto, call-to-action, fotografia"},"site":{"nota":0,"obs":"existe? moderno? funciona em telemóvel?"},"prioridade":1,"oportunidades":["3 serviços concretos que a nossa agência podia vender"],"abordagem":"2 frases de abertura para um primeiro contacto, em português de Portugal, concretas e sem bajulação"}
+"prioridade" de 1 a 5: 5 = presença fraca mas negócio com aspecto viável (grande oportunidade); 1 = já têm tudo bem feito.`;
+  try{
+    const {text}=await callAI(prompt,{tools:[TOOL_FETCH(5),TOOL_SEARCH(3,lead.local)],beta:'web-fetch-2025-09-10',maxTokens:6000});
+    const a=parseJson(text);if(!a||!a.logo)throw{code:'invalid_json',text};
+    for(const k of ['logo','identidade','redes','comunicacao','site']){a[k]=a[k]||{};a[k].nota=Math.min(5,Math.max(0,Number(a[k].nota)||0));a[k].obs=String(a[k].obs||'')}
+    a.prioridade=Math.min(5,Math.max(1,Number(a.prioridade)||3));a.oportunidades=(a.oportunidades||[]).map(String).slice(0,4);a.abordagem=String(a.abordagem||'');
+    const enc=a.redes.encontradas||{};for(const k of REDES){const u=normUrl(enc[k]);if(u&&!lead.redes[k])lead.redes[k]=u}
+    lead.analise=a;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
+  }catch(e){box.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
+}
+function leadToBrief(l){
+  S.brief.marca=l.nome.replace(/\s*\(exemplo fictício\)/,'');S.brief.setor=l.sector;S.brief.produto='';S.brief.objetivo='Notoriedade';
+  S.brief.publico=`Clientes locais em ${l.local}.`;S.brief.diferenciais=l.descricao;
+  S.brief.notas=l.analise?`Diagnóstico de presença: logótipo ${l.analise.logo.nota}/5, identidade ${l.analise.identidade.nota}/5, redes ${l.analise.redes.nota}/5, comunicação ${l.analise.comunicacao.nota}/5. Oportunidades: ${l.analise.oportunidades.join('; ')}`:'';
+  S.discover=null;S.angulosSel=[];S.ads=[];S.plano=null;S.resultados=null;S.analise=null;S.estado='rascunho';S.iteracao=1;
+  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();go(0);toast('Brief preenchido a partir da lead.');
+}
+function renderLeads(){
+  const host=$('#leads');
+  const sectors=[...new Set(S.leads.map(l=>l.sector))].sort(),locais=[...new Set(S.leads.map(l=>l.local))].sort();
+  const keep=(sel,vals)=>{const cur=sel.value;sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option>${esc(v)}</option>`).join('');sel.value=vals.includes(cur)?cur:''};
+  keep($('#pf_sector'),sectors);keep($('#pf_local'),locais);
+  const fs=$('#pf_sector').value,fl=$('#pf_local').value,fe=$('#pf_estado').value,q=$('#pf_q').value.trim().toLowerCase(),ord=$('#pf_ord').value;
+  let L=S.leads.filter(l=>(!fs||l.sector===fs)&&(!fl||l.local===fl)&&(!fe||l.estado===fe)&&(!q||(l.nome+' '+l.morada).toLowerCase().includes(q)));
+  if(ord==='nome')L.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));else if(ord==='prio')L.sort((a,b)=>(b.analise?.prioridade||0)-(a.analise?.prioridade||0));
+  $('#leadCount').textContent=`${L.length} de ${S.leads.length}`;
+  if(!S.leads.length){host.innerHTML=`<div class="card flat"><h3>Sem leads</h3><p class="muted">Indique localização e sector e carregue em «Pesquisar empresas». As empresas ficam guardadas no projeto e podem ser filtradas por sector, local e estado.</p></div>`;return}
+  if(!L.length){host.innerHTML=`<div class="card flat"><p class="muted">Nenhuma lead corresponde aos filtros.</p></div>`;return}
+  const est={novo:['Novo',''],analisado:['Analisado','accent'],contactado:['Contactado','warn'],cliente:['Cliente','good'],descartado:['Descartado','bad']};
+  host.innerHTML='';
+  for(const l of L){
+    const el=document.createElement('article');el.className='card lead';el.dataset.id=l.id;const a=l.analise;
+    const redes=REDES.map(k=>l.redes[k]?`<a class="chip good" href="${esc(l.redes[k])}" target="_blank" rel="noopener">${REDE_NOME[k]} ✓</a>`:`<span class="chip off">${REDE_NOME[k]}</span>`).join('');
+    el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div style="flex:1;min-width:240px"><div class="row"><h3></h3><span class="chip ${est[l.estado]?.[1]||''}">${est[l.estado]?.[0]||l.estado}</span>${a?`<span class="chip accent" title="Prioridade comercial">Prioridade ${a.prioridade}/5</span>`:''}</div>
+        <div class="small muted addr"></div>
+        <div class="row" style="margin-top:6px"><span class="chip">${esc(l.sector)}</span><span class="chip">${esc(l.local)}</span>${l.site?`<a class="chip" href="${esc(l.site)}" target="_blank" rel="noopener">Site ↗</a>`:'<span class="chip off">Sem site</span>'}${l.fonte?`<a class="chip" href="${esc(l.fonte)}" target="_blank" rel="noopener">Fonte ↗</a>`:''}</div></div>
+      <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm primary" data-brief>Criar brief</button><button class="btn sm" data-del title="Remover">×</button></div></div>
+      <div class="row redes" style="margin-top:10px">${redes}</div>
+      <p class="small desc" style="margin-top:8px"></p>
+      <div class="an" style="margin-top:6px"></div>`;
+    $('h3',el).textContent=l.nome;$('.addr',el).textContent=[l.morada,l.telefone].filter(Boolean).join(' · ');$('.desc',el).textContent=l.descricao;
+    if(a){const sc=[['Logótipo','logo'],['Identidade visual','identidade'],['Redes sociais','redes'],['Comunicação','comunicacao'],['Site','site']];
+      $('.an',el).innerHTML=`<div class="scores">${sc.map(([n,k])=>`<div class="score"><div class="l">${n}</div><div class="b">${[1,2,3,4,5].map(i=>`<i class="${i<=a[k].nota?'f':''}"></i>`).join('')}</div><div class="o"></div></div>`).join('')}</div>
+        <div class="grid g2"><div><h4>Oportunidades</h4><ul class="clean">${a.oportunidades.map(o=>`<li>${esc(o)}</li>`).join('')}</ul></div><div><h4>Abordagem sugerida</h4><p class="small"></p><button class="btn sm" data-copy style="margin-top:6px">Copiar</button></div></div>`;
+      $$('.score .o',el).forEach((o,i)=>o.textContent=a[sc[i][1]].obs);$('.an p',el).textContent=a.abordagem;$('[data-copy]',el).onclick=()=>copyText(a.abordagem)}
+    $('.st',el).onchange=e=>{l.estado=e.target.value;commit();renderLeads()};
+    $('[data-an]',el).onclick=()=>analyseLead(l,el);
+    $('[data-brief]',el).onclick=()=>leadToBrief(l);
+    $('[data-del]',el).onclick=async()=>{if(await confirmDlg('Remover lead',l.nome)){S.leads=S.leads.filter(x=>x!==l);commit();renderLeads()}};
+    host.append(el);
+  }
+}
+function leadsCsv(){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';return ['nome;sector;local;morada;telefone;site;instagram;facebook;linkedin;tiktok;estado;prioridade;logo;identidade;redes;comunicacao;site_nota;oportunidades;abordagem',...S.leads.map(l=>[l.nome,l.sector,l.local,l.morada,l.telefone,l.site,l.redes.instagram,l.redes.facebook,l.redes.linkedin,l.redes.tiktok,l.estado,l.analise?.prioridade,l.analise?.logo.nota,l.analise?.identidade.nota,l.analise?.redes.nota,l.analise?.comunicacao.nota,l.analise?.site.nota,(l.analise?.oportunidades||[]).join(' | '),l.analise?.abordagem].map(q).join(';'))].join('\n')}
+
+/* ===== Downloads directos ===== */
+downloads={save:async({filename,data})=>{const blob=data instanceof Blob?data:new Blob([data]);const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return{status:'saved'}}};
+
+/* ===== Exportar / importar ===== */
+function exportProject(){readBrief();downloads.save({filename:`${slug(S.brief.marca)}_orbita_it${S.iteracao}.json`,data:JSON.stringify(S,null,2)});toast('Projeto exportado.')}
+function importProject(file){const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!o.brief)throw 0;S=Object.assign(blank(),o);commit();renderAll();toast('Projeto importado.')}catch(e){toast('Ficheiro inválido.','err')}};r.readAsText(file)}
+
+/* ===== Arranque ===== */
+function renderAll(){writeBrief();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();$('#pr_local').value=S.prospect?.local||'';$('#pr_sector').value=S.prospect?.sector||'';$('#pr_n').value=S.prospect?.n||8;renderLeads();go(S.etapa||0)}
+function load(){
+  let saved=null;try{saved=JSON.parse($('#saved-state').textContent)}catch(e){}
+  const local=loadLocal();
+  S=saved||local||JSON.parse(JSON.stringify(DEMO));
+  if(!saved&&!local)S.etapa=4;if(!S.leads)S.leads=[];if(!S.prospect)S.prospect={local:'',sector:'',n:8};
+  renderAll();
+}
+$$('.step').forEach(s=>s.onclick=()=>{readBrief();persistLocal();go(Number(s.dataset.step));if(s.dataset.step==='1')renderCreateTools()});
+$$('#b_canais input').forEach(i=>i.onchange=()=>{i.closest('.toggle').classList.toggle('on',i.checked);readBrief();persistLocal();renderCreateTools()});
+$$('#p0 input,#p0 select,#p0 textarea').forEach(el=>el.addEventListener('change',()=>{readBrief();commit()}));
+$('#btnDiscover').onclick=discover;
+$('#btnCreate').onclick=create;
+$('#c_n').onchange=e=>{S.criar.n=Number(e.target.value);persistLocal()};
+$('#c_tpl').onchange=e=>{S.criar.tpl=e.target.value;persistLocal();renderAds()};
+$('#c_img').onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{IMG=img;$('#c_tpl').value='foto';S.criar.tpl='foto';persistLocal();renderAds()};img.src=URL.createObjectURL(f)};
+$('#btnZip').onclick=saveZip;
+$('#btnCsv').onclick=()=>copyText(csvAds());
+$('#btnDemo').onclick=async()=>{if(S.brief.marca&&!(await confirmDlg('Carregar exemplo','Substitui o projeto actual pelo exemplo «Café da Ribeira».')))return;S=JSON.parse(JSON.stringify(DEMO));S.plano=buildPlan();S.plano.feito=[0,1,2,3,4,5,6];S.resultados=simulate();commit();renderAll();go(0)};
+$('#btnReset').onclick=async()=>{if(!(await confirmDlg('Novo projeto','Limpa o brief, a pesquisa e os criativos. Se já guardou, a versão guardada mantém-se até voltar a guardar.')))return;S=blank();IMG=null;commit();renderAll()};
+$('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
+window.addEventListener('resize',()=>{const c=$('#chart');if(c&&S.resultados&&$('#p3').classList.contains('show'))renderOptimize()});
+
+load();
+
+initAI();
+renderLaunch();
+</script>
+</body>
+</html>
