@@ -184,6 +184,16 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 
 
 /* Estúdio */
+.insp{margin-bottom:16px}
+.drop{margin-top:12px;border:2px dashed var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;text-align:center;font-family:var(--display);font-weight:600;transition:border-color .2s,background .2s}
+.drop:hover,.drop.over{border-color:var(--magenta);background:var(--blush)}
+.refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:12px}
+.ref{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);position:relative}
+.ref .th{aspect-ratio:1;background:var(--surface-2) center/cover no-repeat;display:grid;place-items:center;font:700 22px var(--display);color:var(--ink-2)}
+.ref .tg{position:absolute;top:6px;left:6px;font:700 10.5px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;background:rgba(22,22,22,.75);color:#fff;padding:5px 7px;border-radius:999px}
+.ref .rm{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(22,22,22,.75);color:#fff;cursor:pointer;font-size:15px;line-height:1}
+.ref input{border:0;border-top:1px solid var(--line);border-radius:0;font-size:12.5px;padding:8px 10px}
+
 #stTabs .chip{min-height:40px;padding:0 18px;font-size:14px;cursor:pointer;border:1.5px solid var(--ink)}
 #stTabs .chip[aria-pressed="true"],.dv[aria-pressed="true"]{background:var(--magenta);border-color:var(--magenta);color:#fff}
 .dv{cursor:pointer;min-height:34px}
@@ -388,6 +398,12 @@ footer .hand{color:var(--magenta)}
       <label style="flex:2;min-width:220px">Manter da marca actual<input id="st_manter" placeholder="Ex.: o cobre, o nome escrito à mão"></label>
       <label style="flex:2;min-width:220px">Evitar<input id="st_evitar" placeholder="Ex.: clip-art, letras com sombra"></label>
       <button class="btn primary" id="btnBrand">Gerar marca</button>
+    </div>
+    <div class="card insp" id="stInsp">
+      <div class="row" style="justify-content:space-between;align-items:flex-start"><div><h3>Inspiração</h3><p class="small muted" style="margin-top:4px;max-width:70ch">Arrasta imagens (PNG, JPG, WebP, GIF, SVG), vídeos (MP4, MOV, WebM) ou PDFs com referências de logótipos, marcas, cores ou estilos. A IA lê-as e usa-as como direcção, sem copiar. Escreve em cada uma o que te interessa.</p></div>
+      <label style="min-width:150px">Conceitos de logótipo<select id="st_nlogos"><option value="3">3</option><option value="4">4</option><option value="6">6</option></select></label></div>
+      <div class="drop" id="stDrop" tabindex="0" role="button" aria-label="Adicionar referências"><input type="file" id="stFiles" multiple accept="image/*,video/*,application/pdf,.svg" hidden><span>Arrasta para aqui ou <u>escolhe ficheiros</u></span><small class="muted">Até 10 referências · vídeos viram uma folha de 4 fotogramas · PDF até 4 MB</small></div>
+      <div class="refs" id="stRefs"></div>
     </div>
     <div id="stOrigem" class="row" style="margin:-4px 0 12px"></div><div id="stStatus" class="small muted" style="margin-bottom:12px"></div>
     <div class="row" id="stTabs" style="margin-bottom:16px"></div>
@@ -1207,6 +1223,53 @@ function prefillStudio(lead){
   m.tab='marca';
   if(m.anim&&!m.anim.texto)m.anim.texto='';
 }
+
+/* --- Inspiração (referências guardadas em IndexedDB) --- */
+const IDB={db:null,async open(){if(this.db)return this.db;return this.db=await new Promise((res,rej)=>{const r=indexedDB.open('orbita-refs',1);r.onupgradeneeded=()=>r.result.createObjectStore('refs');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})},
+  async put(k,v){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('refs','readwrite');t.objectStore('refs').put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})},
+  async get(k){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('refs').objectStore('refs').get(k);t.onsuccess=()=>res(t.result);t.onerror=()=>rej(t.error)})},
+  async del(k){const db=await this.open();return new Promise(res=>{const t=db.transaction('refs','readwrite');t.objectStore('refs').delete(k);t.oncomplete=res;t.onerror=res})}};
+function canvasFrom(src,max=1024){const w=src.naturalWidth||src.videoWidth||src.width||800,h=src.naturalHeight||src.videoHeight||src.height||800;const k=Math.min(1,max/Math.max(w,h));const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(w*k));cv.height=Math.max(1,Math.round(h*k));const c=cv.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,cv.width,cv.height);c.drawImage(src,0,0,cv.width,cv.height);return cv}
+const toJpeg=(cv,q=.82)=>cv.toDataURL('image/jpeg',q);
+function loadImgUrl(url){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('não consegui abrir a imagem (formato não suportado pelo browser)'));i.src=url})}
+async function fileToRef(f){
+  const id='R'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);const nome=f.name;const t=f.type||'';
+  if(t==='application/pdf'||/\.pdf$/i.test(nome)){if(f.size>4*1024*1024)throw new Error(`«${nome}» tem mais de 4 MB`);
+    const b64=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(String(fr.result).split(',')[1]);fr.readAsDataURL(f)});
+    await IDB.put(id,{kind:'pdf',data:b64});return {id,nome,tipo:'pdf',nota:'',thumb:''}}
+  if(t.startsWith('video/')||/\.(mp4|mov|webm|m4v)$/i.test(nome)){
+    const url=URL.createObjectURL(f);const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto';v.src=url;
+    await new Promise((res,rej)=>{v.onloadeddata=res;v.onerror=()=>rej(new Error(`não consegui ler o vídeo «${nome}» (formato não suportado pelo browser)`))});
+    const d=isFinite(v.duration)&&v.duration>0?v.duration:1;const fw=512,fh=Math.round(512*((v.videoHeight/v.videoWidth)||.5625));const sheet=document.createElement('canvas');sheet.width=fw*2;sheet.height=fh*2;const sc=sheet.getContext('2d');
+    const times=[.1,.35,.6,.85];for(let i=0;i<4;i++){await new Promise(r=>{v.onseeked=r;v.currentTime=Math.min(d-.05,d*times[i])});sc.drawImage(v,(i%2)*fw,Math.floor(i/2)*fh,fw,fh)}
+    URL.revokeObjectURL(url);const data=toJpeg(sheet);await IDB.put(id,{kind:'image',data:data.split(',')[1]});
+    return {id,nome,tipo:'vídeo',nota:'',thumb:toJpeg(canvasFrom(sheet,220),.7)}}
+  const url=URL.createObjectURL(f);let img;try{img=await loadImgUrl(url)}finally{setTimeout(()=>URL.revokeObjectURL(url),1000)}
+  const cv=canvasFrom(img,1024);const data=toJpeg(cv);await IDB.put(id,{kind:'image',data:data.split(',')[1]});
+  return {id,nome,tipo:/svg/.test(t)||/\.svg$/i.test(nome)?'svg':/gif/.test(t)?'gif':'imagem',nota:'',thumb:toJpeg(canvasFrom(img,220),.7)};
+}
+async function addRefs(files){
+  const m=stEnsure();m.refs=m.refs||[];const list=[...files];let ok=0;
+  for(const f of list){if(m.refs.length>=10){toast('Máximo de 10 referências.','warn');break}
+    try{$('#stStatus').innerHTML=`<span class="thinking">A preparar «${esc(f.name)}»…</span>`;m.refs.push(await fileToRef(f));ok++}catch(e){toast(e.message||String(e),'warn')}}
+  $('#stStatus').textContent='';persistLocal();renderRefs();if(ok)toast(ok===1?'Referência adicionada.':`${ok} referências adicionadas.`);
+}
+function renderRefs(){
+  const m=stEnsure(),host=$('#stRefs');if(!host)return;m.refs=m.refs||[];host.innerHTML='';
+  m.refs.forEach((r,i)=>{const d=document.createElement('div');d.className='ref';
+    d.innerHTML=`<div class="th" ${r.thumb?`style="background-image:url('${r.thumb}')"`:''}>${r.thumb?'':'PDF'}</div><span class="tg">${esc(r.tipo)}</span><button class="rm" title="Remover">×</button><input placeholder="O que te interessa aqui?">`;
+    d.title=r.nome;$('input',d).value=r.nota||'';$('input',d).onchange=e=>{r.nota=e.target.value;persistLocal()};
+    $('.rm',d).onclick=async()=>{m.refs.splice(i,1);await IDB.del(r.id);persistLocal();renderRefs()};host.append(d)});
+  $('#st_nlogos').value=String(m.nlogos||3);
+}
+async function refBlocks(onlyImages){
+  const m=stEnsure(),out=[];let n=0;
+  for(const r of (m.refs||[])){const d=await IDB.get(r.id).catch(()=>null);if(!d)continue;if(onlyImages&&d.kind!=='image')continue;n++;
+    out.push({type:'text',text:`Referência ${n} (${r.tipo}${r.tipo==='vídeo'?', 4 fotogramas':''}: ${r.nome})${r.nota?' — o que interessa: '+r.nota:''}`});
+    out.push(d.kind==='pdf'?{type:'document',source:{type:'base64',media_type:'application/pdf',data:d.data}}:{type:'image',source:{type:'base64',media_type:'image/jpeg',data:d.data}})}
+  return out;
+}
+function withRefs(blocks,prompt){return blocks.length?[{role:'user',content:[...blocks,{type:'text',text:prompt}]}]:prompt}
 function stEnsure(){if(!S.marca)S.marca={brand:null,prompt:'',estilo:ESTILOS[0],tab:'marca',layout:{versoes:[],atual:-1,device:'desktop'},posts:{itens:[]},anim:{tipo:'logo',fmt:'sq',dur:6,texto:''},usarNosAnuncios:true,chat:[]};return S.marca}
 function brandCtx(){const b=S.brief;return `Cliente: ${b.marca||'(sem nome)'}\nSector: ${b.setor||'n/d'}\nProduto/serviço: ${b.produto||'n/d'}\nPúblico: ${b.publico||'n/d'}\nDiferenciais: ${b.diferenciais||'n/d'}\nTom pedido: ${b.tom}\nNotas e diagnóstico: ${b.notas||'—'}`}
 
@@ -1274,8 +1337,8 @@ function normBrand(o){
     voz:{descricao:String(o.voz?.descricao||''),palavras:(o.voz?.palavras||[]).map(String).slice(0,8),exemplos:(o.voz?.exemplos||[]).map(String).slice(0,4)},
     paleta:(o.paleta||[]).filter(c=>c&&/^#[0-9a-f]{6}$/i.test(c.hex||'')).slice(0,6).map(c=>({hex:c.hex.toLowerCase(),nome:String(c.nome||''),papel:String(c.papel||'')})),
     fontes:{titulo:FONTES.includes(o.fontes?.titulo)?o.fontes.titulo:'Inter Tight',texto:FONTES.includes(o.fontes?.texto)?o.fontes.texto:'Inter'},
-    logos:(o.logos||[]).map(l=>({nome:String(l.nome||'Conceito'),ideia:String(l.ideia||''),svg:cleanSvg(l.svg),svgEscuro:cleanSvg(l.svg_escuro||l.svgEscuro||'')})).filter(l=>l.svg).slice(0,4),
-    logoSel:0,aplicacoes:(o.aplicacoes||[]).map(String).slice(0,6)};
+    logos:(o.logos||[]).map(l=>({nome:String(l.nome||'Conceito'),ideia:String(l.ideia||''),svg:cleanSvg(l.svg),svgEscuro:cleanSvg(l.svg_escuro||l.svgEscuro||'')})).filter(l=>l.svg).slice(0,6),
+    logoSel:0,aplicacoes:(o.aplicacoes||[]).map(String).slice(0,6),leitura:(o.leitura_referencias||[]).map(String).slice(0,6)};
   if(!br.logos.length)throw{code:'invalid_json',message:'sem logótipos válidos'};
   if(br.paleta.length<3)throw{code:'invalid_json',message:'paleta incompleta'};
   return br;
@@ -1284,16 +1347,17 @@ const BRAND_SCHEMA=`{"nome":"","tagline":"frase curta","conceito":"2-3 frases: a
 "paleta":[{"hex":"#000000","nome":"nome evocativo","papel":"principal | destaque | fundo | texto | apoio"}],
 "fontes":{"titulo":"uma da lista","texto":"uma da lista"},
 "logos":[{"nome":"nome do conceito","ideia":"1 frase","svg":"<svg viewBox=\\"0 0 480 240\\" xmlns=\\"http://www.w3.org/2000/svg\\">…</svg>","svg_escuro":"mesma versão para fundo escuro"}],
-"aplicacoes":["3-5 aplicações recomendadas: sinalética, embalagem, redes…"]}`;
-const SVG_RULES=`Regras dos logótipos: 3 conceitos MUITO diferentes (ex.: monograma/símbolo + nome; lettering; emblema/selo). SVG válido, viewBox="0 0 480 240", fundo transparente, só formas (path, circle, rect, polygon, ellipse, line, g) e <text>. Texto com font-family igual à fonte de título escolhida e font-weight explícito. Cores só da paleta. Sem <image>, sem scripts, sem URLs externas, sem filtros pesados. Desenha símbolos com intenção (geometria simples, bem equilibrada), centrados na área.`;
+"aplicacoes":["3-5 aplicações recomendadas: sinalética, embalagem, redes…"],"leitura_referencias":["3-5 pontos sobre o que tiraste das referências; [] se não houver"]}`;
+const SVG_RULES=`Regras dos logótipos: ${(S.marca&&S.marca.nlogos)||3} conceitos MUITO diferentes (ex.: monograma/símbolo + nome; lettering; emblema/selo). SVG válido, viewBox="0 0 480 240", fundo transparente, só formas (path, circle, rect, polygon, ellipse, line, g) e <text>. Texto com font-family igual à fonte de título escolhida e font-weight explícito. Cores só da paleta. Sem <image>, sem scripts, sem URLs externas, sem filtros pesados. Desenha símbolos com intenção (geometria simples, bem equilibrada), centrados na área.`;
 
 async function genBrand(instr){
-  const m=stEnsure();m.prompt=$('#st_prompt').value.trim();m.estilo=$('#st_estilo').value;m.manter=$('#st_manter').value.trim();m.evitar=$('#st_evitar').value.trim();persistLocal();
+  const m=stEnsure();m.prompt=$('#st_prompt').value.trim();m.estilo=$('#st_estilo').value;m.manter=$('#st_manter').value.trim();m.evitar=$('#st_evitar').value.trim();m.nlogos=Number($('#st_nlogos').value)||3;persistLocal();
+  const refs=await refBlocks(false);const refTxt=refs.length?`\nANEXEI ${refs.length/2} REFERÊNCIAS DE INSPIRAÇÃO (acima). Analisa-as: formas, construção dos símbolos, tipografia, cor, textura, tom, o que têm em comum. Usa-as como direcção criativa SEM copiar nenhum logótipo nem marca existente; respeita as notas de cada uma. Resume em «leitura_referencias» o que tiraste delas.`:'';
   const cur=m.brand&&instr;
   stBusy(cur?'A ajustar a marca…':'A desenhar a marca: conceito, logótipos, paleta e tipografia…');
   const prompt=cur?`És director de arte de um estúdio de branding em Portugal. Esta é a marca actual em JSON:\n${JSON.stringify(m.brand)}\n\nPedido de alteração: «${instr}»\nAplica APENAS o que foi pedido e mantém o resto. Fontes permitidas: ${FONTES.join(', ')}.\n${SVG_RULES}\nResponde APENAS com um bloco \`\`\`json com a marca completa no mesmo formato:\n${BRAND_SCHEMA}`
   :`És director de arte de um estúdio de branding em Portugal. Cria uma identidade visual para este cliente.\n${brandCtx()}\nEstilo pretendido: ${m.estilo}.\n${m.prompt?'Indicações do designer: '+m.prompt+'\n':''}${m.manter?'Manter da marca actual: '+m.manter+'\n':''}${m.evitar?'Evitar: '+m.evitar+'\n':''}Escolhe 2 fontes Google desta lista (título e texto, bom contraste entre si): ${FONTES.join(', ')}.\nPaleta de 5 cores com bom contraste (pelo menos uma escura para texto e uma clara para fundo, uma de destaque).\n${SVG_RULES}\nTexto em português de Portugal. Responde APENAS com um bloco \`\`\`json:\n${BRAND_SCHEMA}`;
-  try{const {text}=await stAI(prompt,{maxTokens:12000});const br=normBrand(parseJson(text));if(cur)br.logoSel=Math.min(m.brand.logoSel||0,br.logos.length-1);
+  try{const {text}=await stAI(withRefs(refs,prompt+refTxt),{maxTokens:Math.max(12000,(m.nlogos||3)*2500)});const br=normBrand(parseJson(text));if(cur)br.logoSel=Math.min(m.brand.logoSel||0,br.logos.length-1);
     m.brand=br;commit();stBusy('');renderStudio();toast(cur?'Marca actualizada.':'Marca criada. Escolhe o logótipo e passa ao layout.')}
   catch(e){stErr(e)}
 }
@@ -1314,7 +1378,8 @@ Requisitos:
 - Responsivo (telemóvel primeiro), acessível (contraste, alt, foco visível), textos em português de Portugal na voz da marca.
 - Design com personalidade (não genérico): tipografia grande, ritmo entre secções claras e escuras, detalhes da marca.
 Responde APENAS com um bloco \`\`\`html.`;
-  try{const {text,truncated}=await stAI(prompt,{maxTokens:16000});let h=extractHtml(text);if(!/<html|<body|<section|<div/i.test(h))throw{code:'invalid_json'};
+  const lrefs=edit?[]:await refBlocks(true);const lp=lrefs.length?prompt+'\nAnexei referências visuais de inspiração (acima): usa-as para o ambiente, composição e detalhes, sem copiar.':prompt;
+  try{const {text,truncated}=await stAI(withRefs(lrefs,lp),{maxTokens:16000});let h=extractHtml(text);if(!/<html|<body|<section|<div/i.test(h))throw{code:'invalid_json'};
     if(truncated&&!/<\/html>/i.test(h))h+='\n</body></html>';
     m.layout.versoes=m.layout.versoes.slice(0,m.layout.atual+1);m.layout.versoes.push(h);if(m.layout.versoes.length>8)m.layout.versoes.shift();m.layout.atual=m.layout.versoes.length-1;
     commit();stBusy('');renderStudio();toast(edit?'Alteração aplicada.':'Layout criado.')}
@@ -1356,6 +1421,7 @@ function renderStudio(){
   $('#st_prompt').value=m.prompt||'';$('#st_estilo').value=m.estilo||ESTILOS[0];$('#st_manter').value=m.manter||'';$('#st_evitar').value=m.evitar||'';
   $('#stOrigem').innerHTML=(m.origem?`<span class="chip accent">Pré-preenchido com ${esc(m.origem)}</span><span class="small muted">Revê os campos e carrega em «Gerar marca».</span>`:'')+(S.brief.marca?`<button class="jif-link" id="stRefill" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep)">Preencher outra vez com o brief e a análise</button>`:'');
   const rf=$('#stRefill');if(rf)rf.onclick=()=>{readBrief();prefillStudio(null);persistLocal();renderStudio();toast('Campos do Estúdio actualizados.')};
+  renderRefs();
   $$('#stTabs [data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===m.tab));
   ST_TABS.forEach(([k])=>$('#st_'+k).hidden=k!==m.tab);
   $('#st_chat').placeholder={marca:'Pede uma alteração à marca (ex.: logótipo mais simples, paleta mais quente, fonte mais elegante)',layout:'Pede uma alteração à página (ex.: hero escuro, mais espaço, junta uma secção de preços)',posts:'Pede uma alteração aos posts (ex.: mais curtos, tom mais divertido, um post de Natal)',anim:'Pede uma alteração à animação (ex.: mais rápida, fundo claro, formato story)'}[m.tab];
@@ -1381,7 +1447,7 @@ function renderBrand(){
     </div>
     <div class="grid g2" style="margin-top:16px">
       <div class="card"><h3>Voz da marca</h3><p class="vz"></p><div class="row" style="margin:10px 0" id="stWords"></div><ul class="clean" id="stEx"></ul></div>
-      <div class="card"><h3>Aplicações</h3><ul class="clean" id="stApl"></ul>
+      <div class="card">${br.leitura?.length?'<h3>O que a IA viu nas referências</h3><ul class="clean" id="stLeit" style="margin-bottom:18px"></ul>':''}<h3>Aplicações</h3><ul class="clean" id="stApl"></ul>
         <label class="toggle ${S.marca.usarNosAnuncios?'on':''}" style="margin-top:14px"><input type="checkbox" id="stUseAds" ${S.marca.usarNosAnuncios?'checked':''}> Usar esta marca nos anúncios (Criar)</label>
         <div class="row" style="margin-top:14px"><button class="btn sm primary" id="btnKit">Descarregar kit de marca (.zip)</button><button class="btn sm" id="btnToLayout">Criar layout web</button></div></div>
     </div>`;
@@ -1389,6 +1455,7 @@ function renderBrand(){
   $('.ty-t',host).textContent=br.tagline||br.nome;$('.ty-b',host).textContent=br.voz.exemplos[0]||br.conceito;$('.vz',host).textContent=br.voz.descricao;
   $('#stWords').innerHTML=br.voz.palavras.map(w=>`<span class="chip">${esc(w)}</span>`).join('');
   $('#stEx').innerHTML=br.voz.exemplos.map(e=>`<li>«${esc(e)}»</li>`).join('');
+  if($('#stLeit'))$('#stLeit').innerHTML=br.leitura.map(e=>`<li>${esc(e)}</li>`).join('');
   $('#stApl').innerHTML=br.aplicacoes.map(e=>`<li>${esc(e)}</li>`).join('')||'<li class="muted">—</li>';
   $('#stPal').innerHTML=br.paleta.map(c=>`<button class="sw" style="background:${c.hex};color:${dark(c.hex)?'#fff':'#111'}" data-hex="${c.hex}" title="Copiar ${c.hex}"><b>${esc(c.nome)}</b><span>${c.hex.toUpperCase()}</span><i>${esc(c.papel)}</i></button>`).join('');
   $$('#stPal .sw').forEach(b=>b.onclick=()=>copyText(b.dataset.hex));
@@ -1574,6 +1641,9 @@ async function brandKit(){
 
 function initStudio(){
   $('#st_estilo').innerHTML=ESTILOS.map(e=>`<option>${e}</option>`).join('');
+  const dz=$('#stDrop'),fi=$('#stFiles');dz.onclick=e=>{if(e.target!==fi)fi.click()};dz.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fi.click()}};fi.onchange=()=>{addRefs(fi.files);fi.value=''};
+  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));dz.addEventListener('drop',e=>addRefs(e.dataTransfer.files));
+  $('#st_nlogos').onchange=e=>{stEnsure().nlogos=Number(e.target.value)||3;persistLocal()};
   $('#stTabs').innerHTML=ST_TABS.map(([k,v])=>`<button class="chip" data-tab="${k}" aria-pressed="false">${v}</button>`).join('');
   $$('#stTabs [data-tab]').forEach(b=>b.onclick=()=>{stEnsure().tab=b.dataset.tab;persistLocal();renderStudio()});
   $('#btnBrand').onclick=async()=>{if(S.marca?.brand&&!(await confirmDlg('Gerar marca nova','Substitui a marca actual por uma nova. O layout, os posts e a animação passam a usar a nova marca.')))return;genBrand()};
@@ -1583,7 +1653,7 @@ function initStudio(){
 
 /* ===== Arranque ===== */
 function renderAll(){writeBrief();renderStudio();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
-const BUILD='20261107160418';
+const BUILD='20261107161217';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
