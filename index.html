@@ -993,7 +993,7 @@ Acrescenta ao mesmo JSON a chave "brief", com o que conseguires apurar do site, 
     if(a.atividade)lead.atividade=String(a.atividade);if(a.ativo===false){lead.estado='descartado';lead.analise=a;commit();renderLeads();toast(`«${lead.nome}» parece estar encerrado. Marquei como descartado.`,'warn');return}lead.analise=a;lead.potencial=a.prioridade;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
   }catch(e){box.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
 }
-function leadToBrief(l){
+function leadToBrief(l,dest){
   const a=l.analise||{},ab=a.brief||{},b=S.brief,clean=v=>String(v??'').trim();
   const OBJ=['Vendas online','Leads / pedidos de contacto','Notoriedade','Visitas à loja','Instalações de app','Reservas / marcações'];
   const TOM=['Próximo e directo','Premium e sóbrio','Divertido','Técnico e informativo','Inspirador'];
@@ -1024,7 +1024,7 @@ function leadToBrief(l){
   ].filter(Boolean).join('\n');
   S.discover=null;S.angulosSel=[];S.ads=[];S.plano=null;S.resultados=null;S.analise=null;S.estado='rascunho';S.iteracao=1;
   S.marca=null;prefillStudio(l);
-  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();renderStudio();go(0);
+  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();renderStudio();go(dest??0);
   toast(l.analise?'Brief e Estúdio preenchidos com a análise. Revê e carrega em «Pesquisar com IA» ou vai ao Estúdio.':'Brief preenchido com os dados da lead. Analisa a presença primeiro para um brief mais completo.');
 }
 
@@ -1049,7 +1049,7 @@ function renderLeads(){
       <div style="flex:1;min-width:240px"><div class="row"><h3></h3><span class="chip ${est[l.estado]?.[1]||''}">${est[l.estado]?.[0]||l.estado}</span>${a?`<span class="chip accent" title="Após análise do site e redes">Potencial ${a.prioridade}/5</span>`:(l.potencial?`<span class="chip warn" title="Estimado na pesquisa; analisa para confirmar">Potencial ${l.potencial}/5 · est.</span>`:'')}</div>
         <div class="small muted addr"></div>
         <div class="row" style="margin-top:6px"><span class="chip">${esc(l.sector)}</span><span class="chip">${esc(l.local)}</span>${l.site?`<a class="chip" href="${esc(l.site)}" target="_blank" rel="noopener">Site ↗</a>`:'<span class="chip off">Sem site</span>'}${l.fonte?`<a class="chip" href="${esc(l.fonte)}" target="_blank" rel="noopener">Fonte ↗</a>`:''}</div></div>
-      <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm primary" data-brief>Criar brief</button><button class="btn sm x" data-del title="Remover">×</button></div></div>
+      <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm" data-brief>Criar brief</button><button class="btn sm primary" data-studio>Ir para o Estúdio</button><button class="btn sm x" data-del title="Remover">×</button></div></div>
       <div class="row redes" style="margin-top:10px">${redes}</div>
       <p class="small desc" style="margin-top:8px"></p>
       <div class="an" style="margin-top:6px"></div>`;
@@ -1060,7 +1060,7 @@ function renderLeads(){
       $$('.score .o',el).forEach((o,i)=>o.textContent=a[sc[i][1]].obs);$('.an p',el).textContent=a.abordagem;$('[data-copy]',el).onclick=()=>copyText(a.abordagem)}
     $('.st',el).onchange=e=>{l.estado=e.target.value;commit();renderLeads()};
     $('[data-an]',el).onclick=()=>analyseLead(l,el);
-    $('[data-brief]',el).onclick=()=>leadToBrief(l);
+    $('[data-brief]',el).onclick=()=>leadToBrief(l);$('[data-studio]',el).onclick=()=>leadToBrief(l,5);
     $('[data-del]',el).onclick=async()=>{if(await confirmDlg('Remover lead',l.nome)){S.leads=S.leads.filter(x=>x!==l);commit();renderLeads()}};
     host.append(el);
   }
