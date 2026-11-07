@@ -1536,6 +1536,14 @@ function initStudio(){
 
 /* ===== Arranque ===== */
 function renderAll(){writeBrief();renderStudio();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
+const BUILD='20261107021347';
+async function checkUpdate(){
+  if(BUILD.startsWith('__')||location.protocol==='file:')return;
+  try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
+    if(m&&m[1]!==BUILD&&!$('#updBar')){const d=document.createElement('div');d.id='updBar';d.className='note warn';d.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:30;box-shadow:var(--shadow-float);align-items:center';
+      d.innerHTML='<span>✶</span><span>Há uma versão nova da Órbita.</span><button class="btn sm primary" style="margin-left:8px">Actualizar</button>';$('button',d).onclick=()=>location.replace(location.pathname+'?v='+Date.now());document.body.append(d)}}catch(e){}
+}
+setTimeout(checkUpdate,1500);setInterval(checkUpdate,5*60*1000);
 initStudio();
 function load(){
   let saved=null;try{saved=JSON.parse($('#saved-state').textContent)}catch(e){}
