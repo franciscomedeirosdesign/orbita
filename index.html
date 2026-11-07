@@ -208,7 +208,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 </header>
 
 <main>
-  <div id="aiNote" class="note warn" hidden><span>⚠</span><span>Para usar a IA, introduza a sua chave da API da Anthropic em «Definições IA». A chave fica guardada apenas neste browser. Sem chave, use «Carregar exemplo» para ver o fluxo.</span></div>
+  <div id="aiNote" class="note warn" hidden style="cursor:pointer" onclick="openSettings()" title="Abrir Definições IA"><span>⚠</span><span>Para usar a IA, introduza a sua chave da API da Anthropic em «Definições IA». A chave fica guardada apenas neste browser. Sem chave, use «Carregar exemplo» para ver o fluxo.</span></div>
 
   <!-- P PROSPECTAR -->
   <section class="panel" id="p4">
@@ -727,8 +727,9 @@ function bindNext(){const b=$('#btnNext');if(b)b.onclick=async()=>{
 
 /* ===== IA directa (API Anthropic) ===== */
 const CFG_KEY='orbita.cfg';const API_URL='https://api.anthropic.com/v1/messages';
-function loadCfg(){try{return JSON.parse(localStorage.getItem(CFG_KEY))||{}}catch(e){return{}}}
-function saveCfg(c){try{localStorage.setItem(CFG_KEY,JSON.stringify(c))}catch(e){}}
+let memCfg=null,storeOk=true;
+function loadCfg(){if(memCfg)return memCfg;try{return JSON.parse(localStorage.getItem(CFG_KEY))||{}}catch(e){return{}}}
+function saveCfg(c){memCfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(c));storeOk=localStorage.getItem(CFG_KEY)===JSON.stringify(c)}catch(e){storeOk=false}return storeOk}
 async function callAI(input,{tools,beta,maxTokens=6000,onRound}={}){
   const cfg=loadCfg();if(!cfg.key)throw{code:'not_granted',message:'sem chave'};
   const headers={'content-type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
@@ -766,13 +767,13 @@ const TOOL_SEARCH=(n,city)=>({type:'web_search_20250305',name:'web_search',max_u
 const TOOL_FETCH=n=>({type:'web_fetch_20250910',name:'web_fetch',max_uses:n});
 function openSettings(){
   const cfg=loadCfg();const d=$('#dlg');$('#dlgT').textContent='Definições da IA';
-  $('#dlgB').innerHTML=`<div class="stack"><label>Chave da API da Anthropic<input id="s_key" type="password" placeholder="sk-ant-…" autocomplete="off"></label><label>Modelo<select id="s_model"><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (recomendado)</option><option value="claude-opus-5-5">Claude Opus 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5 (rápido)</option></select></label><p class="small muted">A chave fica guardada só neste browser (localStorage) e é enviada apenas para api.anthropic.com. Crie uma em console.anthropic.com. A prospecção usa a pesquisa web da API, cobrada por pesquisa além dos tokens.</p></div>`;
-  $('#s_key').value=cfg.key||'';$('#s_model').value=cfg.model||'claude-sonnet-5-5';
+  $('#dlgB').innerHTML=`<div class="stack"><label>Chave da API da Anthropic<span class="row" style="gap:6px;flex-wrap:nowrap"><input id="s_key" type="password" placeholder="sk-ant-…" autocomplete="off" style="flex:1"><button type="button" class="btn sm" id="s_show">Mostrar</button></span></label><label>Modelo<select id="s_model"><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (recomendado)</option><option value="claude-opus-5-5">Claude Opus 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5 (rápido)</option></select></label><p class="small muted">A chave fica guardada só neste browser (localStorage) e é enviada apenas para api.anthropic.com. Crie uma em console.anthropic.com. A prospecção usa a pesquisa web da API, cobrada por pesquisa além dos tokens.</p></div>`;
+  $('#s_key').value=cfg.key||'';$('#s_show').onclick=()=>{const k=$('#s_key');const v=k.type==='password';k.type=v?'text':'password';$('#s_show').textContent=v?'Ocultar':'Mostrar'};$('#s_model').value=cfg.model||'claude-sonnet-5-5';
   const y=$('#dlgYes'),n=$('#dlgNo');const done=()=>{d.close();y.onclick=n.onclick=null};
-  y.onclick=()=>{saveCfg({key:$('#s_key').value.trim(),model:$('#s_model').value});done();initAI();toast(loadCfg().key?'Chave guardada. A IA está activa.':'Sem chave: a IA fica desligada.')};n.onclick=done;d.showModal();
+  y.onclick=()=>{const k=$('#s_key').value.trim();if(k&&!/^sk-ant-/.test(k)){toast('A chave deve começar por «sk-ant-». Verifique se copiou a chave completa.','warn');return}const ok=saveCfg({key:k,model:$('#s_model').value});done();initAI();toast(!k?'Sem chave: a IA fica desligada.':ok?'Chave guardada. A IA está activa.':'IA activa só nesta sessão: o browser bloqueia o armazenamento (janela privada?). Terá de a introduzir de novo.',ok||!k?'':'warn')};n.onclick=done;d.showModal();
 }
 function aiCopyLocal(code){return code==='not_granted'?'Chave da API inválida ou em falta. Verifique em «Definições IA».':aiCopy(code)}
-function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample}
+function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample;const b=$('#btnSettings');if(b)b.textContent=sample?'IA activa ✓':'Definições IA'}
 
 /* ===== PROSPECTAR ===== */
 const REDES=['instagram','facebook','linkedin','tiktok'];
