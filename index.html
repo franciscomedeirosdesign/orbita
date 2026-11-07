@@ -40,6 +40,7 @@
   --accent:#6B86FF;--accent-ink:#0B1030;--signal:#F2B33D;--good:#4CC58A;--warn:#E8A14B;--bad:#F06A62;color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.15}
@@ -212,13 +213,14 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   <!-- P PROSPECTAR -->
   <section class="panel" id="p4">
     <div class="head">
-      <div><h2>Prospectar</h2><p>Pesquise pequenas e médias empresas por sector e localização. A IA pesquisa na web, lista as empresas encontradas e, a pedido, visita o site e as redes para avaliar logótipo, identidade visual, redes sociais e comunicação. Presença fraca = oportunidade forte.</p></div>
+      <div><h2>Prospectar</h2><p>Pesquise pequenas e médias empresas por tipo de negócio e localização. A IA pesquisa na web em lotes até ao número pedido, estima o potencial de cada empresa como cliente (presença fraca = oportunidade forte) e ordena a lista. «Analisar presença» visita o site e as redes e afina a nota. Voltar a pesquisar com os mesmos critérios acrescenta empresas novas.</p></div>
     </div>
     <div class="toolbar">
-      <label>Localização<input id="pr_local" placeholder="Ex.: Vila Nova de Gaia"></label>
-      <label>Sector de actividade<input id="pr_sector" list="sectores" placeholder="Ex.: restaurantes"></label>
-      <datalist id="sectores"><option>restaurantes</option><option>cafés e pastelarias</option><option>clínicas dentárias</option><option>ginásios e estúdios</option><option>cabeleireiros e barbearias</option><option>imobiliárias</option><option>oficinas automóveis</option><option>lojas de roupa</option><option>floristas</option><option>alojamento local e hotéis</option><option>escritórios de advogados</option><option>contabilidade</option><option>construção civil</option><option>carpintarias e marcenarias</option><option>vinhos e enoturismo</option><option>padarias</option><option>escolas de condução</option><option>clínicas veterinárias</option><option>óticas</option><option>lojas de decoração</option><option>clínicas de estética</option><option>empresas de limpeza</option></datalist>
-      <label>Nº de empresas<select id="pr_n"><option>5</option><option selected>8</option><option>12</option></select></label>
+      <label>Localização<select id="pr_local"><option value="">Escolher…</option><optgroup label="Porto"><option>Porto</option><option>Vila Nova de Gaia</option><option>Matosinhos</option><option>Maia</option><option>Gondomar</option><option>Valongo</option><option>Póvoa de Varzim</option><option>Vila do Conde</option><option>Santo Tirso</option><option>Trofa</option><option>Paredes</option><option>Penafiel</option><option>Paços de Ferreira</option><option>Lousada</option><option>Felgueiras</option><option>Amarante</option><option>Marco de Canaveses</option><option>Baião</option></optgroup><optgroup label="Braga"><option>Braga</option><option>Guimarães</option><option>Barcelos</option><option>Famalicão</option><option>Esposende</option><option>Vila Verde</option><option>Fafe</option><option>Póvoa de Lanhoso</option><option>Amares</option><option>Vizela</option><option>Cabeceiras de Basto</option><option>Celorico de Basto</option></optgroup><optgroup label="Aveiro"><option>Aveiro</option><option>Santa Maria da Feira</option><option>Oliveira de Azeméis</option><option>Ovar</option><option>Espinho</option><option>São João da Madeira</option><option>Águeda</option><option>Ílhavo</option><option>Estarreja</option><option>Vale de Cambra</option><option>Oliveira do Bairro</option><option>Anadia</option></optgroup><optgroup label="Viana do Castelo"><option>Viana do Castelo</option><option>Ponte de Lima</option><option>Caminha</option><option>Valença</option><option>Vila Nova de Cerveira</option><option>Arcos de Valdevez</option><option>Monção</option><option>Ponte da Barca</option></optgroup><optgroup label="Vila Real"><option>Vila Real</option><option>Chaves</option><option>Peso da Régua</option><option>Valpaços</option><option>Vila Pouca de Aguiar</option></optgroup><optgroup label="Bragança"><option>Bragança</option><option>Mirandela</option><option>Macedo de Cavaleiros</option><option>Miranda do Douro</option></optgroup><optgroup label="Viseu"><option>Viseu</option><option>Lamego</option><option>Tondela</option><option>Mangualde</option><option>Castro Daire</option><option>São Pedro do Sul</option><option>Cinfães</option></optgroup><optgroup label="Guarda"><option>Guarda</option><option>Seia</option><option>Gouveia</option><option>Trancoso</option><option>Sabugal</option></optgroup><optgroup label="Coimbra"><option>Coimbra</option><option>Figueira da Foz</option><option>Cantanhede</option><option>Montemor-o-Velho</option><option>Lousã</option><option>Penacova</option><option>Mira</option></optgroup><optgroup label="Leiria"><option>Leiria</option><option>Marinha Grande</option><option>Pombal</option><option>Alcobaça</option><option>Caldas da Rainha</option><option>Nazaré</option><option>Batalha</option><option>Óbidos</option><option>Peniche</option></optgroup><optgroup label="Castelo Branco"><option>Castelo Branco</option><option>Covilhã</option><option>Fundão</option></optgroup><optgroup label="Santarém"><option>Santarém</option><option>Tomar</option><option>Torres Novas</option><option>Abrantes</option><option>Entroncamento</option><option>Ourém</option><option>Cartaxo</option><option>Rio Maior</option><option>Almeirim</option></optgroup><optgroup label="Lisboa"><option>Lisboa</option><option>Sintra</option><option>Cascais</option><option>Oeiras</option><option>Loures</option><option>Amadora</option><option>Odivelas</option><option>Vila Franca de Xira</option><option>Mafra</option><option>Torres Vedras</option><option>Alenquer</option><option>Lourinhã</option></optgroup><optgroup label="Setúbal"><option>Setúbal</option><option>Almada</option><option>Seixal</option><option>Barreiro</option><option>Montijo</option><option>Palmela</option><option>Sesimbra</option><option>Moita</option><option>Alcochete</option><option>Grândola</option><option>Santiago do Cacém</option><option>Sines</option></optgroup><optgroup label="Portalegre"><option>Portalegre</option><option>Elvas</option><option>Ponte de Sor</option><option>Campo Maior</option></optgroup><optgroup label="Évora"><option>Évora</option><option>Montemor-o-Novo</option><option>Estremoz</option><option>Vendas Novas</option><option>Reguengos de Monsaraz</option></optgroup><optgroup label="Beja"><option>Beja</option><option>Odemira</option><option>Moura</option><option>Serpa</option></optgroup><optgroup label="Faro"><option>Faro</option><option>Loulé</option><option>Portimão</option><option>Albufeira</option><option>Olhão</option><option>Lagos</option><option>Tavira</option><option>Silves</option><option>Lagoa</option><option>Vila Real de Santo António</option></optgroup><optgroup label="Madeira"><option>Funchal</option><option>Câmara de Lobos</option><option>Santa Cruz</option><option>Machico</option><option>Porto Santo</option></optgroup><optgroup label="Açores"><option>Ponta Delgada</option><option>Angra do Heroísmo</option><option>Horta</option><option>Ribeira Grande</option></optgroup><option value="__outro">Outro (escrever)…</option></select></label>
+      <label id="pr_local_outro_l" hidden>Outra localização<input id="pr_local_outro" placeholder="Ex.: Afurada"></label>
+      <label>Tipo de negócio<select id="pr_sector"><option value="">Escolher…</option><optgroup label="Restauração e alimentação"><option>restaurantes</option><option>cafés e pastelarias</option><option>padarias</option><option>bares e cervejarias</option><option>take-away e food trucks</option><option>catering</option><option>mercearias e lojas gourmet</option><option>vinhos e enoturismo</option></optgroup><optgroup label="Saúde e bem-estar"><option>clínicas dentárias</option><option>clínicas médicas e fisioterapia</option><option>clínicas de estética</option><option>farmácias</option><option>óticas</option><option>clínicas veterinárias</option><option>ginásios e estúdios</option><option>psicologia e terapias</option></optgroup><optgroup label="Beleza"><option>cabeleireiros e barbearias</option><option>salões de beleza e unhas</option><option>estúdios de tatuagem</option></optgroup><optgroup label="Comércio"><option>lojas de roupa e calçado</option><option>joalharias e relojoarias</option><option>lojas de decoração e mobiliário</option><option>floristas</option><option>livrarias e papelarias</option><option>lojas de brinquedos e puericultura</option><option>lojas de desporto</option><option>lojas de animais</option><option>lojas de telemóveis e informática</option></optgroup><optgroup label="Serviços profissionais"><option>escritórios de advogados</option><option>contabilidade</option><option>consultoria</option><option>arquitetura e design de interiores</option><option>imobiliárias</option><option>seguros e mediação de crédito</option><option>agências de viagens</option><option>escolas de condução</option><option>centros de explicações e formação</option><option>creches e colégios</option></optgroup><optgroup label="Casa e construção"><option>construção civil</option><option>remodelações</option><option>carpintarias e marcenarias</option><option>canalizadores e eletricistas</option><option>serralharias</option><option>jardinagem</option><option>empresas de limpeza</option><option>cozinhas e móveis por medida</option><option>climatização e energia solar</option></optgroup><optgroup label="Automóvel"><option>oficinas automóveis</option><option>stands de automóveis</option><option>lavagem automóvel</option><option>rent-a-car</option></optgroup><optgroup label="Turismo e lazer"><option>alojamento local e hotéis</option><option>turismo e atividades</option><option>eventos e animação</option><option>fotografia e vídeo</option><option>escolas de música e dança</option><option>escolas de surf e desportos</option></optgroup><optgroup label="Indústria e produção"><option>metalomecânica</option><option>têxtil e confeção</option><option>mobiliário</option><option>agricultura e produtores locais</option><option>transportes e logística</option></optgroup><option value="__outro">Outro (escrever)…</option></select></label>
+      <label id="pr_outro_l" hidden>Outro tipo de negócio<input id="pr_outro" placeholder="Ex.: lojas de bicicletas"></label>
+      <label>Nº de empresas<input type="number" id="pr_n" min="1" step="1" value="10" class="num"></label>
       <button class="btn primary" id="btnProspect">Pesquisar empresas</button>
     </div>
     <div id="prStatus" class="small muted" style="margin-bottom:12px"></div>
@@ -226,7 +228,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
       <label style="flex:1;min-width:140px">Sector<select id="pf_sector"><option value="">Todos</option></select></label>
       <label style="flex:1;min-width:140px">Local<select id="pf_local"><option value="">Todos</option></select></label>
       <label style="flex:1;min-width:140px">Estado<select id="pf_estado"><option value="">Todos</option><option value="novo">Novo</option><option value="analisado">Analisado</option><option value="contactado">Contactado</option><option value="cliente">Cliente</option><option value="descartado">Descartado</option></select></label>
-      <label style="flex:1;min-width:140px">Ordenar<select id="pf_ord"><option value="prio">Prioridade</option><option value="nome">Nome</option><option value="data">Mais recentes</option></select></label>
+      <label style="flex:1;min-width:140px">Ordenar<select id="pf_ord"><option value="prio">Potencial de cliente</option><option value="nome">Nome</option><option value="data">Mais recentes</option></select></label>
       <label style="flex:2;min-width:160px">Procurar<input id="pf_q" placeholder="Nome ou morada"></label>
       <div class="row" style="align-self:end"><span class="small muted" id="leadCount"></span><button class="btn sm" id="btnLeadsCsv">Copiar CSV</button></div>
     </div></div>
@@ -244,7 +246,8 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
         <div class="stack">
           <div class="row" style="gap:12px">
             <label style="flex:1">Marca<input id="b_marca" placeholder="Ex.: Café da Ribeira"></label>
-            <label style="flex:1">Setor<input id="b_setor" placeholder="Ex.: torrefação artesanal"></label>
+            <label style="flex:1">Setor<select id="b_setor"><option value="">Escolher…</option><optgroup label="Restauração e alimentação"><option>restaurantes</option><option>cafés e pastelarias</option><option>padarias</option><option>bares e cervejarias</option><option>take-away e food trucks</option><option>catering</option><option>mercearias e lojas gourmet</option><option>vinhos e enoturismo</option></optgroup><optgroup label="Saúde e bem-estar"><option>clínicas dentárias</option><option>clínicas médicas e fisioterapia</option><option>clínicas de estética</option><option>farmácias</option><option>óticas</option><option>clínicas veterinárias</option><option>ginásios e estúdios</option><option>psicologia e terapias</option></optgroup><optgroup label="Beleza"><option>cabeleireiros e barbearias</option><option>salões de beleza e unhas</option><option>estúdios de tatuagem</option></optgroup><optgroup label="Comércio"><option>lojas de roupa e calçado</option><option>joalharias e relojoarias</option><option>lojas de decoração e mobiliário</option><option>floristas</option><option>livrarias e papelarias</option><option>lojas de brinquedos e puericultura</option><option>lojas de desporto</option><option>lojas de animais</option><option>lojas de telemóveis e informática</option></optgroup><optgroup label="Serviços profissionais"><option>escritórios de advogados</option><option>contabilidade</option><option>consultoria</option><option>arquitetura e design de interiores</option><option>imobiliárias</option><option>seguros e mediação de crédito</option><option>agências de viagens</option><option>escolas de condução</option><option>centros de explicações e formação</option><option>creches e colégios</option></optgroup><optgroup label="Casa e construção"><option>construção civil</option><option>remodelações</option><option>carpintarias e marcenarias</option><option>canalizadores e eletricistas</option><option>serralharias</option><option>jardinagem</option><option>empresas de limpeza</option><option>cozinhas e móveis por medida</option><option>climatização e energia solar</option></optgroup><optgroup label="Automóvel"><option>oficinas automóveis</option><option>stands de automóveis</option><option>lavagem automóvel</option><option>rent-a-car</option></optgroup><optgroup label="Turismo e lazer"><option>alojamento local e hotéis</option><option>turismo e atividades</option><option>eventos e animação</option><option>fotografia e vídeo</option><option>escolas de música e dança</option><option>escolas de surf e desportos</option></optgroup><optgroup label="Indústria e produção"><option>metalomecânica</option><option>têxtil e confeção</option><option>mobiliário</option><option>agricultura e produtores locais</option><option>transportes e logística</option></optgroup><option value="__outro">Outro (escrever)…</option></select></label>
+            <label style="flex:1" id="b_setor_outro_l" hidden>Outro setor<input id="b_setor_outro" placeholder="Ex.: torrefação artesanal"></label>
           </div>
           <label>Produto ou serviço a promover<input id="b_produto" placeholder="Ex.: subscrição mensal de café em grão"></label>
           <label>Objetivo da campanha
@@ -340,7 +343,7 @@ const blank = () => ({
   brief:{marca:'',setor:'',produto:'',objetivo:'Vendas online',publico:'',diferenciais:'',tom:'Próximo e directo',orcamento:600,canais:['meta','google'],notas:''},
   discover:null, angulosSel:[], criar:{n:3,tpl:'bloco',fmts:['meta_feed','meta_story','gdn_land']},
   ads:[], plano:null, resultados:null, analise:null, historico:[],
-  prospect:{local:'',sector:'',n:8}, leads:[]
+  prospect:{local:'',sector:'',n:10}, leads:[]
 });
 
 let S = blank();
@@ -374,10 +377,10 @@ const DEMO = {
     {id:'v6',angulo:'a4',titulo:'O seu espresso merece melhor grão.',texto:'Torrefação artesanal no Porto, lotes pequenos, envio grátis acima de 25 €. Primeira entrega -20 %.',cta:'Ver cafés',gancho_video:'Extração lenta em close-up.'}
   ],
   plano:null, resultados:null, analise:null, historico:[],
-  prospect:{local:'Vila Nova de Gaia',sector:'cafés e pastelarias',n:8},
+  prospect:{local:'Vila Nova de Gaia',sector:'cafés e pastelarias',n:10},
   leads:[
     {id:'L1',nome:'Pastelaria Flor da Afurada (exemplo fictício)',site:'',morada:'Rua da Afurada, Vila Nova de Gaia',telefone:'',sector:'cafés e pastelarias',local:'Vila Nova de Gaia',descricao:'Pastelaria de bairro com fabrico próprio, aberta há 20 anos. Sem site; página de Facebook com publicações esporádicas.',redes:{instagram:null,facebook:'https://facebook.com/',linkedin:null,tiktok:null},estado:'analisado',criado:'2026-11-06',analise:{logo:{nota:1,obs:'Nome pintado na fachada, sem versão digital consistente.'},identidade:{nota:1,obs:'Sem paleta nem tipografia definidas; fotos de telemóvel sem edição.'},redes:{nota:2,obs:'Facebook com 3 publicações em 2026; sem Instagram.',encontradas:['facebook']},comunicacao:{nota:2,obs:'Horários e produtos só se descobrem presencialmente.'},site:{nota:0,obs:'Sem site; aparece no Google Maps com fotos de clientes.'},prioridade:5,oportunidades:['Logótipo e identidade mínima (fachada, embalagens, menu)','Instagram com fotografia de produto semanal','Ficha Google atualizada com horários e fotos profissionais'],abordagem:'Fazemos a vossa pastelaria aparecer tão bem online como o cheiro a pão cá fora. Um logótipo, fotografia e um mês de Instagram para começar.'}},
-    {id:'L2',nome:'Café Mirante do Douro (exemplo fictício)',site:'https://example.com',morada:'Av. Diogo Leite, Vila Nova de Gaia',telefone:'',sector:'cafés e pastelarias',local:'Vila Nova de Gaia',descricao:'Café com esplanada virada ao rio, forte em turistas. Site de template antigo e Instagram ativo mas inconsistente.',redes:{instagram:'https://instagram.com/',facebook:'https://facebook.com/',linkedin:null,tiktok:null},estado:'novo',criado:'2026-11-06',analise:null}
+    {id:'L2',nome:'Café Mirante do Douro (exemplo fictício)',site:'https://example.com',morada:'Av. Diogo Leite, Vila Nova de Gaia',telefone:'',sector:'cafés e pastelarias',local:'Vila Nova de Gaia',descricao:'Café com esplanada virada ao rio, forte em turistas. Site de template antigo e Instagram ativo mas inconsistente.',redes:{instagram:'https://instagram.com/',facebook:'https://facebook.com/',linkedin:null,tiktok:null},potencial:3,sinais:'Instagram activo mas site de template antigo.',estado:'novo',criado:'2026-11-06',analise:null}
   ]
 };
 
@@ -404,14 +407,14 @@ function commit(){persistLocal();renderStatus()}
 /* ===== Brief ===== */
 function readBrief(){
   const b=S.brief;
-  b.marca=$('#b_marca').value.trim();b.setor=$('#b_setor').value.trim();b.produto=$('#b_produto').value.trim();
+  b.marca=$('#b_marca').value.trim();b.setor=pickValue('#b_setor','#b_setor_outro');b.produto=$('#b_produto').value.trim();
   b.objetivo=$('#b_objetivo').value;b.publico=$('#b_publico').value.trim();b.diferenciais=$('#b_diferenciais').value.trim();
   b.tom=$('#b_tom').value;b.orcamento=Math.max(50,Number($('#b_orcamento').value)||0);b.notas=$('#b_notas').value.trim();
   b.canais=$$('#b_canais input:checked').map(i=>i.value);
 }
 function writeBrief(){
   const b=S.brief;
-  $('#b_marca').value=b.marca;$('#b_setor').value=b.setor;$('#b_produto').value=b.produto;$('#b_objetivo').value=b.objetivo;
+  $('#b_marca').value=b.marca;pickSet('#b_setor','#b_setor_outro','#b_setor_outro_l',b.setor);$('#b_produto').value=b.produto;$('#b_objetivo').value=b.objetivo;
   $('#b_publico').value=b.publico;$('#b_diferenciais').value=b.diferenciais;$('#b_tom').value=b.tom;$('#b_orcamento').value=b.orcamento;$('#b_notas').value=b.notas;
   $$('#b_canais input').forEach(i=>{i.checked=b.canais.includes(i.value);i.closest('.toggle').classList.toggle('on',i.checked)});
 }
@@ -774,31 +777,45 @@ function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample}
 /* ===== PROSPECTAR ===== */
 const REDES=['instagram','facebook','linkedin','tiktok'];
 const REDE_NOME={instagram:'Instagram',facebook:'Facebook',linkedin:'LinkedIn',tiktok:'TikTok'};
+function pickValue(selId,inpId){const v=$(selId).value;return v==='__outro'?$(inpId).value.trim():v}
+function pickSet(selId,inpId,lblId,s){const sel=$(selId);if([...sel.options].some(o=>o.value===s||o.text===s)&&s!=='__outro'){sel.value=s;$(lblId).hidden=true}else if(s){sel.value='__outro';$(inpId).value=s;$(lblId).hidden=false}else{sel.value='';$(lblId).hidden=true}}
+function localValue(){return pickValue('#pr_local','#pr_local_outro')}
+function sectorValue(){const v=$('#pr_sector').value;return v==='__outro'?$('#pr_outro').value.trim():v}
+function setSector(s){const sel=$('#pr_sector');if([...sel.options].some(o=>o.value===s||o.text===s)){sel.value=s;$('#pr_outro_l').hidden=true}else if(s){sel.value='__outro';$('#pr_outro').value=s;$('#pr_outro_l').hidden=false}else{sel.value='';$('#pr_outro_l').hidden=true}}
 function normUrl(u){if(!u||typeof u!=='string')return null;u=u.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;try{new URL(u);return u}catch(e){return null}}
 async function prospect(){
-  const local=$('#pr_local').value.trim(),sector=$('#pr_sector').value.trim(),n=Number($('#pr_n').value);
-  if(!local||!sector){toast('Indique a localização e o sector.','warn');return}
+  const local=localValue(),sector=sectorValue(),n=Math.max(1,Math.floor(Number($('#pr_n').value)||10));
+  if(!local||!sector){toast('Indique a localização e o tipo de negócio.','warn');return}
   if(!loadCfg().key){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
   S.prospect={local,sector,n};persistLocal();
-  const st=$('#prStatus'),btn=$('#btnProspect');btn.disabled=true;st.innerHTML=`<span class="thinking">A pesquisar ${esc(sector)} em ${esc(local)}…</span>`;
-  const known=S.leads.map(l=>l.nome).join('; ');
-  const prompt=`És responsável de prospecção comercial numa agência de design, fotografia e redes sociais em Portugal. Usa a pesquisa web para encontrar ${n} pequenas e médias empresas LOCAIS e INDEPENDENTES (não cadeias nem franchisings) do sector «${sector}» em «${local}», Portugal. Faz várias pesquisas diferentes (ex.: «${sector} ${local}», «${sector} ${local} instagram», «${sector} ${local} facebook», listagens locais) e cruza os resultados.
-Para cada empresa procura: site oficial, morada, telefone e ligações directas para Instagram, Facebook, LinkedIn e TikTok (só URLs que tenhas visto em resultados; se não encontrares, null).
-${known?`Ignora estas, já conhecidas: ${known}.`:''}
-No fim responde APENAS com um bloco \`\`\`json contendo um array:
-[{"nome":"","site":"url ou null","morada":"","telefone":"","descricao":"1-2 frases sobre o negócio e a sua presença online aparente","redes":{"instagram":null,"facebook":null,"linkedin":null,"tiktok":null},"fonte":"url onde encontraste"}]
-Em português de Portugal. Não inventes empresas nem URLs.`;
+  const st=$('#prStatus'),btn=$('#btnProspect');btn.disabled=true;
+  const per=10;const maxBatches=Math.ceil(n/per)+2;let added=0,batch=0,empty=0;const today=new Date().toISOString().slice(0,10);
   try{
-    const {text}=await callAI(prompt,{tools:[TOOL_SEARCH(10,local)],maxTokens:8000,onRound:(r)=>{st.innerHTML=`<span class="thinking">A cruzar resultados (ronda ${r+1})…</span>`}});
-    let arr=parseJson(text);if(!Array.isArray(arr))throw{code:'invalid_json',text};
-    const today=new Date().toISOString().slice(0,10);let added=0;
-    for(const x of arr){
-      if(!x||!x.nome)continue;const nome=String(x.nome).trim();
-      if(S.leads.some(l=>l.nome.toLowerCase()===nome.toLowerCase()))continue;
-      const redes={};for(const k of REDES)redes[k]=normUrl(x.redes?.[k]);
-      S.leads.unshift({id:'L'+(hash(nome+Date.now())%100000),nome,site:normUrl(x.site)||'',morada:String(x.morada||''),telefone:String(x.telefone||''),sector,local,descricao:String(x.descricao||''),fonte:normUrl(x.fonte)||'',redes,estado:'novo',criado:today,analise:null});added++;
+    while(added<n&&batch<maxBatches){
+      batch++;const want=Math.min(per,n-added);
+      st.innerHTML=`<span class="thinking">Lote ${batch}: a pesquisar ${esc(sector)} em ${esc(local)}… (${added} de ${n} encontradas)</span>`;
+      const known=S.leads.filter(l=>l.local===local||l.sector===sector).map(l=>l.nome).slice(-80).join('; ');
+      const prompt=`És responsável de prospecção comercial numa agência de design, fotografia e redes sociais em Portugal. Usa a pesquisa web para encontrar ${want} pequenas e médias empresas LOCAIS e INDEPENDENTES (não cadeias nem franchisings) do tipo «${sector}» em «${local}», Portugal. Faz várias pesquisas diferentes${batch>1?' (varia os termos e as fontes: listagens locais, Google Maps, directórios, Instagram, Facebook, freguesias e zonas específicas)':' (ex.: «'+sector+' '+local+'», «'+sector+' '+local+' instagram», «'+sector+' '+local+' facebook», listagens locais)'} e cruza os resultados.
+Para cada empresa procura: site oficial, morada, telefone e ligações directas para Instagram, Facebook, LinkedIn e TikTok (só URLs que tenhas visto em resultados; se não encontrares, null). Estima também o POTENCIAL como cliente da nossa agência, de 1 a 5: 5 = negócio com aspecto viável mas presença digital fraca ou inexistente (sem site, sem redes, logótipo amador); 1 = já comunica de forma profissional e consistente.
+${known?`NÃO repitas estas, já conhecidas: ${known}.`:''}
+No fim responde APENAS com um bloco \`\`\`json contendo um array:
+[{"nome":"","site":"url ou null","morada":"","telefone":"","descricao":"1-2 frases sobre o negócio e a sua presença online aparente","redes":{"instagram":null,"facebook":null,"linkedin":null,"tiktok":null},"potencial":3,"sinais":"meia frase: o que justifica o potencial","fonte":"url onde encontraste"}]
+Em português de Portugal. Não inventes empresas nem URLs.`;
+      const {text}=await callAI(prompt,{tools:[TOOL_SEARCH(10,local)],maxTokens:8000});
+      let arr;try{arr=parseJson(text)}catch(e){arr=[]}
+      if(!Array.isArray(arr))arr=[];
+      let newHere=0;
+      for(const x of arr){
+        if(!x||!x.nome)continue;const nome=String(x.nome).trim();
+        if(S.leads.some(l=>l.nome.toLowerCase()===nome.toLowerCase()))continue;
+        const redes={};for(const k of REDES)redes[k]=normUrl(x.redes?.[k]);
+        S.leads.unshift({id:'L'+(hash(nome+Date.now()+Math.random())%1000000),nome,site:normUrl(x.site)||'',morada:String(x.morada||''),telefone:String(x.telefone||''),sector,local,descricao:String(x.descricao||''),sinais:String(x.sinais||''),potencial:Math.min(5,Math.max(1,Number(x.potencial)||3)),fonte:normUrl(x.fonte)||'',redes,estado:'novo',criado:today,analise:null});
+        newHere++;added++;if(added>=n)break;
+      }
+      commit();renderLeads();
+      if(newHere===0){empty++;if(empty>=2)break}
     }
-    commit();renderLeads();st.textContent=added?`${added} empresas adicionadas.`:'Nenhuma empresa nova encontrada. Tente outro sector ou localização.';
+    st.textContent=added?`${added} empresas adicionadas, ordenadas por potencial de cliente.${added<n?' Não encontrei mais com estes critérios; tente outra zona ou tipo próximo.':''}`:'Nenhuma empresa nova encontrada. Tente outro tipo de negócio ou localização.';
   }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
   finally{btn.disabled=false}
 }
@@ -817,7 +834,7 @@ Avalia de 0 (inexistente) a 5 (profissional e consistente) e responde APENAS com
     for(const k of ['logo','identidade','redes','comunicacao','site']){a[k]=a[k]||{};a[k].nota=Math.min(5,Math.max(0,Number(a[k].nota)||0));a[k].obs=String(a[k].obs||'')}
     a.prioridade=Math.min(5,Math.max(1,Number(a.prioridade)||3));a.oportunidades=(a.oportunidades||[]).map(String).slice(0,4);a.abordagem=String(a.abordagem||'');
     const enc=a.redes.encontradas||{};for(const k of REDES){const u=normUrl(enc[k]);if(u&&!lead.redes[k])lead.redes[k]=u}
-    lead.analise=a;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
+    lead.analise=a;lead.potencial=a.prioridade;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
   }catch(e){box.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
 }
 function leadToBrief(l){
@@ -834,7 +851,8 @@ function renderLeads(){
   keep($('#pf_sector'),sectors);keep($('#pf_local'),locais);
   const fs=$('#pf_sector').value,fl=$('#pf_local').value,fe=$('#pf_estado').value,q=$('#pf_q').value.trim().toLowerCase(),ord=$('#pf_ord').value;
   let L=S.leads.filter(l=>(!fs||l.sector===fs)&&(!fl||l.local===fl)&&(!fe||l.estado===fe)&&(!q||(l.nome+' '+l.morada).toLowerCase().includes(q)));
-  if(ord==='nome')L.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));else if(ord==='prio')L.sort((a,b)=>(b.analise?.prioridade||0)-(a.analise?.prioridade||0));
+  const pot=l=>l.analise?.prioridade??l.potencial??0;
+  if(ord==='nome')L.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));else if(ord==='prio')L.sort((a,b)=>pot(b)-pot(a)||a.nome.localeCompare(b.nome,'pt'));
   $('#leadCount').textContent=`${L.length} de ${S.leads.length}`;
   if(!S.leads.length){host.innerHTML=`<div class="card flat"><h3>Sem leads</h3><p class="muted">Indique localização e sector e carregue em «Pesquisar empresas». As empresas ficam guardadas no projeto e podem ser filtradas por sector, local e estado.</p></div>`;return}
   if(!L.length){host.innerHTML=`<div class="card flat"><p class="muted">Nenhuma lead corresponde aos filtros.</p></div>`;return}
@@ -844,14 +862,14 @@ function renderLeads(){
     const el=document.createElement('article');el.className='card lead';el.dataset.id=l.id;const a=l.analise;
     const redes=REDES.map(k=>l.redes[k]?`<a class="chip good" href="${esc(l.redes[k])}" target="_blank" rel="noopener">${REDE_NOME[k]} ✓</a>`:`<span class="chip off">${REDE_NOME[k]}</span>`).join('');
     el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start">
-      <div style="flex:1;min-width:240px"><div class="row"><h3></h3><span class="chip ${est[l.estado]?.[1]||''}">${est[l.estado]?.[0]||l.estado}</span>${a?`<span class="chip accent" title="Prioridade comercial">Prioridade ${a.prioridade}/5</span>`:''}</div>
+      <div style="flex:1;min-width:240px"><div class="row"><h3></h3><span class="chip ${est[l.estado]?.[1]||''}">${est[l.estado]?.[0]||l.estado}</span>${a?`<span class="chip accent" title="Após análise do site e redes">Potencial ${a.prioridade}/5</span>`:(l.potencial?`<span class="chip warn" title="Estimado na pesquisa; analise para confirmar">Potencial ${l.potencial}/5 · est.</span>`:'')}</div>
         <div class="small muted addr"></div>
         <div class="row" style="margin-top:6px"><span class="chip">${esc(l.sector)}</span><span class="chip">${esc(l.local)}</span>${l.site?`<a class="chip" href="${esc(l.site)}" target="_blank" rel="noopener">Site ↗</a>`:'<span class="chip off">Sem site</span>'}${l.fonte?`<a class="chip" href="${esc(l.fonte)}" target="_blank" rel="noopener">Fonte ↗</a>`:''}</div></div>
       <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm primary" data-brief>Criar brief</button><button class="btn sm" data-del title="Remover">×</button></div></div>
       <div class="row redes" style="margin-top:10px">${redes}</div>
       <p class="small desc" style="margin-top:8px"></p>
       <div class="an" style="margin-top:6px"></div>`;
-    $('h3',el).textContent=l.nome;$('.addr',el).textContent=[l.morada,l.telefone].filter(Boolean).join(' · ');$('.desc',el).textContent=l.descricao;
+    $('h3',el).textContent=l.nome;$('.addr',el).textContent=[l.morada,l.telefone].filter(Boolean).join(' · ');$('.desc',el).textContent=l.descricao+(l.sinais&&!a?' · '+l.sinais:'');
     if(a){const sc=[['Logótipo','logo'],['Identidade visual','identidade'],['Redes sociais','redes'],['Comunicação','comunicacao'],['Site','site']];
       $('.an',el).innerHTML=`<div class="scores">${sc.map(([n,k])=>`<div class="score"><div class="l">${n}</div><div class="b">${[1,2,3,4,5].map(i=>`<i class="${i<=a[k].nota?'f':''}"></i>`).join('')}</div><div class="o"></div></div>`).join('')}</div>
         <div class="grid g2"><div><h4>Oportunidades</h4><ul class="clean">${a.oportunidades.map(o=>`<li>${esc(o)}</li>`).join('')}</ul></div><div><h4>Abordagem sugerida</h4><p class="small"></p><button class="btn sm" data-copy style="margin-top:6px">Copiar</button></div></div>`;
@@ -863,7 +881,7 @@ function renderLeads(){
     host.append(el);
   }
 }
-function leadsCsv(){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';return ['nome;sector;local;morada;telefone;site;instagram;facebook;linkedin;tiktok;estado;prioridade;logo;identidade;redes;comunicacao;site_nota;oportunidades;abordagem',...S.leads.map(l=>[l.nome,l.sector,l.local,l.morada,l.telefone,l.site,l.redes.instagram,l.redes.facebook,l.redes.linkedin,l.redes.tiktok,l.estado,l.analise?.prioridade,l.analise?.logo.nota,l.analise?.identidade.nota,l.analise?.redes.nota,l.analise?.comunicacao.nota,l.analise?.site.nota,(l.analise?.oportunidades||[]).join(' | '),l.analise?.abordagem].map(q).join(';'))].join('\n')}
+function leadsCsv(){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';return ['nome;sector;local;morada;telefone;site;instagram;facebook;linkedin;tiktok;estado;potencial;logo;identidade;redes;comunicacao;site_nota;oportunidades;abordagem',...S.leads.map(l=>[l.nome,l.sector,l.local,l.morada,l.telefone,l.site,l.redes.instagram,l.redes.facebook,l.redes.linkedin,l.redes.tiktok,l.estado,l.analise?.prioridade??l.potencial,l.analise?.logo.nota,l.analise?.identidade.nota,l.analise?.redes.nota,l.analise?.comunicacao.nota,l.analise?.site.nota,(l.analise?.oportunidades||[]).join(' | '),l.analise?.abordagem].map(q).join(';'))].join('\n')}
 
 /* ===== Downloads directos ===== */
 downloads={save:async({filename,data})=>{const blob=data instanceof Blob?data:new Blob([data]);const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return{status:'saved'}}};
@@ -873,12 +891,12 @@ function exportProject(){readBrief();downloads.save({filename:`${slug(S.brief.ma
 function importProject(file){const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!o.brief)throw 0;S=Object.assign(blank(),o);commit();renderAll();toast('Projeto importado.')}catch(e){toast('Ficheiro inválido.','err')}};r.readAsText(file)}
 
 /* ===== Arranque ===== */
-function renderAll(){writeBrief();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();$('#pr_local').value=S.prospect?.local||'';$('#pr_sector').value=S.prospect?.sector||'';$('#pr_n').value=S.prospect?.n||8;renderLeads();go(S.etapa||0)}
+function renderAll(){writeBrief();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
 function load(){
   let saved=null;try{saved=JSON.parse($('#saved-state').textContent)}catch(e){}
   const local=loadLocal();
   S=saved||local||JSON.parse(JSON.stringify(DEMO));
-  if(!saved&&!local)S.etapa=4;if(!S.leads)S.leads=[];if(!S.prospect)S.prospect={local:'',sector:'',n:8};
+  if(!saved&&!local)S.etapa=4;if(!S.leads)S.leads=[];if(!S.prospect)S.prospect={local:'',sector:'',n:10};
   renderAll();
 }
 $$('.step').forEach(s=>s.onclick=()=>{readBrief();persistLocal();go(Number(s.dataset.step));if(s.dataset.step==='1')renderCreateTools()});
@@ -893,7 +911,7 @@ $('#btnZip').onclick=saveZip;
 $('#btnCsv').onclick=()=>copyText(csvAds());
 $('#btnDemo').onclick=async()=>{if(S.brief.marca&&!(await confirmDlg('Carregar exemplo','Substitui o projeto actual pelo exemplo «Café da Ribeira».')))return;S=JSON.parse(JSON.stringify(DEMO));S.plano=buildPlan();S.plano.feito=[0,1,2,3,4,5,6];S.resultados=simulate();commit();renderAll();go(0)};
 $('#btnReset').onclick=async()=>{if(!(await confirmDlg('Novo projeto','Limpa o brief, a pesquisa e os criativos. Se já guardou, a versão guardada mantém-se até voltar a guardar.')))return;S=blank();IMG=null;commit();renderAll()};
-$('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
+$('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#b_setor').onchange=e=>{$('#b_setor_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#b_setor_outro').focus()};$('#pr_local').onchange=e=>{$('#pr_local_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_local_outro').focus()};$('#pr_sector').onchange=e=>{$('#pr_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_outro').focus()};$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
 window.addEventListener('resize',()=>{const c=$('#chart');if(c&&S.resultados&&$('#p3').classList.contains('show'))renderOptimize()});
 
 load();
