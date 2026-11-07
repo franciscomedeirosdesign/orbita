@@ -6,7 +6,7 @@
 <title>Órbita Campanhas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=IBM+Plex+Serif:wght@400;500&family=Old+Standard+TT:ital@1&family=Caveat:wght@600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root{
@@ -181,6 +181,110 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   main{padding:16px 16px 60px}
   h2{font-size:22px}
 }
+
+/* ===== Design system JIF ===== */
+.toggle{flex-direction:row}
+.toggle input{accent-color:#fff;width:auto}
+.toggle:not(.on) input{accent-color:var(--magenta)}
+.btn.x{width:38px;padding:0;justify-content:center;font:400 20px/1 var(--display)}
+.btn.x::after{display:none}
+.top-actions .btn.sm{font-size:15px;padding:0 13px;gap:9px}
+.top-actions .btn.sm::after{border-left-width:6px;border-top-width:4px;border-bottom-width:4px}
+.iter{border-radius:999px}
+@media (max-width:900px){.top-actions{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:4px}.top-actions .btn{flex:none}}
+
+:root,:root[data-theme="light"]{
+  --magenta:#fc3888;--magenta-deep:#d6106a;--blush:#fff4f8;--blush-strong:#ffe1ee;
+  --bg:#fbf9f7;--surface:#ffffff;--surface-2:#fbf9f7;--ink:#161616;--ink-2:#6b6b6b;--line:rgba(22,22,22,.14);
+  --accent:#d6106a;--accent-ink:#fff;--signal:#fc3888;--good:#1e8e5a;--warn:#c9741a;--bad:#c8352e;
+  --display:"Inter Tight","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Serif",Georgia,serif;
+  --accentf:"Old Standard TT",Didot,"Bodoni 72",Georgia,serif;
+  --hand:Caveat,"Comic Sans MS",cursive;
+  --r:18px;--pill:999px;--shadow-float:0 6px 24px rgba(150,0,60,.10);--shadow-modal:0 30px 80px rgba(0,0,0,.35);
+  --gutter:max(16px,1.875vw);color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --magenta-deep:#ff5c9d;--blush:#2a1520;--blush-strong:#4a1c31;--bg:#161616;--surface:#1f1e1f;--surface-2:#242324;--ink:#ffffff;--ink-2:#b8b8b8;--line:rgba(255,255,255,.18);--accent:#ff5c9d;--accent-ink:#161616;color-scheme:dark}}
+body{background:var(--bg);font-family:var(--body);font-size:16px;line-height:1.45}
+h1,h2,h3,h4,label,th,.btn,.chip,.step,.kpi .v,.prio,.quote,input,select,textarea,.status-line,.toggle{font-family:var(--display)}
+h2{font-size:clamp(40px,5vw,72px);font-weight:800;letter-spacing:-.05em;line-height:.95}
+h2 em,.acc{font-family:var(--accentf);font-style:italic;font-weight:400;color:var(--magenta);letter-spacing:-.02em;font-size:1.08em}
+h3{font-size:22px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.head{margin:8px 0 28px;align-items:flex-end}
+.head p{font-family:var(--body);font-size:17px;color:var(--ink-2);max-width:56ch;margin-top:14px}
+.eyebrow{font:600 13px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--magenta-deep);margin-bottom:12px;display:block}
+input,select,textarea{border-radius:12px;border:1px solid var(--line);padding:11px 14px;font-weight:500}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--magenta);outline-offset:2px}
+label{font:600 13px/1.2 var(--display);color:var(--ink-2);letter-spacing:.01em}
+
+/* Topo: tinta, com menu em pílula */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top-row{padding:14px var(--gutter)}
+.brand .mark{display:none}
+.brand h1{font:800 30px/1 var(--display);letter-spacing:-.06em}
+.brand h1 em{font-family:var(--accentf);font-style:italic;font-weight:400;color:var(--magenta);letter-spacing:-.02em}
+.brand small{font:600 11px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--magenta-deep);margin-top:6px}
+.steps{padding:0 var(--gutter) 14px;gap:6px}
+.steps-pill{display:inline-flex;gap:4px;padding:6px;border-radius:var(--pill);background:var(--surface-2);box-shadow:var(--shadow-float),inset 0 0 0 1px rgba(22,22,22,.05)}
+.step{border:0;margin:0;padding:9px 16px 9px 9px;border-radius:var(--pill);gap:10px;transition:background .25s,color .25s}
+.step .n{border:0;background:var(--surface);font:700 12px/1 var(--display);width:26px;height:26px;color:var(--ink)}
+.step strong{font:700 15px/1 var(--display);letter-spacing:-.02em}
+.step span.s{font:500 11.5px/1.2 var(--display);color:var(--ink-2)}
+.step br{display:none}.step div{display:flex;flex-direction:column;gap:3px;text-align:left}
+.step:hover{background:var(--blush-strong)}
+.step.active{background:var(--magenta);border:0}
+.step.active strong,.step.active span.s{color:#fff}
+.step.active .n{background:#fff;color:var(--magenta-deep)}
+.step.done .n{background:var(--ink);color:#fff}
+
+main{max-width:1320px;padding:32px var(--gutter) 90px}
+
+/* Botões: pílula, Old Standard itálico, triângulo magenta */
+.btn{border:0;border-radius:var(--pill);min-height:44px;padding:0 20px;gap:12px;justify-content:space-between;
+  font:italic 400 18px/1 var(--accentf);letter-spacing:-.005em;background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);
+  transition:background .25s,color .25s,transform .3s cubic-bezier(.2,.7,.2,1)}
+.btn::after{content:"";flex:none;border-left:8px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent;transition:transform .25s}
+.btn:hover{background:var(--ink);color:var(--surface);transform:translateY(-1px);border-color:transparent}
+.btn:hover::after{transform:translateX(3px)}
+.btn.primary{background:var(--ink);color:var(--surface);box-shadow:none}
+.btn.primary::after{border-left-color:var(--magenta)}
+.btn.primary:hover{background:var(--magenta);color:#fff;filter:none}
+.btn.primary:hover::after{border-left-color:#fff}
+.btn.sm{min-height:38px;padding:0 15px;font-size:16px}
+.btn:disabled{background:rgba(22,22,22,.1);color:rgba(22,22,22,.45);box-shadow:none;transform:none}
+.top-actions .btn.sm{min-height:36px}
+
+.chip{border-radius:var(--pill);padding:5px 12px;font:600 12.5px/1 var(--display);border:1.5px solid var(--line);background:var(--surface)}
+.chip.accent{color:var(--magenta-deep);border-color:var(--magenta)}
+.toggle{border-radius:var(--pill);border:1.5px solid var(--ink);font:600 14px/1 var(--display);padding:10px 16px}
+.toggle.on{background:var(--magenta);border-color:var(--magenta);color:#fff}
+.toolbar .fmt .toggle{padding:8px 13px}
+
+.card,.toolbar,.ad,.kpi,.angle{border-radius:var(--r);border:1px solid var(--line);background:var(--surface)}
+.card{padding:24px}
+.toolbar{padding:20px;gap:14px;background:var(--surface-2)}
+.card.flat{background:var(--surface-2)}
+.angle.on{border-color:var(--magenta);box-shadow:0 0 0 2px var(--magenta)}
+.angle .pot i,.score .b i{border-radius:999px}
+.angle .pot i.f,.score .b i.f{background:var(--magenta)}
+.quote{font:800 19px/1.05 var(--display);letter-spacing:-.03em}
+.score{border-radius:12px}
+.kpi .v,.prio{font-weight:800;letter-spacing:-.05em;color:var(--ink)}
+.kpi .v{font-size:34px}
+.prio{color:var(--magenta)}
+th{font:600 11.5px/1 var(--display);letter-spacing:.12em}
+.note{border-radius:var(--r);font-family:var(--display);font-weight:500}
+.note.warn{background:var(--blush);border-color:var(--magenta);color:var(--ink)}
+.note.warn>span:first-child{color:var(--magenta)}
+.thinking::before{border-top-color:var(--magenta)}
+.hand{font:600 24px/1 var(--hand);color:var(--magenta-deep)}
+dialog{border-radius:20px;border:0;box-shadow:var(--shadow-modal);padding:28px}
+dialog h3,#dlgT{font:800 32px/1 var(--display);letter-spacing:-.05em}
+footer{padding:28px var(--gutter);max-width:none;background:var(--ink);color:#bbb;font-family:var(--display)}
+footer .hand{color:var(--magenta)}
+@media (max-width:900px){.steps-pill{border-radius:24px;flex-wrap:nowrap}.step span.s{display:none}}
+@media (prefers-reduced-motion:reduce){.btn,.btn::after,.step{transition:none}}
 </style>
 </head>
 <body>
@@ -189,7 +293,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   <div class="top-row">
     <div class="brand">
       <div class="mark" aria-hidden="true"></div>
-      <div><h1>Órbita</h1><small>Campanhas em ciclo contínuo</small></div>
+      <div><h1><em>Ó</em>rbita</h1><small>JIF studio · Damos a volta à tua marca</small></div>
     </div>
     <div class="status-line" id="statusLine"></div>
     <div class="top-actions">
@@ -198,22 +302,22 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
       <button class="btn sm" id="btnImport">Importar</button><button class="btn sm" id="btnExport">Exportar projeto</button><button class="btn sm primary" id="btnSettings">Definições IA</button><input type="file" id="importFile" accept="application/json" hidden>
     </div>
   </div>
-  <nav class="steps" id="steps" aria-label="Etapas">
+  <nav class="steps" id="steps" aria-label="Etapas"><div class="steps-pill">
     <button class="step" data-step="4"><span class="n">P</span><div><strong>Prospectar</strong><br><span class="s">Leads por sector e local</span></div></button>
     <button class="step" data-step="0"><span class="n">1</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button>
     <button class="step" data-step="1"><span class="n">2</span><div><strong>Criar</strong><br><span class="s">Variações e formatos</span></div></button>
     <button class="step" data-step="2"><span class="n">3</span><div><strong>Lançar</strong><br><span class="s">Plano de media</span></div></button>
     <button class="step" data-step="3"><span class="n">4</span><div><strong>Otimizar</strong><br><span class="s">Resultados e aprendizagens</span></div></button>
-  </nav>
+  </div></nav>
 </header>
 
 <main>
-  <div id="aiNote" class="note warn" hidden style="cursor:pointer" onclick="openSettings()" title="Abrir Definições IA"><span>⚠</span><span>Para usar a IA, introduza a sua chave da API da Anthropic em «Definições IA». A chave fica guardada apenas neste browser. Sem chave, use «Carregar exemplo» para ver o fluxo.</span></div>
+  <div id="aiNote" class="note warn" hidden style="cursor:pointer" onclick="openSettings()" title="Abrir Definições IA"><span>⚠</span><span>Para usares a IA, mete a tua chave da API da Anthropic em «Definições IA». Fica guardada só neste browser. Sem chave, usa «Carregar exemplo» para ver como funciona.</span></div>
 
   <!-- P PROSPECTAR -->
   <section class="panel" id="p4">
     <div class="head">
-      <div><h2>Prospectar</h2><p>Pesquise pequenas e médias empresas por tipo de negócio e localização. A IA pesquisa na web em lotes até ao número pedido, estima o potencial de cada empresa como cliente (presença fraca = oportunidade forte) e ordena a lista. «Analisar presença» visita o site e as redes e afina a nota. Voltar a pesquisar com os mesmos critérios acrescenta empresas novas.</p></div>
+      <div><span class="eyebrow">Prospectar · Leads</span><h2>Quem precisa de uma <em>volta</em>?</h2><p>Escolhe o tipo de negócio e a zona. A IA procura pequenas e médias empresas em actividade, dá a cada uma uma nota de potencial (presença fraca = boa oportunidade) e põe as melhores no topo. «Analisar presença» visita o site e as redes e afina a nota. Se voltares a pesquisar com os mesmos critérios, aparecem empresas novas.</p></div>
     </div>
     <div class="toolbar">
       <label>Localização<select id="pr_local"><option value="">Escolher…</option><optgroup label="Porto"><option>Porto</option><option>Vila Nova de Gaia</option><option>Matosinhos</option><option>Maia</option><option>Gondomar</option><option>Valongo</option><option>Póvoa de Varzim</option><option>Vila do Conde</option><option>Santo Tirso</option><option>Trofa</option><option>Paredes</option><option>Penafiel</option><option>Paços de Ferreira</option><option>Lousada</option><option>Felgueiras</option><option>Amarante</option><option>Marco de Canaveses</option><option>Baião</option></optgroup><optgroup label="Braga"><option>Braga</option><option>Guimarães</option><option>Barcelos</option><option>Famalicão</option><option>Esposende</option><option>Vila Verde</option><option>Fafe</option><option>Póvoa de Lanhoso</option><option>Amares</option><option>Vizela</option><option>Cabeceiras de Basto</option><option>Celorico de Basto</option></optgroup><optgroup label="Aveiro"><option>Aveiro</option><option>Santa Maria da Feira</option><option>Oliveira de Azeméis</option><option>Ovar</option><option>Espinho</option><option>São João da Madeira</option><option>Águeda</option><option>Ílhavo</option><option>Estarreja</option><option>Vale de Cambra</option><option>Oliveira do Bairro</option><option>Anadia</option></optgroup><optgroup label="Viana do Castelo"><option>Viana do Castelo</option><option>Ponte de Lima</option><option>Caminha</option><option>Valença</option><option>Vila Nova de Cerveira</option><option>Arcos de Valdevez</option><option>Monção</option><option>Ponte da Barca</option></optgroup><optgroup label="Vila Real"><option>Vila Real</option><option>Chaves</option><option>Peso da Régua</option><option>Valpaços</option><option>Vila Pouca de Aguiar</option></optgroup><optgroup label="Bragança"><option>Bragança</option><option>Mirandela</option><option>Macedo de Cavaleiros</option><option>Miranda do Douro</option></optgroup><optgroup label="Viseu"><option>Viseu</option><option>Lamego</option><option>Tondela</option><option>Mangualde</option><option>Castro Daire</option><option>São Pedro do Sul</option><option>Cinfães</option></optgroup><optgroup label="Guarda"><option>Guarda</option><option>Seia</option><option>Gouveia</option><option>Trancoso</option><option>Sabugal</option></optgroup><optgroup label="Coimbra"><option>Coimbra</option><option>Figueira da Foz</option><option>Cantanhede</option><option>Montemor-o-Velho</option><option>Lousã</option><option>Penacova</option><option>Mira</option></optgroup><optgroup label="Leiria"><option>Leiria</option><option>Marinha Grande</option><option>Pombal</option><option>Alcobaça</option><option>Caldas da Rainha</option><option>Nazaré</option><option>Batalha</option><option>Óbidos</option><option>Peniche</option></optgroup><optgroup label="Castelo Branco"><option>Castelo Branco</option><option>Covilhã</option><option>Fundão</option></optgroup><optgroup label="Santarém"><option>Santarém</option><option>Tomar</option><option>Torres Novas</option><option>Abrantes</option><option>Entroncamento</option><option>Ourém</option><option>Cartaxo</option><option>Rio Maior</option><option>Almeirim</option></optgroup><optgroup label="Lisboa"><option>Lisboa</option><option>Sintra</option><option>Cascais</option><option>Oeiras</option><option>Loures</option><option>Amadora</option><option>Odivelas</option><option>Vila Franca de Xira</option><option>Mafra</option><option>Torres Vedras</option><option>Alenquer</option><option>Lourinhã</option></optgroup><optgroup label="Setúbal"><option>Setúbal</option><option>Almada</option><option>Seixal</option><option>Barreiro</option><option>Montijo</option><option>Palmela</option><option>Sesimbra</option><option>Moita</option><option>Alcochete</option><option>Grândola</option><option>Santiago do Cacém</option><option>Sines</option></optgroup><optgroup label="Portalegre"><option>Portalegre</option><option>Elvas</option><option>Ponte de Sor</option><option>Campo Maior</option></optgroup><optgroup label="Évora"><option>Évora</option><option>Montemor-o-Novo</option><option>Estremoz</option><option>Vendas Novas</option><option>Reguengos de Monsaraz</option></optgroup><optgroup label="Beja"><option>Beja</option><option>Odemira</option><option>Moura</option><option>Serpa</option></optgroup><optgroup label="Faro"><option>Faro</option><option>Loulé</option><option>Portimão</option><option>Albufeira</option><option>Olhão</option><option>Lagos</option><option>Tavira</option><option>Silves</option><option>Lagoa</option><option>Vila Real de Santo António</option></optgroup><optgroup label="Madeira"><option>Funchal</option><option>Câmara de Lobos</option><option>Santa Cruz</option><option>Machico</option><option>Porto Santo</option></optgroup><optgroup label="Açores"><option>Ponta Delgada</option><option>Angra do Heroísmo</option><option>Horta</option><option>Ribeira Grande</option></optgroup><option value="__outro">Outro (escrever)…</option></select></label>
@@ -238,7 +342,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   <!-- 1 DESCOBRIR -->
   <section class="panel" id="p0">
     <div class="head">
-      <div><h2>Descobrir</h2><p>Escreva o brief do cliente. A IA devolve o retrato do público, tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
+      <div><span class="eyebrow">Etapa 1 · Descobrir</span><h2>Conhecer a <em>marca</em></h2><p>Escreve o brief do cliente. A IA devolve o retrato do público, as tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
     </div>
     <div class="grid g2" style="grid-template-columns:minmax(300px,2fr) minmax(300px,3fr)">
       <div class="card">
@@ -271,7 +375,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
               <label class="toggle on"><input type="checkbox" value="google" checked> Google Display</label>
             </div>
           </div>
-          <label>Notas da iteração anterior<textarea id="b_notas" placeholder="Preenchido automaticamente quando fecha um ciclo em Otimizar."></textarea></label>
+          <label>Notas da iteração anterior<textarea id="b_notas" placeholder="Preenche-se sozinho quando fechas um ciclo em Otimizar."></textarea></label>
           <div class="row">
             <button class="btn primary" id="btnDiscover">Pesquisar com IA</button>
             <span id="discoverStatus" class="small muted"></span>
@@ -285,7 +389,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   <!-- 2 CRIAR -->
   <section class="panel" id="p1">
     <div class="head">
-      <div><h2>Criar</h2><p>Escolha os ângulos, o número de variações e os formatos. A IA escreve os textos e a app renderiza cada anúncio com o moodboard. Pode trocar o fundo por uma fotografia vossa.</p></div>
+      <div><span class="eyebrow">Etapa 2 · Criar</span><h2>Criar as <em>peças</em></h2><p>Escolhe os ângulos, o número de variações e os formatos. A IA escreve os textos e a app monta cada anúncio com o moodboard. Podes trocar o fundo por uma fotografia tua.</p></div>
     </div>
     <div class="toolbar">
       <label>Variações por ângulo<select id="c_n"><option>2</option><option selected>3</option><option>4</option></select></label>
@@ -306,7 +410,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   <!-- 3 LANÇAR -->
   <section class="panel" id="p2">
     <div class="head">
-      <div><h2>Lançar</h2><p>Plano de media a partir do orçamento e dos canais escolhidos. Nesta versão a publicação é simulada: a app prepara o plano e a lista de verificação; a submissão nas plataformas faz-se manualmente ou, numa versão futura, pela API de cada canal.</p></div>
+      <div><span class="eyebrow">Etapa 3 · Lançar</span><h2>Pôr tudo a <em>rodar</em></h2><p>O plano de media sai do orçamento e dos canais que escolheste. Por agora a publicação é simulada: a app prepara o plano e a lista de verificação, e tu publicas à mão em cada plataforma.</p></div>
     </div>
     <div id="launchOut" class="stack"></div>
   </section>
@@ -314,12 +418,12 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
   <!-- 4 OTIMIZAR -->
   <section class="panel" id="p3">
     <div class="head">
-      <div><h2>Otimizar</h2><p>Resultados por variação. Nesta versão os números são simulados a partir do potencial de cada ângulo, para testar o ciclo; com as APIs ligadas, entram os dados reais. A IA lê a tabela, aponta o vencedor e propõe a próxima iteração.</p></div>
+      <div><span class="eyebrow">Etapa 4 · Otimizar</span><h2>Dar mais uma <em>volta</em></h2><p>Resultados por variação. Nesta versão os números são simulados a partir do potencial de cada ângulo, para testar o ciclo; com as APIs ligadas, entram os dados reais. A IA lê a tabela, aponta o vencedor e propõe a próxima iteração.</p></div>
     </div>
     <div id="optOut" class="stack"></div>
   </section>
 </main>
-<footer>Protótipo autónomo. O projeto fica guardado automaticamente neste browser; use «Exportar projeto» para guardar um ficheiro .json e «Importar» para o recuperar noutro computador. Os pedidos à IA vão directamente do seu browser para a API da Anthropic.</footer>
+<footer><span class="hand">feito pela JIF ✶</span><br>O projeto fica guardado sozinho neste browser. Usa «Exportar projeto» para levares um ficheiro .json e «Importar» para o abrires noutro computador. Os pedidos à IA vão directamente do teu browser para a API da Anthropic.</footer>
 
 <dialog id="dlg"><h3 id="dlgT"></h3><p id="dlgB" class="small" style="margin:10px 0 16px"></p><div class="row" style="justify-content:flex-end"><button class="btn sm" id="dlgNo">Cancelar</button><button class="btn sm primary" id="dlgYes">Confirmar</button></div></dialog>
 
@@ -398,7 +502,7 @@ function luminance(hex){const m=hex.replace('#','');if(m.length<6)return .5;cons
 function dark(hex){return luminance(hex)<.4}
 function toast(msg,kind){const n=$('#toastArea')||(()=>{const d=document.createElement('div');d.id='toastArea';d.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:20;display:flex;flex-direction:column;gap:6px';document.body.append(d);return d})();const t=document.createElement('div');t.className='note'+(kind?' '+kind:'');t.style.boxShadow='0 6px 20px rgba(0,0,0,.18)';t.textContent=msg;n.append(t);setTimeout(()=>t.remove(),3800)}
 function confirmDlg(t,b){return new Promise(res=>{const d=$('#dlg');$('#dlgT').textContent=t;$('#dlgB').textContent=b;const y=$('#dlgYes'),n=$('#dlgNo');const done=v=>{d.close();y.onclick=n.onclick=null;res(v)};y.onclick=()=>done(true);n.onclick=()=>done(false);d.showModal()})}
-function aiCopy(code){return({not_granted:'Não autorizou esta página a usar o Claude.',rate_limited:'Demasiados pedidos. Tente daqui a pouco.',refused:'A IA recusou este pedido. Altere o brief.',invalid_json:'A resposta veio mal formatada. Tente outra vez.',session_expired:'Sessão expirada. Volte a iniciar sessão.',cancelled:''})[code]||'Falhou a ligação à IA. Tente outra vez.'}
+function aiCopy(code){return({not_granted:'Ainda não autorizaste esta página a usar o Claude.',rate_limited:'Muitos pedidos de uma vez. Tenta daqui a pouco.',refused:'A IA recusou este pedido. Muda o brief e tenta de novo.',invalid_json:'A resposta veio baralhada. Tenta outra vez.',session_expired:'A sessão expirou. Entra outra vez.',cancelled:''})[code]||'Falhou a ligação à IA. Tenta outra vez.'}
 
 function persistLocal(){try{localStorage.setItem('orbita.v1',JSON.stringify(S))}catch(e){}}
 function loadLocal(){try{const j=localStorage.getItem('orbita.v1');return j?JSON.parse(j):null}catch(e){return null}}
@@ -436,8 +540,8 @@ function renderStatus(){
 /* ===== 1 DESCOBRIR ===== */
 async function discover(){
   readBrief();
-  if(!S.brief.marca||!S.brief.produto){toast('Preencha pelo menos a marca e o produto.','warn');return}
-  if(!sample){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  if(!S.brief.marca||!S.brief.produto){toast('Preenche pelo menos a marca e o produto.','warn');return}
+  if(!sample){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
   const st=$('#discoverStatus');const btn=$('#btnDiscover');btn.disabled=true;st.innerHTML='<span class="thinking">A pesquisar público, mercado e ângulos…</span>';
   const prompt=`És estratega numa agência de publicidade portuguesa. Lê o brief e devolve APENAS um objeto JSON (sem texto à volta), em português de Portugal, com esta forma exacta:
 {"publico":{"resumo":"2 frases","dores":["4 itens curtos"],"desejos":["3 itens curtos"]},
@@ -456,13 +560,13 @@ ${briefText()}`;
     while(r.moodboard.paleta.length<5)r.moodboard.paleta.push(['#1B1B1B','#1F3BE0','#F2F2EE','#8A8F94','#FFFFFF'][r.moodboard.paleta.length]);
     S.discover=r;S.angulosSel=r.angulos.filter(a=>a.potencial>=4).map(a=>a.id).slice(0,3);if(!S.angulosSel.length)S.angulosSel=[r.angulos[0].id];
     S.ads=[];S.plano=null;S.resultados=null;S.analise=null;
-    commit();renderDiscover();st.textContent='Pronto. Escolha os ângulos e avance para Criar.';
-  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}</span>`}
+    commit();renderDiscover();st.textContent='Pronto. Escolhe os ângulos e passa a Criar.';
+  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,160))+')</span>':''}</span>`}
   finally{btn.disabled=false}
 }
 function renderDiscover(){
   const out=$('#discoverOut');const d=S.discover;
-  if(!d){out.innerHTML=`<div class="card flat"><h3>Ainda sem pesquisa</h3><p class="muted">Preencha o brief e carregue em «Pesquisar com IA». Aparecem aqui o retrato do público, o mercado, cinco ângulos criativos e o moodboard.</p></div>`;return}
+  if(!d){out.innerHTML=`<div class="card flat"><h3>Ainda sem pesquisa</h3><p class="muted">Preenche o brief e carrega em «Pesquisar com IA». Aparecem aqui o retrato do público, o mercado, cinco ângulos criativos e o moodboard.</p></div>`;return}
   const m=d.moodboard;
   out.innerHTML=`
   <div class="grid g2">
@@ -483,7 +587,7 @@ function renderDiscover(){
     <div class="words">${m.palavras.map(w=>`<span class="chip">${esc(w)}</span>`).join('')}</div>
     <p class="small muted" style="margin-top:10px">${esc(m.estilo)}</p></div>`;
   $$('#angles input').forEach(i=>i.onchange=()=>{i.closest('.angle').classList.toggle('on',i.checked);S.angulosSel=$$('#angles input:checked').map(x=>x.value);$('#selCount').textContent=S.angulosSel.length;persistLocal()});
-  $('#toCreate').onclick=()=>{if(!S.angulosSel.length){toast('Escolha pelo menos um ângulo.','warn');return}readBrief();persistLocal();renderCreateTools();go(1)};
+  $('#toCreate').onclick=()=>{if(!S.angulosSel.length){toast('Escolhe pelo menos um ângulo.','warn');return}readBrief();persistLocal();renderCreateTools();go(1)};
 }
 
 /* ===== 2 CRIAR ===== */
@@ -491,14 +595,14 @@ function renderCreateTools(){
   const fm=$('#c_fmts');const canais=S.brief.canais;
   const avail=Object.values(FORMATS).filter(f=>canais.includes(f.canal));
   S.criar.fmts=S.criar.fmts.filter(id=>avail.some(f=>f.id===id));if(!S.criar.fmts.length)S.criar.fmts=avail.slice(0,2).map(f=>f.id);
-  fm.innerHTML=avail.map(f=>`<label class="toggle ${S.criar.fmts.includes(f.id)?'on':''}"><input type="checkbox" value="${f.id}" ${S.criar.fmts.includes(f.id)?'checked':''}> ${f.nome}</label>`).join('')||'<span class="small muted">Escolha canais no brief.</span>';
+  fm.innerHTML=avail.map(f=>`<label class="toggle ${S.criar.fmts.includes(f.id)?'on':''}"><input type="checkbox" value="${f.id}" ${S.criar.fmts.includes(f.id)?'checked':''}> ${f.nome}</label>`).join('')||'<span class="small muted">Escolhe os canais no brief.</span>';
   $$('#c_fmts input').forEach(i=>i.onchange=()=>{i.closest('.toggle').classList.toggle('on',i.checked);S.criar.fmts=$$('#c_fmts input:checked').map(x=>x.value);persistLocal();renderAds()});
   $('#c_n').value=S.criar.n;$('#c_tpl').value=S.criar.tpl;
 }
 async function create(){
-  if(!S.discover){toast('Faça primeiro a pesquisa em Descobrir.','warn');go(0);return}
-  if(!S.angulosSel.length){toast('Escolha pelo menos um ângulo em Descobrir.','warn');go(0);return}
-  if(!sample){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  if(!S.discover){toast('Faz primeiro a pesquisa em Descobrir.','warn');go(0);return}
+  if(!S.angulosSel.length){toast('Escolhe pelo menos um ângulo em Descobrir.','warn');go(0);return}
+  if(!sample){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
   S.criar.n=Number($('#c_n').value);const st=$('#createStatus');const btn=$('#btnCreate');btn.disabled=true;st.innerHTML='<span class="thinking">A escrever variações…</span>';
   const ang=S.discover.angulos.filter(a=>S.angulosSel.includes(a.id));
   const prompt=`És copywriter de performance numa agência portuguesa. Escreve anúncios em português de Portugal (nunca do Brasil), no tom «${S.brief.tom}». Devolve APENAS um array JSON, sem markdown, com ${S.criar.n} variações para CADA ângulo (total ${ang.length*S.criar.n}), nesta forma:
@@ -518,7 +622,7 @@ PÚBLICO: ${S.discover.publico.resumo} Dores: ${S.discover.publico.dores.join(';
     r=r.filter(x=>x&&x.titulo).map((x,i)=>({id:'v'+(i+1),angulo:S.angulosSel.includes(x.angulo)?x.angulo:S.angulosSel[0],titulo:String(x.titulo).slice(0,60),texto:String(x.texto||'').slice(0,180),cta:String(x.cta||'Saber mais').slice(0,24),gancho_video:String(x.gancho_video||'')}));
     if(!r.length)throw{code:'empty_completion'};
     S.ads=r;S.plano=null;S.resultados=null;S.analise=null;S.estado='rascunho';commit();renderAds();st.textContent=`${r.length} variações geradas.`;
-  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}</span>`}
+  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,160))+')</span>':''}</span>`}
   finally{btn.disabled=false}
 }
 
@@ -566,7 +670,7 @@ function drawAd(canvas,ad,fmt){
 function renderAds(){
   const host=$('#ads');const fmts=S.criar.fmts.map(id=>FORMATS[id]).filter(Boolean);
   $('#createActions').hidden=!S.ads.length;
-  if(!S.ads.length){host.innerHTML=`<div class="card flat" style="grid-column:1/-1"><h3>Sem variações</h3><p class="muted">Escolha os formatos e carregue em «Gerar variações». Cada texto é renderizado em todos os formatos seleccionados.</p></div>`;return}
+  if(!S.ads.length){host.innerHTML=`<div class="card flat" style="grid-column:1/-1"><h3>Sem variações</h3><p class="muted">Escolhe os formatos e carrega em «Gerar variações». Cada texto aparece em todos os formatos que escolheres.</p></div>`;return}
   const ang=id=>(S.discover?.angulos.find(a=>a.id===id)||{}).titulo||id;
   host.innerHTML='';let count=0;
   for(const ad of S.ads)for(const f of fmts){
@@ -594,7 +698,7 @@ async function savePng(cv,name){
   try{await downloads.save({filename:name,data:blob});toast('Guardado: '+name)}catch(e){if(e.code!=='declined')toast('Não foi possível descarregar ('+e.code+').','err')}
 }
 async function saveZip(){
-  if(!downloads){toast('Descarregar indisponível neste browser.','warn');return}
+  if(!downloads){toast('Este browser não deixa descarregar.','warn');return}
   const zip=new JSZip();const fmts=S.criar.fmts.map(id=>FORMATS[id]);const off=document.createElement('canvas');
   for(const ad of S.ads)for(const f of fmts){drawAd(off,ad,f);const b=await new Promise(r=>off.toBlob(r,'image/png'));zip.file(`${f.id}/${ad.id}_${slug(ad.titulo).slice(0,30)}.png`,b)}
   zip.file('textos.csv',csvAds());
@@ -614,7 +718,7 @@ function buildPlan(){
 }
 function renderLaunch(){
   const out=$('#launchOut');
-  if(!S.ads.length){out.innerHTML=`<div class="card flat"><h3>Ainda sem criativos</h3><p class="muted">Gere as variações em Criar. O plano de media usa o orçamento e os canais do brief.</p></div>`;return}
+  if(!S.ads.length){out.innerHTML=`<div class="card flat"><h3>Ainda sem criativos</h3><p class="muted">Gera as variações em Criar. O plano de media usa o orçamento e os canais do brief.</p></div>`;return}
   if(!S.plano)S.plano=buildPlan();
   const p=S.plano;const tot=p.linhas.reduce((s,l)=>s+l.orcamento,0);
   out.innerHTML=`
@@ -636,7 +740,7 @@ function renderLaunch(){
   $$('.checklist input').forEach((i,idx)=>i.onchange=()=>{p.feito=$$('.checklist input').map((x,k)=>x.checked?k:-1).filter(k=>k>=0);persistLocal()});
   $('#btnPlanCsv').onclick=()=>{const q=s=>'"'+String(s).replace(/"/g,'""')+'"';const t=['canal;orcamento;diario;formatos;pecas;segmentacao',...p.linhas.map(l=>[CANAIS[l.canal],l.orcamento,l.diario,l.formatos.map(f=>FORMATS[f].nome).join(', '),l.pecas,l.publico].map(q).join(';'))].join('\n');copyText(t)};
   const pj=$('#btnPlanJson');if(pj)pj.onclick=async()=>{try{await downloads.save({filename:`${slug(S.brief.marca)}_plano_it${S.iteracao}.json`,data:JSON.stringify({brief:S.brief,plano:p,ads:S.ads},null,2)})}catch(e){}};
-  $('#btnLaunch').onclick=async()=>{if(p.feito.length<p.checklist.length){const ok=await confirmDlg('Lista incompleta','Ainda há pontos por verificar. Marcar a campanha como publicada na mesma?');if(!ok)return}S.estado='ativa';S.resultados=null;S.analise=null;commit();renderLaunch();toast('Campanha marcada como activa. Veja os resultados em Otimizar.');go(3);renderOptimize()};
+  $('#btnLaunch').onclick=async()=>{if(p.feito.length<p.checklist.length){const ok=await confirmDlg('Lista incompleta','Ainda há pontos por verificar. Marcar a campanha como publicada na mesma?');if(!ok)return}S.estado='ativa';S.resultados=null;S.analise=null;commit();renderLaunch();toast('Campanha marcada como activa. Vê os resultados em Otimizar.');go(3);renderOptimize()};
 }
 async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copiado para a área de transferência.')}catch(e){toast('O browser não permitiu copiar.','err')}}
 
@@ -659,7 +763,7 @@ function simulate(){
 }
 function renderOptimize(){
   const out=$('#optOut');
-  if(S.estado!=='ativa'&&!S.resultados){out.innerHTML=`<div class="card flat"><h3>Campanha ainda não publicada</h3><p class="muted">Marque a campanha como publicada em Lançar. Os resultados aparecem aqui por variação e canal.</p></div>`;return}
+  if(S.estado!=='ativa'&&!S.resultados){out.innerHTML=`<div class="card flat"><h3>Campanha ainda não publicada</h3><p class="muted">Marca a campanha como publicada em Lançar. Os resultados aparecem aqui por variação e canal.</p></div>`;return}
   if(!S.resultados)S.resultados=simulate();
   const R=S.resultados;const byAd={};for(const r of R){const a=byAd[r.ad]||(byAd[r.ad]={ad:r.ad,gasto:0,imp:0,cl:0,conv:0});a.gasto+=r.gasto;a.imp+=r.impressoes;a.cl+=r.cliques;a.conv+=r.conversoes}
   const rows=Object.values(byAd).map(a=>({...a,ctr:a.cl/a.imp,cpa:a.conv?a.gasto/a.conv:null})).sort((x,y)=>(x.cpa??1e9)-(y.cpa??1e9)||y.ctr-x.ctr);
@@ -702,7 +806,7 @@ function analysisHtml(a){return `<p>${esc(a.resumo)}</p><div class="grid g2" sty
   <div class="note" style="margin-top:14px"><span>→</span><div><strong>Próximo ângulo:</strong> ${esc(a.proximo_angulo?.titulo||'')} <span class="muted">· ${esc(a.proximo_angulo?.descricao||'')}</span></div></div>
   <div class="row" style="margin-top:14px"><button class="btn primary" id="btnNext">Fechar ciclo e iniciar iteração ${S.iteracao+1} →</button><span class="small muted">As aprendizagens passam para o brief; a vencedora fica no histórico.</span></div>`}
 async function analyse(rows){
-  if(!sample){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  if(!sample){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
   const host=$('#analysis');host.innerHTML='<span class="thinking">A ler os resultados…</span>';
   const ang=id=>(S.discover?.angulos.find(a=>a.id===id)||{}).titulo||id;const adOf=id=>S.ads.find(a=>a.id===id)||{};
   const table=rows.map(a=>`${a.ad} | ângulo: ${ang(adOf(a.ad).angulo)} | título: «${adOf(a.ad).titulo}» | CTR ${(a.ctr*100).toFixed(2)}% | resultados ${a.conv} | custo/resultado ${a.cpa?a.cpa.toFixed(2)+' €':'n/a'} | gasto ${a.gasto.toFixed(2)} €`).join('\n');
@@ -716,7 +820,7 @@ ${briefText()}
 RESULTADOS (30 dias, iteração ${S.iteracao}):
 ${table}`;
   try{const r=await sample.json(prompt,{modelTier:'default',cache:false});if(!r||!r.resumo)throw{code:'invalid_json'};S.analise=r;commit();host.innerHTML=analysisHtml(r);bindNext()}
-  catch(e){host.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}</span>`}
+  catch(e){host.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,160))+')</span>':''}</span>`}
 }
 function bindNext(){const b=$('#btnNext');if(b)b.onclick=async()=>{
   const ok=await confirmDlg('Fechar ciclo','Inicia a iteração '+(S.iteracao+1)+'. O brief recebe as aprendizagens e os criativos actuais passam ao histórico.');if(!ok)return;
@@ -731,14 +835,14 @@ let memCfg=null,storeOk=true;
 function loadCfg(){if(memCfg)return memCfg;try{return JSON.parse(localStorage.getItem(CFG_KEY))||{}}catch(e){return{}}}
 function saveCfg(c){memCfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(c));storeOk=localStorage.getItem(CFG_KEY)===JSON.stringify(c)}catch(e){storeOk=false}return storeOk}
 async function callAI(input,{tools,beta,maxTokens=6000,onRound}={}){
-  const cfg=loadCfg();if(!cfg.key)throw{code:'not_granted',message:'sem chave'};
+  const cfg=loadCfg();if(!cfg.key)throw{code:'no_key',message:''};
   const headers={'content-type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
   if(beta)headers['anthropic-beta']=beta;
   let messages=typeof input==='string'?[{role:'user',content:input}]:input.slice();let text='';
   for(let round=0;round<5;round++){
     const body={model:cfg.model||'claude-sonnet-5-5',max_tokens:maxTokens,messages};if(tools)body.tools=tools;
     let r;try{r=await fetch(API_URL,{method:'POST',headers,body:JSON.stringify(body)})}catch(e){throw{code:'upstream_error',message:String(e)}}
-    if(r.status===401||r.status===403)throw{code:'not_granted',message:'chave inválida'};
+    if(r.status===401||r.status===403){let m='';try{m=(await r.json()).error?.message||''}catch(e){}throw{code:r.status===401?'not_granted':'forbidden',message:m}}
     if(r.status===429)throw{code:'rate_limited'};
     if(!r.ok){let m='';try{m=(await r.json()).error?.message||''}catch(e){}throw{code:'upstream_error',message:m}}
     const d=await r.json();
@@ -767,12 +871,14 @@ const TOOL_SEARCH=(n,city)=>({type:'web_search_20250305',name:'web_search',max_u
 const TOOL_FETCH=n=>({type:'web_fetch_20250910',name:'web_fetch',max_uses:n});
 function openSettings(){
   const cfg=loadCfg();const d=$('#dlg');$('#dlgT').textContent='Definições da IA';
-  $('#dlgB').innerHTML=`<div class="stack"><label>Chave da API da Anthropic<span class="row" style="gap:6px;flex-wrap:nowrap"><input id="s_key" type="password" placeholder="sk-ant-…" autocomplete="off" style="flex:1"><button type="button" class="btn sm" id="s_show">Mostrar</button></span></label><label>Modelo<select id="s_model"><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (recomendado)</option><option value="claude-opus-5-5">Claude Opus 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5 (rápido)</option></select></label><p class="small muted">A chave fica guardada só neste browser (localStorage) e é enviada apenas para api.anthropic.com. Crie uma em console.anthropic.com. A prospecção usa a pesquisa web da API, cobrada por pesquisa além dos tokens.</p></div>`;
-  $('#s_key').value=cfg.key||'';$('#s_show').onclick=()=>{const k=$('#s_key');const v=k.type==='password';k.type=v?'text':'password';$('#s_show').textContent=v?'Ocultar':'Mostrar'};$('#s_model').value=cfg.model||'claude-sonnet-5-5';
+  $('#dlgB').innerHTML=`<div class="stack"><label>Chave da API da Anthropic<span class="row" style="gap:6px;flex-wrap:nowrap"><input id="s_key" type="password" placeholder="sk-ant-…" autocomplete="off" style="flex:1"><button type="button" class="btn sm" id="s_show">Mostrar</button><button type="button" class="btn sm" id="s_test">Testar chave</button></span></label><p class="small" id="s_res"></p><label>Modelo<select id="s_model"><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (recomendado)</option><option value="claude-opus-5-5">Claude Opus 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5 (rápido)</option></select></label><p class="small muted">A chave fica guardada só neste browser e só é enviada para api.anthropic.com. Cria uma em console.anthropic.com. A prospecção usa a pesquisa web da API, que é cobrada por pesquisa além dos tokens.</p></div>`;
+  $('#s_key').value=cfg.key||'';$('#s_test').onclick=async()=>{const k=cleanKey($('#s_key').value);$('#s_key').value=k;$('#s_res').textContent='A testar…';const t=await testKey(k,$('#s_model').value);$('#s_res').textContent=t.msg;$('#s_res').style.color=t.ok?'#1a7f37':'#c0392b'};$('#s_show').onclick=()=>{const k=$('#s_key');const v=k.type==='password';k.type=v?'text':'password';$('#s_show').textContent=v?'Ocultar':'Mostrar'};$('#s_model').value=cfg.model||'claude-sonnet-5-5';
   const y=$('#dlgYes'),n=$('#dlgNo');const done=()=>{d.close();y.onclick=n.onclick=null};
-  y.onclick=()=>{const k=$('#s_key').value.trim();if(k&&!/^sk-ant-/.test(k)){toast('A chave deve começar por «sk-ant-». Verifique se copiou a chave completa.','warn');return}const ok=saveCfg({key:k,model:$('#s_model').value});done();initAI();toast(!k?'Sem chave: a IA fica desligada.':ok?'Chave guardada. A IA está activa.':'IA activa só nesta sessão: o browser bloqueia o armazenamento (janela privada?). Terá de a introduzir de novo.',ok||!k?'':'warn')};n.onclick=done;d.showModal();
+  y.onclick=()=>{const k=cleanKey($('#s_key').value);if(k&&!/^sk-ant-/.test(k)){toast('A chave deve começar por «sk-ant-». Vê se copiaste a chave toda.','warn');return}const ok=saveCfg({key:k,model:$('#s_model').value});done();initAI();toast(!k?'Sem chave: a IA fica desligada.':ok?'Chave guardada. A IA está activa.':'IA activa só nesta sessão: o browser bloqueia o armazenamento (janela privada?). Vais ter de a meter outra vez.',ok||!k?'':'warn')};n.onclick=done;d.showModal();
 }
-function aiCopyLocal(code){return code==='not_granted'?'Chave da API inválida ou em falta. Verifique em «Definições IA».':aiCopy(code)}
+function aiCopyLocal(code){return code==='no_key'?'Falta a chave da API. Mete-a em «Definições IA».':code==='not_granted'?'A Anthropic recusou a chave (401). Abre «Definições IA» e usa «Testar chave».':code==='forbidden'?'A chave não tem permissão para este pedido (403). Vê os créditos e as permissões em console.anthropic.com.':aiCopy(code)}
+async function testKey(key,model){try{const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model,max_tokens:5,messages:[{role:'user',content:'ok'}]})});if(r.ok)return{ok:true,msg:'Chave válida ✓'};let m='';try{m=(await r.json()).error?.message||''}catch(e){}return{ok:false,msg:'Erro '+r.status+(m?': '+m:'')}}catch(e){return{ok:false,msg:'Sem ligação à API: '+e}}}
+const cleanKey=k=>(k||'').replace(/[\s"'«»“”]/g,'');
 function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample;const b=$('#btnSettings');if(b)b.textContent=sample?'IA activa ✓':'Definições IA'}
 
 /* ===== PROSPECTAR ===== */
@@ -786,8 +892,8 @@ function setSector(s){const sel=$('#pr_sector');if([...sel.options].some(o=>o.va
 function normUrl(u){if(!u||typeof u!=='string')return null;u=u.trim();if(!/^https?:\/\//i.test(u))u='https://'+u;try{new URL(u);return u}catch(e){return null}}
 async function prospect(){
   const local=localValue(),sector=sectorValue(),n=Math.max(1,Math.floor(Number($('#pr_n').value)||10));
-  if(!local||!sector){toast('Indique a localização e o tipo de negócio.','warn');return}
-  if(!loadCfg().key){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  if(!local||!sector){toast('Escolhe a localização e o tipo de negócio.','warn');return}
+  if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
   S.prospect={local,sector,n};persistLocal();
   const st=$('#prStatus'),btn=$('#btnProspect');btn.disabled=true;
   const per=10;const maxBatches=Math.ceil(n/per)+2;let added=0,batch=0,empty=0;const today=new Date().toISOString().slice(0,10);
@@ -797,37 +903,38 @@ async function prospect(){
       st.innerHTML=`<span class="thinking">Lote ${batch}: a pesquisar ${esc(sector)} em ${esc(local)}… (${added} de ${n} encontradas)</span>`;
       const known=S.leads.filter(l=>l.local===local||l.sector===sector).map(l=>l.nome).slice(-80).join('; ');
       const prompt=`És responsável de prospecção comercial numa agência de design, fotografia e redes sociais em Portugal. Usa a pesquisa web para encontrar ${want} pequenas e médias empresas LOCAIS e INDEPENDENTES (não cadeias nem franchisings) do tipo «${sector}» em «${local}», Portugal. Faz várias pesquisas diferentes${batch>1?' (varia os termos e as fontes: listagens locais, Google Maps, directórios, Instagram, Facebook, freguesias e zonas específicas)':' (ex.: «'+sector+' '+local+'», «'+sector+' '+local+' instagram», «'+sector+' '+local+' facebook», listagens locais)'} e cruza os resultados.
+INCLUI APENAS NEGÓCIOS EM ACTIVIDADE. Exclui empresas marcadas como «encerrado permanentemente»/«fechado definitivamente» no Google Maps, com anúncio de trespasse, insolvência ou encerramento, ou sem qualquer sinal de actividade nos últimos 12 meses (avaliações, publicações nas redes, horário actualizado, notícias). Na dúvida, procura confirmação; se não houver sinal recente de actividade, não incluas.
 Para cada empresa procura: site oficial, morada, telefone e ligações directas para Instagram, Facebook, LinkedIn e TikTok (só URLs que tenhas visto em resultados; se não encontrares, null). Estima também o POTENCIAL como cliente da nossa agência, de 1 a 5: 5 = negócio com aspecto viável mas presença digital fraca ou inexistente (sem site, sem redes, logótipo amador); 1 = já comunica de forma profissional e consistente.
 ${known?`NÃO repitas estas, já conhecidas: ${known}.`:''}
 No fim responde APENAS com um bloco \`\`\`json contendo um array:
-[{"nome":"","site":"url ou null","morada":"","telefone":"","descricao":"1-2 frases sobre o negócio e a sua presença online aparente","redes":{"instagram":null,"facebook":null,"linkedin":null,"tiktok":null},"potencial":3,"sinais":"meia frase: o que justifica o potencial","fonte":"url onde encontraste"}]
+[{"nome":"","site":"url ou null","morada":"","telefone":"","descricao":"1-2 frases sobre o negócio e a sua presença online aparente","redes":{"instagram":null,"facebook":null,"linkedin":null,"tiktok":null},"potencial":3,"sinais":"meia frase: o que justifica o potencial","ativo":true,"atividade":"sinal recente de actividade e data aproximada (ex.: avaliação Google em out/2026, post Instagram em set/2026)","fonte":"url onde encontraste"}]
 Em português de Portugal. Não inventes empresas nem URLs.`;
       const {text}=await callAI(prompt,{tools:[TOOL_SEARCH(10,local)],maxTokens:8000});
       let arr;try{arr=parseJson(text)}catch(e){arr=[]}
       if(!Array.isArray(arr))arr=[];
       let newHere=0;
       for(const x of arr){
-        if(!x||!x.nome)continue;const nome=String(x.nome).trim();
+        if(!x||!x.nome||x.ativo===false)continue;const nome=String(x.nome).trim();
         if(S.leads.some(l=>l.nome.toLowerCase()===nome.toLowerCase()))continue;
         const redes={};for(const k of REDES)redes[k]=normUrl(x.redes?.[k]);
-        S.leads.unshift({id:'L'+(hash(nome+Date.now()+Math.random())%1000000),nome,site:normUrl(x.site)||'',morada:String(x.morada||''),telefone:String(x.telefone||''),sector,local,descricao:String(x.descricao||''),sinais:String(x.sinais||''),potencial:Math.min(5,Math.max(1,Number(x.potencial)||3)),fonte:normUrl(x.fonte)||'',redes,estado:'novo',criado:today,analise:null});
+        S.leads.unshift({id:'L'+(hash(nome+Date.now()+Math.random())%1000000),nome,site:normUrl(x.site)||'',morada:String(x.morada||''),telefone:String(x.telefone||''),sector,local,descricao:String(x.descricao||''),sinais:String(x.sinais||''),atividade:String(x.atividade||''),potencial:Math.min(5,Math.max(1,Number(x.potencial)||3)),fonte:normUrl(x.fonte)||'',redes,estado:'novo',criado:today,analise:null});
         newHere++;added++;if(added>=n)break;
       }
       commit();renderLeads();
       if(newHere===0){empty++;if(empty>=2)break}
     }
-    st.textContent=added?`${added} empresas adicionadas, ordenadas por potencial de cliente.${added<n?' Não encontrei mais com estes critérios; tente outra zona ou tipo próximo.':''}`:'Nenhuma empresa nova encontrada. Tente outro tipo de negócio ou localização.';
+    st.textContent=added?`${added} empresas adicionadas, ordenadas por potencial de cliente.${added<n?' Não encontrei mais com estes critérios; experimenta outra zona ou um tipo parecido.':''}`:'Não apareceu nenhuma empresa nova. Experimenta outro tipo de negócio ou outra zona.';
   }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
   finally{btn.disabled=false}
 }
 async function analyseLead(lead,el){
-  if(!loadCfg().key){toast('Introduza a chave da API em «Definições IA».','warn');openSettings();return}
+  if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
   const box=$('.an',el);box.innerHTML='<span class="thinking">A visitar o site e as redes…</span>';
   const links=[lead.site,...REDES.map(k=>lead.redes[k])].filter(Boolean);
   const prompt=`És director criativo numa agência de design, fotografia e redes sociais. Avalia a presença digital e a marca da empresa «${lead.nome}» (${lead.sector}, ${lead.local}). Morada: ${lead.morada||'n/d'}.
-${links.length?`Visita com web_fetch estas páginas: ${links.join(' , ')}.`:'Não há site conhecido.'} Se faltar alguma rede social, faz 1-2 pesquisas web para confirmar se existe (ex.: «${lead.nome} instagram»). Não inventes o que não conseguires ver.
+${links.length?`Visita com web_fetch estas páginas: ${links.join(' , ')}.`:'Não há site conhecido.'} Confirma também se o negócio continua EM ACTIVIDADE (Google Maps «encerrado permanentemente», trespasse, último post/avaliação). Se faltar alguma rede social, faz 1-2 pesquisas web para confirmar se existe (ex.: «${lead.nome} instagram»). Não inventes o que não conseguires ver.
 Avalia de 0 (inexistente) a 5 (profissional e consistente) e responde APENAS com um bloco \`\`\`json:
-{"logo":{"nota":0,"obs":"1 frase"},"identidade":{"nota":0,"obs":"paleta, tipografia, consistência entre site e redes"},"redes":{"nota":0,"obs":"quais existem, frequência aparente, qualidade das fotos","encontradas":{"instagram":"url ou null","facebook":null,"linkedin":null,"tiktok":null}},"comunicacao":{"nota":0,"obs":"clareza da oferta, texto, call-to-action, fotografia"},"site":{"nota":0,"obs":"existe? moderno? funciona em telemóvel?"},"prioridade":1,"oportunidades":["3 serviços concretos que a nossa agência podia vender"],"abordagem":"2 frases de abertura para um primeiro contacto, em português de Portugal, concretas e sem bajulação"}
+{"ativo":true,"atividade":"sinal mais recente de actividade e data","logo":{"nota":0,"obs":"1 frase"},"identidade":{"nota":0,"obs":"paleta, tipografia, consistência entre site e redes"},"redes":{"nota":0,"obs":"quais existem, frequência aparente, qualidade das fotos","encontradas":{"instagram":"url ou null","facebook":null,"linkedin":null,"tiktok":null}},"comunicacao":{"nota":0,"obs":"clareza da oferta, texto, call-to-action, fotografia"},"site":{"nota":0,"obs":"existe? moderno? funciona em telemóvel?"},"prioridade":1,"oportunidades":["3 serviços concretos que a nossa agência podia vender"],"abordagem":"2 frases de abertura para um primeiro contacto, em português de Portugal, concretas e sem bajulação"}
 "prioridade" de 1 a 5: 5 = presença fraca mas negócio com aspecto viável (grande oportunidade); 1 = já têm tudo bem feito.`;
   try{
     const {text}=await callAI(prompt,{tools:[TOOL_FETCH(5),TOOL_SEARCH(3,lead.local)],beta:'web-fetch-2025-09-10',maxTokens:6000});
@@ -835,7 +942,7 @@ Avalia de 0 (inexistente) a 5 (profissional e consistente) e responde APENAS com
     for(const k of ['logo','identidade','redes','comunicacao','site']){a[k]=a[k]||{};a[k].nota=Math.min(5,Math.max(0,Number(a[k].nota)||0));a[k].obs=String(a[k].obs||'')}
     a.prioridade=Math.min(5,Math.max(1,Number(a.prioridade)||3));a.oportunidades=(a.oportunidades||[]).map(String).slice(0,4);a.abordagem=String(a.abordagem||'');
     const enc=a.redes.encontradas||{};for(const k of REDES){const u=normUrl(enc[k]);if(u&&!lead.redes[k])lead.redes[k]=u}
-    lead.analise=a;lead.potencial=a.prioridade;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
+    if(a.atividade)lead.atividade=String(a.atividade);if(a.ativo===false){lead.estado='descartado';lead.analise=a;commit();renderLeads();toast(`«${lead.nome}» parece estar encerrado. Marquei como descartado.`,'warn');return}lead.analise=a;lead.potencial=a.prioridade;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
   }catch(e){box.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
 }
 function leadToBrief(l){
@@ -855,7 +962,7 @@ function renderLeads(){
   const pot=l=>l.analise?.prioridade??l.potencial??0;
   if(ord==='nome')L.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));else if(ord==='prio')L.sort((a,b)=>pot(b)-pot(a)||a.nome.localeCompare(b.nome,'pt'));
   $('#leadCount').textContent=`${L.length} de ${S.leads.length}`;
-  if(!S.leads.length){host.innerHTML=`<div class="card flat"><h3>Sem leads</h3><p class="muted">Indique localização e sector e carregue em «Pesquisar empresas». As empresas ficam guardadas no projeto e podem ser filtradas por sector, local e estado.</p></div>`;return}
+  if(!S.leads.length){host.innerHTML=`<div class="card flat"><h3>Sem leads</h3><p class="muted">Escolhe a zona e o tipo de negócio e carrega em «Pesquisar empresas». As empresas ficam guardadas no projeto e podes filtrá-las por sector, local e estado.</p></div>`;return}
   if(!L.length){host.innerHTML=`<div class="card flat"><p class="muted">Nenhuma lead corresponde aos filtros.</p></div>`;return}
   const est={novo:['Novo',''],analisado:['Analisado','accent'],contactado:['Contactado','warn'],cliente:['Cliente','good'],descartado:['Descartado','bad']};
   host.innerHTML='';
@@ -863,14 +970,14 @@ function renderLeads(){
     const el=document.createElement('article');el.className='card lead';el.dataset.id=l.id;const a=l.analise;
     const redes=REDES.map(k=>l.redes[k]?`<a class="chip good" href="${esc(l.redes[k])}" target="_blank" rel="noopener">${REDE_NOME[k]} ✓</a>`:`<span class="chip off">${REDE_NOME[k]}</span>`).join('');
     el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start">
-      <div style="flex:1;min-width:240px"><div class="row"><h3></h3><span class="chip ${est[l.estado]?.[1]||''}">${est[l.estado]?.[0]||l.estado}</span>${a?`<span class="chip accent" title="Após análise do site e redes">Potencial ${a.prioridade}/5</span>`:(l.potencial?`<span class="chip warn" title="Estimado na pesquisa; analise para confirmar">Potencial ${l.potencial}/5 · est.</span>`:'')}</div>
+      <div style="flex:1;min-width:240px"><div class="row"><h3></h3><span class="chip ${est[l.estado]?.[1]||''}">${est[l.estado]?.[0]||l.estado}</span>${a?`<span class="chip accent" title="Após análise do site e redes">Potencial ${a.prioridade}/5</span>`:(l.potencial?`<span class="chip warn" title="Estimado na pesquisa; analisa para confirmar">Potencial ${l.potencial}/5 · est.</span>`:'')}</div>
         <div class="small muted addr"></div>
         <div class="row" style="margin-top:6px"><span class="chip">${esc(l.sector)}</span><span class="chip">${esc(l.local)}</span>${l.site?`<a class="chip" href="${esc(l.site)}" target="_blank" rel="noopener">Site ↗</a>`:'<span class="chip off">Sem site</span>'}${l.fonte?`<a class="chip" href="${esc(l.fonte)}" target="_blank" rel="noopener">Fonte ↗</a>`:''}</div></div>
-      <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm primary" data-brief>Criar brief</button><button class="btn sm" data-del title="Remover">×</button></div></div>
+      <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm primary" data-brief>Criar brief</button><button class="btn sm x" data-del title="Remover">×</button></div></div>
       <div class="row redes" style="margin-top:10px">${redes}</div>
       <p class="small desc" style="margin-top:8px"></p>
       <div class="an" style="margin-top:6px"></div>`;
-    $('h3',el).textContent=l.nome;$('.addr',el).textContent=[l.morada,l.telefone].filter(Boolean).join(' · ');$('.desc',el).textContent=l.descricao+(l.sinais&&!a?' · '+l.sinais:'');
+    $('h3',el).textContent=l.nome;$('.addr',el).textContent=[l.morada,l.telefone].filter(Boolean).join(' · ');$('.desc',el).textContent=l.descricao+(l.sinais&&!a?' · '+l.sinais:'');if(l.atividade){const d=document.createElement('p');d.className='small';d.style.cssText='color:var(--good);margin-top:4px';d.textContent='● Em actividade: '+l.atividade;$('.desc',el).after(d)}
     if(a){const sc=[['Logótipo','logo'],['Identidade visual','identidade'],['Redes sociais','redes'],['Comunicação','comunicacao'],['Site','site']];
       $('.an',el).innerHTML=`<div class="scores">${sc.map(([n,k])=>`<div class="score"><div class="l">${n}</div><div class="b">${[1,2,3,4,5].map(i=>`<i class="${i<=a[k].nota?'f':''}"></i>`).join('')}</div><div class="o"></div></div>`).join('')}</div>
         <div class="grid g2"><div><h4>Oportunidades</h4><ul class="clean">${a.oportunidades.map(o=>`<li>${esc(o)}</li>`).join('')}</ul></div><div><h4>Abordagem sugerida</h4><p class="small"></p><button class="btn sm" data-copy style="margin-top:6px">Copiar</button></div></div>`;
@@ -882,7 +989,7 @@ function renderLeads(){
     host.append(el);
   }
 }
-function leadsCsv(){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';return ['nome;sector;local;morada;telefone;site;instagram;facebook;linkedin;tiktok;estado;potencial;logo;identidade;redes;comunicacao;site_nota;oportunidades;abordagem',...S.leads.map(l=>[l.nome,l.sector,l.local,l.morada,l.telefone,l.site,l.redes.instagram,l.redes.facebook,l.redes.linkedin,l.redes.tiktok,l.estado,l.analise?.prioridade??l.potencial,l.analise?.logo.nota,l.analise?.identidade.nota,l.analise?.redes.nota,l.analise?.comunicacao.nota,l.analise?.site.nota,(l.analise?.oportunidades||[]).join(' | '),l.analise?.abordagem].map(q).join(';'))].join('\n')}
+function leadsCsv(){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';return ['nome;sector;local;morada;telefone;site;instagram;facebook;linkedin;tiktok;estado;atividade;potencial;logo;identidade;redes;comunicacao;site_nota;oportunidades;abordagem',...S.leads.map(l=>[l.nome,l.sector,l.local,l.morada,l.telefone,l.site,l.redes.instagram,l.redes.facebook,l.redes.linkedin,l.redes.tiktok,l.estado,l.atividade,l.analise?.prioridade??l.potencial,l.analise?.logo.nota,l.analise?.identidade.nota,l.analise?.redes.nota,l.analise?.comunicacao.nota,l.analise?.site.nota,(l.analise?.oportunidades||[]).join(' | '),l.analise?.abordagem].map(q).join(';'))].join('\n')}
 
 /* ===== Downloads directos ===== */
 downloads={save:async({filename,data})=>{const blob=data instanceof Blob?data:new Blob([data]);const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return{status:'saved'}}};
@@ -911,7 +1018,7 @@ $('#c_img').onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Im
 $('#btnZip').onclick=saveZip;
 $('#btnCsv').onclick=()=>copyText(csvAds());
 $('#btnDemo').onclick=async()=>{if(S.brief.marca&&!(await confirmDlg('Carregar exemplo','Substitui o projeto actual pelo exemplo «Café da Ribeira».')))return;S=JSON.parse(JSON.stringify(DEMO));S.plano=buildPlan();S.plano.feito=[0,1,2,3,4,5,6];S.resultados=simulate();commit();renderAll();go(0)};
-$('#btnReset').onclick=async()=>{if(!(await confirmDlg('Novo projeto','Limpa o brief, a pesquisa e os criativos. Se já guardou, a versão guardada mantém-se até voltar a guardar.')))return;S=blank();IMG=null;commit();renderAll()};
+$('#btnReset').onclick=async()=>{if(!(await confirmDlg('Novo projeto','Limpa o brief, a pesquisa e os criativos. Se já exportaste, esse ficheiro fica como estava.')))return;S=blank();IMG=null;commit();renderAll()};
 $('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#b_setor').onchange=e=>{$('#b_setor_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#b_setor_outro').focus()};$('#pr_local').onchange=e=>{$('#pr_local_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_local_outro').focus()};$('#pr_sector').onchange=e=>{$('#pr_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_outro').focus()};$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
 window.addEventListener('resize',()=>{const c=$('#chart');if(c&&S.resultados&&$('#p3').classList.contains('show'))renderOptimize()});
 
