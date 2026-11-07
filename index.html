@@ -196,6 +196,19 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 .jif-pack--featured .jif-pack__name,.jif-pack--featured .jif-pack__price strong{color:#fff}.jif-pack--featured .jif-pack__price{border-color:rgba(255,255,255,.35)}.jif-pack--featured li::before{background:#fff}
 .jif-badge{justify-self:start;font:600 11px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:999px;background:var(--blush-strong);color:var(--magenta-deep)}
 .jif-pack--featured .jif-badge{background:#fff}
+
+.ly-estr summary{cursor:pointer;list-style:none;font-family:var(--display)}.ly-estr summary::-webkit-details-marker{display:none}.ly-estr summary::before{content:"▸ ";color:var(--magenta)}.ly-estr[open] summary::before{content:"▾ "}
+.ly-heroes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}
+.ly-h{display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-family:var(--display)}
+.ly-h small{font:400 12.5px/1.3 var(--body);color:var(--ink-2)}.ly-h[aria-pressed="true"]{border-color:var(--magenta);box-shadow:0 0 0 2px var(--magenta)}
+.ly-thumb{display:block;position:relative;height:64px;border-radius:8px;background:var(--surface-2);margin-bottom:6px;overflow:hidden}
+.ly-thumb i{position:absolute;display:block;border-radius:3px;background:var(--ink)}
+.ly-split i:nth-child(1){left:8%;top:22%;width:40%;height:10px}.ly-split i:nth-child(2){left:8%;top:44%;width:30%;height:6px;opacity:.4}.ly-split i:nth-child(3){right:8%;top:16%;width:36%;height:68%;background:var(--magenta)}
+.ly-centro i:nth-child(1){left:20%;top:26%;width:60%;height:12px}.ly-centro i:nth-child(2){left:30%;top:50%;width:40%;height:6px;opacity:.4}.ly-centro i:nth-child(3){left:40%;top:68%;width:20%;height:9px;border-radius:9px;background:var(--magenta)}
+.ly-editorial i:nth-child(1){left:6%;top:14%;width:88%;height:22px}.ly-editorial i:nth-child(2){left:6%;top:48%;width:70%;height:22px}.ly-editorial i:nth-child(3){right:6%;bottom:10%;width:26%;height:5px;opacity:.4}
+.ly-cartaz{background:var(--magenta)!important}.ly-cartaz i{background:#fff!important}.ly-cartaz i:nth-child(1){left:10%;top:18%;width:50%;height:16px}.ly-cartaz i:nth-child(2){left:10%;top:44%;width:66%;height:16px}.ly-cartaz i:nth-child(3){left:10%;bottom:14%;width:22%;height:8px;border-radius:8px}
+.on-sec{background:var(--ink);color:var(--surface);border-color:var(--ink)}.on-sec button{background:none;border:0;color:inherit;cursor:pointer;padding:0 0 0 6px;font-size:13px;opacity:.7}.on-sec button:hover{opacity:1}
+.off-sec{border-style:dashed;cursor:pointer;background:transparent}
 /* Estúdio */
 .insp{margin-bottom:16px}
 .drop{margin-top:12px;border:2px dashed var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;text-align:center;font-family:var(--display);font-weight:600;transition:border-color .2s,background .2s}
@@ -1393,32 +1406,161 @@ async function genBrand(instr){
   catch(e){stErr(e)}
 }
 
-async function genLayout(instr){
+/* --- Layout web v2: estrutura escolhida, CSS base da marca, revisão de qualidade, edição por secção --- */
+const HEROES={split:['Dividido','Título e texto à esquerda, bloco visual à direita'],centro:['Centrado','Título grande ao centro, chamada por baixo'],editorial:['Editorial','Título enorme a ocupar o ecrã, texto em coluna estreita'],cartaz:['Cartaz','Fundo de cor forte, tipografia gráfica, quase um poster']};
+const SECOES={sobre:['Sobre','história e propósito em 2 colunas'],produtos:['Produtos / serviços','cartões com nome, descrição curta e preço ou «desde»'],diferenciais:['Diferenciais','3–4 pontos com número ou ícone SVG'],processo:['Como funciona','3–4 passos numerados'],galeria:['Galeria','grelha de blocos de fotografia com legenda'],testemunhos:['Testemunhos','2–3 citações com nome e local'],precos:['Preços / packs','2–3 cartões, um em destaque'],faq:['Perguntas frequentes','4–6 perguntas em <details>'],cta:['Chamada final','faixa de cor com título e botão'],contactos:['Contactos','morada, horário, telefone, mapa em placeholder'],newsletter:['Newsletter','campo de email e botão']};
+const SEC_DEFAULT=['sobre','produtos','diferenciais','testemunhos','cta','contactos'];
+function lyEnsure(){const L=S.marca.layout;if(!L.estrutura)L.estrutura={hero:'split',secoes:[...SEC_DEFAULT],ritmo:'arejado'};return L}
+function baseCss(){const br=S.marca.brand,p=brandPal(),f=br.fontes;const air=lyEnsure().estrutura.ritmo!=='compacto';
+  return `:root{--bg:${p.light};--ink:${p.dark};--accent:${p.acc};--alt:${p.alt};--muted:color-mix(in srgb,var(--ink) 62%,var(--bg));--line:color-mix(in srgb,var(--ink) 14%,transparent);
+--f-title:"${f.titulo}",Georgia,serif;--f-text:"${f.texto}",system-ui,sans-serif;
+--t-hero:clamp(44px,7.2vw,112px);--t-h2:clamp(32px,4.4vw,64px);--t-h3:clamp(20px,1.8vw,26px);--t-lead:clamp(18px,1.5vw,22px);--t-body:clamp(16px,1.1vw,18px);--t-small:14px;
+--s-1:8px;--s-2:16px;--s-3:24px;--s-4:40px;--s-5:64px;--s-6:${air?'clamp(80px,12vh,160px)':'clamp(56px,8vh,96px)'};
+--r:${['Minimal e limpo','Tecnológico','Premium e sóbrio'].includes(S.marca.estilo)?'6px':'18px'};--max:1200px;--gut:clamp(20px,5vw,64px)}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--t-body)/1.55 var(--f-text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:var(--f-title);line-height:1.02;margin:0;text-wrap:balance}h1{font-size:var(--t-hero)}h2{font-size:var(--t-h2)}h3{font-size:var(--t-h3)}p{margin:0;text-wrap:pretty;max-width:62ch}
+img,svg{max-width:100%;height:auto}a{color:inherit}
+.wrap{width:min(100% - 2*var(--gut),var(--max));margin-inline:auto}section{padding-block:var(--s-6)}
+.grid{display:grid;gap:var(--s-3)}.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.lead{font-size:var(--t-lead);color:var(--muted)}.eyebrow{font:600 13px/1 var(--f-text);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;background:var(--ink);color:var(--bg);font:600 16px/1 var(--f-text);text-decoration:none;border:0;cursor:pointer;transition:transform .25s,background .25s}.btn:hover{transform:translateY(-2px);background:var(--accent)}.btn--ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px currentColor}
+.card{background:color-mix(in srgb,var(--bg) 92%,var(--ink));border-radius:var(--r);padding:var(--s-4)}
+.dark{background:var(--ink);color:var(--bg)}.dark .lead{color:color-mix(in srgb,var(--bg) 72%,var(--ink))}.dark .card{background:color-mix(in srgb,var(--ink) 88%,var(--bg))}
+.foto{border-radius:var(--r);background:linear-gradient(135deg,var(--accent),var(--alt));display:grid;place-items:end start;padding:var(--s-2);min-height:260px;color:#fff;font-size:var(--t-small)}
+.logo svg{height:48px;width:auto;display:block}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s,transform .8s}.rv.on{opacity:1;transform:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}.rv{opacity:1;transform:none}}`}
+const LAYOUT_RULES=`REGRAS DE COMPOSIÇÃO (obrigatórias):
+- Começa o <style> com o CSS BASE abaixo, sem o alterar; acrescenta depois só o que for próprio desta página. Usa as variáveis (--bg, --ink, --accent, --alt, --muted, tamanhos --t-*, espaços --s-*), nunca cores ou tamanhos soltos fora delas.
+- Tudo dentro de .wrap (largura máxima e margens); grelhas com .grid .g2/.g3; nada com largura fixa em px acima de 360px; nada pode passar a largura do ecrã em 390px.
+- Hierarquia: um só <h1> (hero); cada secção com eyebrow + <h2> + texto; no máximo 2 pesos de letra por família.
+- Ritmo: alterna secções claras e .dark; nunca duas secções escuras seguidas; a chamada final usa a cor --accent.
+- Contraste mínimo 4.5:1 para texto normal; texto sobre --accent só se o contraste chegar (senão usa --ink ou --bg).
+- Botões só com .btn / .btn--ghost; no máximo 2 por secção.
+- Logótipo: {{LOGO}} em fundos claros, {{LOGO_ESCURO}} em fundos escuros, sozinho num elemento com classe "logo".
+- Sem imagens externas nem lorem ipsum: fotos são <div class="foto">Fotografia: descrição do que fotografar</div>; ícones em SVG inline simples.
+- Animação: classe .rv nos blocos a revelar + <script> inline curto com IntersectionObserver que acrescenta .on; entrada suave do hero.
+- Cada secção de topo é um elemento directo de <body> (<header>, <section>, <footer>), com id em minúsculas.`;
+async function genLayout(instr,opts={}){
   const m=stEnsure();if(!m.brand){toast('Cria primeiro a marca.','warn');return}
-  const cur=m.layout.versoes[m.layout.atual];const edit=!!(instr&&cur);
-  stBusy(edit?'A aplicar a alteração ao layout…':'A desenhar a página: estrutura, textos e animações…');
-  const br=m.brand,logo=br.logos[br.logoSel||0];
-  const prompt=edit?`És designer e programador front-end. Esta é a página actual:\n\`\`\`html\n${cur}\n\`\`\`\nPedido: «${instr}»\nAltera só o necessário e devolve a página COMPLETA. Mantém as regras: HTML autónomo, CSS no <style>, JS inline mínimo, sem imagens externas, {{LOGO}} onde deve aparecer o logótipo. Responde APENAS com um bloco \`\`\`html.`
-  :`És designer e programador front-end num estúdio criativo. Cria a landing page (uma página) da marca.\n${brandCtx()}\nMarca: ${JSON.stringify({nome:br.nome,tagline:br.tagline,conceito:br.conceito,voz:br.voz,paleta:br.paleta,fontes:br.fontes})}\n
-Requisitos:
-- HTML5 completo e autónomo, <html lang="pt-PT">, <meta viewport>, um <link> do Google Fonts só para «${br.fontes.titulo}» e «${br.fontes.texto}» (usa exactamente https://fonts.googleapis.com/css2?${fontQ(br.fontes.titulo)}&${fontQ(br.fontes.texto)}&display=swap), todo o CSS num <style>, variáveis CSS com a paleta.
-- Secções: cabeçalho com logótipo e menu, hero forte com título e chamada para acção, sobre, produtos/serviços (cartões), porquê nós/diferenciais, testemunhos, chamada final, contactos/horário (usa os dados reais das notas se existirem; senão marcadores claros como [morada]), rodapé.
-- Escreve o logótipo como o texto literal {{LOGO}} (sozinho dentro de um elemento com classe "logo"), no cabeçalho e no rodapé.
-- Sem imagens externas: usa blocos de cor, gradientes, formas e ilustrações em SVG inline; marca as zonas de fotografia com um bloco de cor e a legenda «Fotografia: …».
-- Animações suaves: entrada do hero, revelar secções ao fazer scroll (IntersectionObserver em <script> inline curto), hover em botões e cartões; respeita prefers-reduced-motion.
-- Responsivo (telemóvel primeiro), acessível (contraste, alt, foco visível), textos em português de Portugal na voz da marca.
-- Design com personalidade (não genérico): tipografia grande, ritmo entre secções claras e escuras, detalhes da marca.
+  const L=lyEnsure(),E=L.estrutura;const cur=L.versoes[L.atual];const edit=!!(instr&&cur);
+  stBusy(edit?(opts.sec!=null?'A alterar a secção escolhida…':'A aplicar a alteração ao layout…'):'A desenhar a página: estrutura, textos e animações…');
+  const br=m.brand;
+  const secTxt=E.secoes.map((k,i)=>`${i+1}. ${SECOES[k][0]} — ${SECOES[k][1]}`).join('\n');
+  const prompt=edit?`És designer e programador front-end. Esta é a página actual:\n\`\`\`html\n${cur}\n\`\`\`\n${opts.sec!=null?`Altera APENAS o elemento nº ${opts.sec+1} filho directo de <body>${opts.secLabel?` (começa por «${opts.secLabel}»)`:''}. Deixa todo o resto da página exactamente igual (podes acrescentar CSS no fim do <style> só para essa secção).\n`:''}Pedido: «${instr}»\nMantém as regras:\n${LAYOUT_RULES}\nDevolve a página COMPLETA. Responde APENAS com um bloco \`\`\`html.`
+  :`És designer e programador front-end num estúdio criativo. Cria a landing page (uma página) da marca.\n${brandCtx()}\nMarca: ${JSON.stringify({nome:br.nome,tagline:br.tagline,conceito:br.conceito,voz:br.voz,paleta:br.paleta,fontes:br.fontes})}
+ESTRUTURA PEDIDA:
+- <header> com {{LOGO}} e menu com âncoras para as secções.
+- Hero «${HEROES[E.hero][0]}»: ${HEROES[E.hero][1]}. Título forte na voz da marca, 1 frase de apoio, 1–2 botões.
+${secTxt}
+- <footer> escuro com {{LOGO_ESCURO}}, contactos e links.
+Ritmo ${E.ritmo==='compacto'?'compacto (secções mais curtas)':'arejado (muito espaço em branco)'}.
+Usa dados reais das notas (morada, horário, telefone); se faltarem, usa marcadores claros como [morada].
+Google Fonts: um <link> para https://fonts.googleapis.com/css2?${fontQ(br.fontes.titulo)}&${fontQ(br.fontes.texto)}&display=swap
+${LAYOUT_RULES}
+CSS BASE:\n${baseCss()}
+Textos em português de Portugal, na voz da marca. Design com personalidade: usa a tipografia grande, a cor de destaque com intenção e um detalhe gráfico da marca que se repita.
 Responde APENAS com um bloco \`\`\`html.`;
   const lrefs=edit?[]:await refBlocks(true);const lp=lrefs.length?prompt+'\nAnexei referências visuais de inspiração (acima): usa-as para o ambiente, composição e detalhes, sem copiar.':prompt;
   try{const {text,truncated}=await stAI(withRefs(lrefs,lp),{maxTokens:16000});let h=extractHtml(text);if(!/<html|<body|<section|<div/i.test(h))throw{code:'invalid_json'};
     if(truncated&&!/<\/html>/i.test(h))h+='\n</body></html>';
-    m.layout.versoes=m.layout.versoes.slice(0,m.layout.atual+1);m.layout.versoes.push(h);if(m.layout.versoes.length>8)m.layout.versoes.shift();m.layout.atual=m.layout.versoes.length-1;
-    commit();stBusy('');renderStudio();toast(edit?'Alteração aplicada.':'Layout criado.')}
+    L.versoes=L.versoes.slice(0,L.atual+1);L.versoes.push(h);if(L.versoes.length>10)L.versoes.shift();L.atual=L.versoes.length-1;L.sel=null;L.qa=null;
+    commit();stBusy('');renderStudio();toast(edit?'Alteração aplicada.':'Layout criado. A rever a qualidade…');setTimeout(runQA,600)}
   catch(e){stErr(e)}
 }
-function layoutDoc(i){const m=S.marca;const h=m.layout.versoes[i??m.layout.atual]||'';const br=m.brand;const logo=br?.logos?.[br.logoSel||0];
-  const lightBg=h.match(/class="logo[^"]*"/)?logo?.svg:logo?.svg;
-  return h.replace(/\{\{LOGO\}\}/g,logo?`<span style="display:inline-block;height:1em;line-height:0"></span>${logo.svg.replace('<svg','<svg style="height:56px;width:auto;display:block" role="img" aria-label="'+esc(br.nome)+'"')}`:esc(br?.nome||''))}
+function layoutDoc(i,forPreview){const m=S.marca;const h=m.layout.versoes[i??m.layout.atual]||'';const br=m.brand;const logo=br?.logos?.[br.logoSel||0];
+  const svg=s=>s?s.replace('<svg','<svg role="img" aria-label="'+esc(br.nome)+'"'):esc(br?.nome||'');
+  let out=h.replace(/\{\{LOGO_ESCURO\}\}/g,svg(logo?.svgEscuro||logo?.svg)).replace(/\{\{LOGO\}\}/g,svg(logo?.svg));
+  if(forPreview){const pick=`<script>(()=>{let on=false;const st=document.createElement('style');st.textContent='.__h{outline:3px dashed #fc3888!important;outline-offset:-3px;cursor:pointer}.__s{outline:3px solid #fc3888!important;outline-offset:-3px}';document.head.appendChild(st);
+const tops=()=>[...document.body.children].filter(e=>!/^(SCRIPT|STYLE|LINK|NOSCRIPT)$/.test(e.tagName));
+addEventListener('message',e=>{const d=e.data||{};if(d.t==='pick'){on=!!d.on;if(!on)tops().forEach(x=>x.classList.remove('__h'))}if(d.t==='sel'){tops().forEach((x,i)=>x.classList.toggle('__s',i===d.i));const el=tops()[d.i];el&&el.scrollIntoView({block:'start'})}});
+document.addEventListener('mouseover',e=>{if(!on)return;tops().forEach(x=>x.classList.toggle('__h',x.contains(e.target)))});
+document.addEventListener('click',e=>{if(!on)return;const t=tops();const i=t.findIndex(x=>x.contains(e.target));if(i<0)return;e.preventDefault();e.stopPropagation();const el=t[i];const lab=(el.querySelector('h1,h2,h3')||el).textContent.trim().replace(/\\s+/g,' ').slice(0,60);parent.postMessage({orbitaSec:i,label:lab,tag:el.tagName.toLowerCase(),id:el.id||''},'*')},true)})()<\/script>`;
+    out=/<\/body>/i.test(out)?out.replace(/<\/body>/i,pick+'</body>'):out+pick}
+  return out}
+
+/* revisão de qualidade (iframe sem scripts, mesmo origem para medir) */
+function parseRgb(s){const m=String(s).match(/rgba?\(([^)]+)\)/);if(!m)return null;const v=m[1].split(/[ ,\/]+/).filter(Boolean).map(Number);return {r:v[0],g:v[1],b:v[2],a:v.length>3?v[3]:1}}
+function relLum({r,g,b}){const f=c=>{c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4)};return .2126*f(r)+.7152*f(g)+.0722*f(b)}
+function cRatio(a,b){const A=relLum(a),B=relLum(b);return (Math.max(A,B)+.05)/(Math.min(A,B)+.05)}
+async function measure(html,width){
+  const fr=document.createElement('iframe');fr.setAttribute('sandbox','allow-same-origin');fr.style.cssText=`position:fixed;left:-9999px;top:0;width:${width}px;height:900px;border:0;visibility:hidden`;document.body.append(fr);
+  fr.srcdoc=html.replace(/<script[\s\S]*?<\/script>/gi,'');await new Promise(r=>{fr.onload=r;setTimeout(r,4000)});await new Promise(r=>setTimeout(r,700));
+  const doc=fr.contentDocument,win=fr.contentWindow,res={over:[],contrast:[],small:0,secs:0};
+  try{const W=doc.documentElement.clientWidth;
+    doc.querySelectorAll('body *').forEach(el=>{const r=el.getBoundingClientRect();if(r.width>0&&r.right>W+2&&!el.closest('[style*="overflow"]')){const cs=win.getComputedStyle(el);if(cs.position!=='fixed')res.over.push((el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:''))+` (${Math.round(r.right-W)}px)`)}});
+    res.over=[...new Set(res.over)].slice(0,5);
+    const bgOf=el=>{for(let e=el;e;e=e.parentElement){const c=parseRgb(win.getComputedStyle(e).backgroundColor);if(c&&c.a>.5)return c;if(win.getComputedStyle(e).backgroundImage!=='none')return null}return {r:255,g:255,b:255,a:1}};
+    doc.querySelectorAll('h1,h2,h3,h4,p,li,a,span,button,small,label').forEach(el=>{if(!el.textContent.trim()||el.children.length>2)return;const cs=win.getComputedStyle(el);const fg=parseRgb(cs.color),bg=bgOf(el);if(!fg||!bg)return;const fs=parseFloat(cs.fontSize);const need=fs>=24||(fs>=18.66&&+cs.fontWeight>=700)?3:4.5;const cr=cRatio(fg,bg);
+      if(cr<need)res.contrast.push(`«${el.textContent.trim().slice(0,36)}» ${cr.toFixed(1)}:1`);if(el.matches('p,li')&&fs<14)res.small++});
+    res.contrast=[...new Set(res.contrast)].slice(0,6);res.secs=[...doc.body.children].filter(e=>/^(HEADER|SECTION|FOOTER|MAIN|NAV|DIV)$/.test(e.tagName)).length;
+  }catch(e){res.err=String(e)}
+  fr.remove();return res}
+async function runQA(){
+  const L=S.marca?.layout;if(!L?.versoes?.length)return;const html=layoutDoc();const issues=[];
+  if(!/<meta[^>]+viewport/i.test(html))issues.push('Falta a meta viewport (a página não se adapta ao telemóvel).');
+  if(/<img[^>]+src=["']https?:/i.test(html))issues.push('Usa imagens externas: troca por blocos .foto.');
+  if(/lorem ipsum/i.test(html))issues.push('Tem texto «lorem ipsum».');
+  const br=S.marca.brand;if(!new RegExp('fonts\\.googleapis[^"\']*'+br.fontes.titulo.replace(/ /g,'\\+')).test(html))issues.push(`Não carrega a fonte da marca «${br.fontes.titulo}».`);
+  if((html.match(/<h1[\s>]/gi)||[]).length!==1)issues.push(`Tem ${(html.match(/<h1[\s>]/gi)||[]).length} títulos <h1> (deve ter 1).`);
+  $('#lyQA')&&($('#lyQA').innerHTML='<span class="thinking">A medir em telemóvel e computador…</span>');
+  const mob=await measure(html,390),desk=await measure(html,1280);
+  if(mob.over.length)issues.push(`Em telemóvel há elementos a sair do ecrã: ${mob.over.join(', ')}.`);
+  if(desk.over.length)issues.push(`Em computador há elementos a sair do ecrã: ${desk.over.join(', ')}.`);
+  if(desk.contrast.length)issues.push(`Contraste fraco: ${desk.contrast.join('; ')}.`);
+  if(mob.small)issues.push(`${mob.small} parágrafos com letra abaixo de 14px em telemóvel.`);
+  L.qa={issues,quando:Date.now(),v:L.atual};persistLocal();renderQA();
+}
+function renderQA(){const L=S.marca?.layout,box=$('#lyQA');if(!box)return;const q=L?.qa;
+  if(!q||q.v!==L.atual){box.innerHTML='<button class="jif-link" id="qaRun" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Rever qualidade</button>';$('#qaRun').onclick=runQA;return}
+  box.innerHTML=q.issues.length?`<div class="note warn" style="align-items:flex-start"><span>✶</span><div><b>Revisão: ${q.issues.length} ${q.issues.length===1?'ponto':'pontos'} a corrigir</b><ul class="clean" style="margin-top:6px">${q.issues.map(i=>`<li>${esc(i)}</li>`).join('')}</ul><div class="row" style="margin-top:10px"><button class="btn sm primary" id="qaFix">Corrigir com IA</button><button class="btn sm" id="qaRun">Rever outra vez</button></div></div></div>`
+    :`<div class="note" style="border-color:var(--good)"><span style="color:var(--good)">✓</span><span>Revisão sem problemas: cabe no telemóvel, contraste e estrutura em ordem. <button class="jif-link" id="qaRun" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;padding:0">Rever outra vez</button></span></div>`;
+  $('#qaRun').onclick=runQA;if($('#qaFix'))$('#qaFix').onclick=()=>genLayout('Corrige estes problemas detectados na revisão automática, sem mudar o design: '+q.issues.join(' '))}
+
+function renderLayout(){
+  const host=$('#st_layout'),m=S.marca;
+  if(!m.brand){host.innerHTML=`<div class="card flat"><h3>Primeiro a marca</h3><p class="muted">O layout usa o logótipo, a paleta e as fontes da marca. Gera a marca no separador «Marca».</p></div>`;return}
+  const L=lyEnsure(),E=L.estrutura;
+  const estr=`<details class="card ly-estr" ${(!L.versoes.length||L.estrOpen)?'open':''}><summary><b>Estrutura da página</b> <span class="small muted">· hero ${HEROES[E.hero][0].toLowerCase()} · ${E.secoes.length} secções · ${E.ritmo}</span></summary>
+    <div class="ly-heroes">${Object.entries(HEROES).map(([k,[n,d]])=>`<button class="ly-h" aria-pressed="${E.hero===k}" data-h="${k}"><span class="ly-thumb ly-${k}"><i></i><i></i><i></i></span><b>${n}</b><small>${d}</small></button>`).join('')}</div>
+    <div class="small muted" style="margin:14px 0 8px">Secções, pela ordem em que aparecem (carrega para ligar/desligar; as setas mudam a ordem)</div>
+    <div class="row" id="lySecs">${E.secoes.map((k,i)=>`<span class="chip on-sec">${i+1}. ${SECOES[k][0]}<button data-up="${i}" title="Subir">↑</button><button data-rm="${k}" title="Tirar">×</button></span>`).join('')}${Object.keys(SECOES).filter(k=>!E.secoes.includes(k)).map(k=>`<button class="chip off-sec" data-add="${k}">+ ${SECOES[k][0]}</button>`).join('')}</div>
+    <div class="row" style="margin-top:14px"><label style="max-width:200px">Ritmo<select id="lyRitmo"><option value="arejado">Arejado</option><option value="compacto">Compacto</option></select></label><button class="btn primary" id="btnLay">${L.versoes.length?'Gerar de novo com esta estrutura':'Gerar layout web'}</button></div></details>`;
+  if(!L.versoes.length){host.innerHTML=estr;bindEstr();return}
+  const w={desktop:'100%',tablet:'820px',mobile:'390px'}[L.device||'desktop'];
+  host.innerHTML=estr+`<div class="row" style="justify-content:space-between;margin:14px 0 12px">
+      <div class="row">${['desktop','tablet','mobile'].map(d=>`<button class="chip dv" aria-pressed="${(L.device||'desktop')===d}" data-d="${d}">${{desktop:'Computador',tablet:'Tablet',mobile:'Telemóvel'}[d]}</button>`).join('')}
+        <button class="chip dv" id="lyPick" aria-pressed="${!!L.picking}">${L.picking?'A escolher… clica numa secção':'Escolher secção para editar'}</button></div>
+      <div class="row"><button class="btn sm" id="lyPrev" ${L.atual<=0?'disabled':''}>Anterior</button><span class="iter">v${L.atual+1} de ${L.versoes.length}</span><button class="btn sm" id="lyNext" ${L.atual>=L.versoes.length-1?'disabled':''}>Seguinte</button>
+      <button class="btn sm" id="lyOpen">Abrir em janela</button><button class="btn sm" id="lyDl">Descarregar HTML</button></div></div>
+    <div id="lySel"></div><div id="lyQA" style="margin-bottom:12px"></div>
+    <div class="frame-wrap"><iframe id="lyFrame" title="Pré-visualização do layout" sandbox="allow-scripts" style="width:${w}"></iframe></div>`;
+  bindEstr();
+  const fr=$('#lyFrame');fr.srcdoc=layoutDoc(undefined,true);fr.onload=()=>{fr.contentWindow.postMessage({t:'pick',on:!!L.picking},'*');if(L.sel)fr.contentWindow.postMessage({t:'sel',i:L.sel.i},'*')};
+  renderSel();renderQA();
+  $$('.dv[data-d]',host).forEach(b=>b.onclick=()=>{L.device=b.dataset.d;persistLocal();renderLayout()});
+  $('#lyPick').onclick=()=>{L.picking=!L.picking;persistLocal();$('#lyPick').setAttribute('aria-pressed',L.picking);$('#lyPick').textContent=L.picking?'A escolher… clica numa secção':'Escolher secção para editar';fr.contentWindow.postMessage({t:'pick',on:L.picking},'*')};
+  $('#lyPrev').onclick=()=>{L.atual--;L.sel=null;commit();renderLayout()};$('#lyNext').onclick=()=>{L.atual++;L.sel=null;commit();renderLayout()};
+  $('#lyOpen').onclick=()=>{const u=URL.createObjectURL(new Blob([layoutDoc()],{type:'text/html'}));window.open(u,'_blank')};
+  $('#lyDl').onclick=()=>downloads.save({filename:`${slug(m.brand.nome)}_landing_v${L.atual+1}.html`,data:new Blob([layoutDoc()],{type:'text/html'})});
+}
+function renderSel(){const L=S.marca.layout,box=$('#lySel');if(!box)return;
+  box.innerHTML=L.sel?`<div class="row" style="margin-bottom:10px"><span class="chip accent">A editar a secção ${L.sel.i+1}${L.sel.label?': «'+esc(L.sel.label)+'»':''}</span><span class="small muted">O pedido em baixo só altera esta secção.</span><button class="jif-link" id="lySelX" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;padding:0">Página inteira</button></div>`:'';
+  if($('#lySelX'))$('#lySelX').onclick=()=>{L.sel=null;persistLocal();renderSel();$('#lyFrame').contentWindow.postMessage({t:'sel',i:-1},'*');stChatPlaceholder()};stChatPlaceholder()}
+function stChatPlaceholder(){const m=S.marca;if(m?.tab!=='layout')return;$('#st_chat').placeholder=m.layout.sel?`Pede uma alteração à secção ${m.layout.sel.i+1} (ex.: mais espaço, título maior, fundo escuro, 3 cartões em vez de 4)`:'Pede uma alteração à página (ex.: hero escuro, mais espaço, junta uma secção de preços)'}
+function bindEstr(){const L=lyEnsure(),E=L.estrutura;
+  const dt=$('.ly-estr');if(dt)dt.ontoggle=()=>{L.estrOpen=dt.open};
+  $$('.ly-h').forEach(b=>b.onclick=()=>{E.hero=b.dataset.h;persistLocal();renderLayout()});
+  $$('#lySecs [data-rm]').forEach(b=>b.onclick=()=>{E.secoes=E.secoes.filter(k=>k!==b.dataset.rm);persistLocal();renderLayout()});
+  $$('#lySecs [data-add]').forEach(b=>b.onclick=()=>{const i=E.secoes.indexOf('cta');const k=b.dataset.add;if(i>=0&&!['contactos','newsletter'].includes(k))E.secoes.splice(i,0,k);else E.secoes.push(k);persistLocal();renderLayout()});
+  $$('#lySecs [data-up]').forEach(b=>b.onclick=()=>{const i=+b.dataset.up;if(i>0){[E.secoes[i-1],E.secoes[i]]=[E.secoes[i],E.secoes[i-1]];persistLocal();renderLayout()}});
+  $('#lyRitmo').value=E.ritmo;$('#lyRitmo').onchange=e=>{E.ritmo=e.target.value;persistLocal()};
+  $('#btnLay').onclick=async()=>{if(L.versoes.length&&!(await confirmDlg('Gerar de novo','Cria uma página nova com esta estrutura. As versões anteriores ficam no histórico.')))return;genLayout()};
+}
+addEventListener('message',e=>{const d=e.data;if(!d||d.orbitaSec===undefined)return;const fr=$('#lyFrame');if(!fr||e.source!==fr.contentWindow)return;
+  const L=S.marca.layout;L.sel={i:d.orbitaSec,label:d.label};L.picking=false;persistLocal();fr.contentWindow.postMessage({t:'pick',on:false},'*');fr.contentWindow.postMessage({t:'sel',i:d.orbitaSec},'*');
+  const pk=$('#lyPick');if(pk){pk.setAttribute('aria-pressed','false');pk.textContent='Escolher secção para editar'}renderSel();$('#st_chat').focus()});
 
 async function genPosts(instr){
   const m=stEnsure();if(!m.brand){toast('Cria primeiro a marca.','warn');return}
@@ -1444,7 +1586,7 @@ async function genAnim(instr){
 
 function stChat(){const inp=$('#st_chat');const t=inp.value.trim();if(!t)return;const m=stEnsure();
   m.chat=(m.chat||[]).concat({tab:m.tab,t}).slice(-20);inp.value='';persistLocal();
-  ({marca:()=>m.brand?genBrand(t):($('#st_prompt').value=t,genBrand()),layout:()=>genLayout(t),posts:()=>m.posts.itens.length?genPosts(t):genPosts(),anim:()=>genAnim(t)})[m.tab]();}
+  ({marca:()=>m.brand?genBrand(t):($('#st_prompt').value=t,genBrand()),layout:()=>{const L=m.layout;if(!L.versoes.length){toast('Gera primeiro o layout.','warn');return}genLayout(t,L.sel?{sec:L.sel.i,secLabel:L.sel.label}:{})},posts:()=>m.posts.itens.length?genPosts(t):genPosts(),anim:()=>genAnim(t)})[m.tab]();}
 
 /* --- render --- */
 function renderStudio(){
@@ -1459,7 +1601,7 @@ function renderStudio(){
   if($('#stGoDisc'))$('#stGoDisc').onclick=()=>go(0);
   $$('#stTabs [data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===m.tab));
   ST_TABS.forEach(([k])=>$('#st_'+k).hidden=k!==m.tab);
-  $('#st_chat').placeholder={marca:'Pede uma alteração à marca (ex.: logótipo mais simples, paleta mais quente, fonte mais elegante)',layout:'Pede uma alteração à página (ex.: hero escuro, mais espaço, junta uma secção de preços)',posts:'Pede uma alteração aos posts (ex.: mais curtos, tom mais divertido, um post de Natal)',anim:'Pede uma alteração à animação (ex.: mais rápida, fundo claro, formato story)'}[m.tab];
+  $('#st_chat').placeholder={marca:'Pede uma alteração à marca (ex.: logótipo mais simples, paleta mais quente, fonte mais elegante)',layout:m.layout?.sel?`Pede uma alteração à secção ${m.layout.sel.i+1}`:'Pede uma alteração à página (ex.: hero escuro, mais espaço, junta uma secção de preços)',posts:'Pede uma alteração aos posts (ex.: mais curtos, tom mais divertido, um post de Natal)',anim:'Pede uma alteração à animação (ex.: mais rápida, fundo claro, formato story)'}[m.tab];
   $('#btnStChat').disabled=!m.brand&&m.tab!=='marca';
   if(m.brand)loadFonts([m.brand.fontes.titulo,m.brand.fontes.texto]).then(()=>{if(m.tab==='posts')drawPosts()});
   stopAnim();
@@ -1507,24 +1649,6 @@ function renderBrand(){
   $('#btnKit').onclick=brandKit;$('#btnToAds').onclick=()=>$('#stSkip').click();$('#btnToLayout').onclick=()=>{S.marca.tab='layout';renderStudio();if(!S.marca.layout.versoes.length)genLayout()};
 }
 async function logoCanvas(svg,w=1600){const img=await svgImage(svg,w);const cv=document.createElement('canvas');cv.width=w;cv.height=Math.round(w*vbRatio(svg));cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);return cv}
-
-function renderLayout(){
-  const host=$('#st_layout'),L=S.marca.layout;
-  if(!S.marca.brand){host.innerHTML=`<div class="card flat"><h3>Primeiro a marca</h3><p class="muted">O layout usa o logótipo, a paleta e as fontes da marca. Gera a marca no separador «Marca».</p></div>`;return}
-  if(!L.versoes.length){host.innerHTML=`<div class="card flat"><h3>Ainda sem layout</h3><p class="muted">Gera uma landing page completa com a marca: hero, serviços, testemunhos, contactos e animações ao fazer scroll. Depois pede alterações em conversa.</p><button class="btn primary" id="btnLay" style="margin-top:14px">Gerar layout web</button></div>`;$('#btnLay').onclick=()=>genLayout();return}
-  const w={desktop:'100%',tablet:'820px',mobile:'390px'}[L.device||'desktop'];
-  host.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:12px">
-      <div class="row">${['desktop','tablet','mobile'].map(d=>`<button class="chip dv" aria-pressed="${(L.device||'desktop')===d}" data-d="${d}">${{desktop:'Computador',tablet:'Tablet',mobile:'Telemóvel'}[d]}</button>`).join('')}</div>
-      <div class="row"><button class="btn sm" id="lyPrev" ${L.atual<=0?'disabled':''}>Versão anterior</button><span class="iter">v${L.atual+1} de ${L.versoes.length}</span><button class="btn sm" id="lyNext" ${L.atual>=L.versoes.length-1?'disabled':''}>Seguinte</button>
-      <button class="btn sm" id="lyOpen">Abrir em janela</button><button class="btn sm" id="lyDl">Descarregar HTML</button><button class="btn sm" id="lyRe">Gerar de novo</button></div></div>
-    <div class="frame-wrap"><iframe id="lyFrame" title="Pré-visualização do layout" sandbox="allow-scripts" style="width:${w}"></iframe></div>`;
-  $('#lyFrame').srcdoc=layoutDoc();
-  $$('.dv',host).forEach(b=>b.onclick=()=>{L.device=b.dataset.d;persistLocal();renderLayout()});
-  $('#lyPrev').onclick=()=>{L.atual--;commit();renderLayout()};$('#lyNext').onclick=()=>{L.atual++;commit();renderLayout()};
-  $('#lyOpen').onclick=()=>{const u=URL.createObjectURL(new Blob([layoutDoc()],{type:'text/html'}));window.open(u,'_blank')};
-  $('#lyDl').onclick=()=>downloads.save({filename:`${slug(S.marca.brand.nome)}_landing_v${L.atual+1}.html`,data:new Blob([layoutDoc()],{type:'text/html'})});
-  $('#lyRe').onclick=async()=>{if(await confirmDlg('Gerar de novo','Cria uma página nova de raiz. As versões anteriores ficam no histórico.'))genLayout()};
-}
 
 function renderPosts(){
   const host=$('#st_posts'),P=S.marca.posts;
@@ -1762,7 +1886,7 @@ function initServices(){$('#b_invest').innerHTML=INVEST.map(x=>`<option value="$
   ['#b_invest','#b_mensal','#b_prio'].forEach(id=>$(id).addEventListener('change',()=>{readBrief();commit();renderServices()}));
   $('#b_orcamento').addEventListener('change',()=>{readBrief();S.plano=null;commit();renderLaunch()})}
 
-const BUILD='20261107162807';
+const BUILD='20261107183748';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
