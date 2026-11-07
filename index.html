@@ -935,23 +935,53 @@ async function analyseLead(lead,el){
 ${links.length?`Visita com web_fetch estas páginas: ${links.join(' , ')}.`:'Não há site conhecido.'} Confirma também se o negócio continua EM ACTIVIDADE (Google Maps «encerrado permanentemente», trespasse, último post/avaliação). Se faltar alguma rede social, faz 1-2 pesquisas web para confirmar se existe (ex.: «${lead.nome} instagram»). Não inventes o que não conseguires ver.
 Avalia de 0 (inexistente) a 5 (profissional e consistente) e responde APENAS com um bloco \`\`\`json:
 {"ativo":true,"atividade":"sinal mais recente de actividade e data","logo":{"nota":0,"obs":"1 frase"},"identidade":{"nota":0,"obs":"paleta, tipografia, consistência entre site e redes"},"redes":{"nota":0,"obs":"quais existem, frequência aparente, qualidade das fotos","encontradas":{"instagram":"url ou null","facebook":null,"linkedin":null,"tiktok":null}},"comunicacao":{"nota":0,"obs":"clareza da oferta, texto, call-to-action, fotografia"},"site":{"nota":0,"obs":"existe? moderno? funciona em telemóvel?"},"prioridade":1,"oportunidades":["3 serviços concretos que a nossa agência podia vender"],"abordagem":"2 frases de abertura para um primeiro contacto, em português de Portugal, concretas e sem bajulação"}
-"prioridade" de 1 a 5: 5 = presença fraca mas negócio com aspecto viável (grande oportunidade); 1 = já têm tudo bem feito.`;
+"prioridade" de 1 a 5: 5 = presença fraca mas negócio com aspecto viável (grande oportunidade); 1 = já têm tudo bem feito.
+Acrescenta ao mesmo JSON a chave "brief", com o que conseguires apurar do site, das redes e das avaliações (para preparar uma campanha para este cliente; não inventes factos, usa "" se não souberes):
+"brief":{"produto":"produto ou serviço principal a promover, concreto","objetivo":"um de: Vendas online | Leads / pedidos de contacto | Notoriedade | Visitas à loja | Instalações de app | Reservas / marcações","publico":"quem são os clientes: idades, zona, interesses, ocasiões","diferenciais":"o que os distingue: especialidades, história, preços, prémios, o que os clientes elogiam nas avaliações","tom":"um de: Próximo e directo | Premium e sóbrio | Divertido | Técnico e informativo | Inspirador","canais":["meta","google","tiktok"],"orcamento":300,"horario":"","precos":"faixa de preços se visível","avaliacoes":"nota média e nº de avaliações Google se visível","marca_visual":"cores, tipografia e estilo actuais (para o moodboard)"}
+"canais": só os que fazem sentido para este negócio. "orcamento": orçamento mensal de media realista em euros para uma PME deste tipo.`;
   try{
     const {text}=await callAI(prompt,{tools:[TOOL_FETCH(5),TOOL_SEARCH(3,lead.local)],beta:'web-fetch-2025-09-10',maxTokens:6000});
     const a=parseJson(text);if(!a||!a.logo)throw{code:'invalid_json',text};
     for(const k of ['logo','identidade','redes','comunicacao','site']){a[k]=a[k]||{};a[k].nota=Math.min(5,Math.max(0,Number(a[k].nota)||0));a[k].obs=String(a[k].obs||'')}
-    a.prioridade=Math.min(5,Math.max(1,Number(a.prioridade)||3));a.oportunidades=(a.oportunidades||[]).map(String).slice(0,4);a.abordagem=String(a.abordagem||'');
+    a.prioridade=Math.min(5,Math.max(1,Number(a.prioridade)||3));a.oportunidades=(a.oportunidades||[]).map(String).slice(0,4);a.abordagem=String(a.abordagem||'');a.brief=a.brief&&typeof a.brief==='object'?a.brief:{};
     const enc=a.redes.encontradas||{};for(const k of REDES){const u=normUrl(enc[k]);if(u&&!lead.redes[k])lead.redes[k]=u}
     if(a.atividade)lead.atividade=String(a.atividade);if(a.ativo===false){lead.estado='descartado';lead.analise=a;commit();renderLeads();toast(`«${lead.nome}» parece estar encerrado. Marquei como descartado.`,'warn');return}lead.analise=a;lead.potencial=a.prioridade;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
   }catch(e){box.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
 }
 function leadToBrief(l){
-  S.brief.marca=l.nome.replace(/\s*\(exemplo fictício\)/,'');S.brief.setor=l.sector;S.brief.produto='';S.brief.objetivo='Notoriedade';
-  S.brief.publico=`Clientes locais em ${l.local}.`;S.brief.diferenciais=l.descricao;
-  S.brief.notas=l.analise?`Diagnóstico de presença: logótipo ${l.analise.logo.nota}/5, identidade ${l.analise.identidade.nota}/5, redes ${l.analise.redes.nota}/5, comunicação ${l.analise.comunicacao.nota}/5. Oportunidades: ${l.analise.oportunidades.join('; ')}`:'';
+  const a=l.analise||{},ab=a.brief||{},b=S.brief,clean=v=>String(v??'').trim();
+  const OBJ=['Vendas online','Leads / pedidos de contacto','Notoriedade','Visitas à loja','Instalações de app','Reservas / marcações'];
+  const TOM=['Próximo e directo','Premium e sóbrio','Divertido','Técnico e informativo','Inspirador'];
+  const pick=(v,list,def)=>{v=clean(v).toLowerCase();return list.find(o=>o.toLowerCase()===v)||list.find(o=>v&&o.toLowerCase().startsWith(v.slice(0,6)))||def};
+  b.marca=l.nome.replace(/\s*\(exemplo fictício\)/,'');
+  b.setor=l.sector;
+  b.produto=clean(ab.produto)||clean(l.descricao).split(/[.;]/)[0]||'';
+  b.objetivo=pick(ab.objetivo,OBJ,/restaura|caf|bar|pastel|padar|cabeleir|barbe|estétic|clínic|ginás|fisio|dent/i.test(l.sector)?'Reservas / marcações':'Notoriedade');
+  b.publico=clean(ab.publico)||`Clientes locais em ${l.local}${l.morada?' (zona de '+l.morada+')':''}.`;
+  b.diferenciais=[clean(ab.diferenciais)||clean(l.descricao),ab.precos?'Preços: '+clean(ab.precos):'',ab.avaliacoes?'Avaliações: '+clean(ab.avaliacoes):''].filter(Boolean).join('\n');
+  b.tom=pick(ab.tom,TOM,b.tom||'Próximo e directo');
+  const can=(Array.isArray(ab.canais)?ab.canais:[]).map(c=>clean(c).toLowerCase()).filter(c=>['meta','google','tiktok'].includes(c));
+  b.canais=can.length?can:(['meta',...(l.redes?.tiktok?['tiktok']:[]),'google']);
+  const orc=Number(ab.orcamento);if(orc>=50)b.orcamento=Math.round(orc/50)*50;
+  const sc=a.logo?`Diagnóstico de presença: logótipo ${a.logo.nota}/5 (${a.logo.obs}); identidade ${a.identidade.nota}/5 (${a.identidade.obs}); redes ${a.redes.nota}/5 (${a.redes.obs}); comunicação ${a.comunicacao.nota}/5 (${a.comunicacao.obs}); site ${a.site.nota}/5 (${a.site.obs}).`:'';
+  const redes=REDES.filter(k=>l.redes?.[k]).map(k=>`${k}: ${l.redes[k]}`).join(' · ');
+  b.notas=[
+    l.site?'Site: '+l.site:'Sem site conhecido.',
+    redes?'Redes: '+redes:'Sem redes sociais encontradas.',
+    [l.morada,l.telefone].filter(Boolean).join(' · '),
+    ab.horario?'Horário: '+clean(ab.horario):'',
+    l.atividade?'Actividade: '+l.atividade:'',
+    ab.marca_visual?'Marca actual: '+clean(ab.marca_visual):'',
+    sc,
+    a.oportunidades?.length?'Oportunidades: '+a.oportunidades.join('; '):'',
+    a.abordagem?'Abordagem sugerida: '+a.abordagem:'',
+    !a.logo&&l.sinais?'Sinais: '+l.sinais:''
+  ].filter(Boolean).join('\n');
   S.discover=null;S.angulosSel=[];S.ads=[];S.plano=null;S.resultados=null;S.analise=null;S.estado='rascunho';S.iteracao=1;
-  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();go(0);toast('Brief preenchido a partir da lead.');
+  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();go(0);
+  toast(l.analise?'Brief preenchido com a análise. Revê e carrega em «Pesquisar com IA».':'Brief preenchido com os dados da lead. Analisa a presença primeiro para um brief mais completo.');
 }
+
 function renderLeads(){
   const host=$('#leads');
   const sectors=[...new Set(S.leads.map(l=>l.sector))].sort(),locais=[...new Set(S.leads.map(l=>l.local))].sort();
