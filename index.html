@@ -841,10 +841,13 @@ async function callAI(input,{tools,beta,maxTokens=6000,onRound}={}){
   let messages=typeof input==='string'?[{role:'user',content:input}]:input.slice();let text='';
   for(let round=0;round<5;round++){
     const body={model:cfg.model||'claude-sonnet-5-5',max_tokens:maxTokens,messages};if(tools)body.tools=tools;
-    let r;try{r=await fetch(API_URL,{method:'POST',headers,body:JSON.stringify(body)})}catch(e){throw{code:'upstream_error',message:String(e)}}
+    let r,tries=0;
+    while(true){try{r=await fetch(API_URL,{method:'POST',headers,body:JSON.stringify(body)})}catch(e){if(++tries<3){await new Promise(z=>setTimeout(z,1500*tries));continue}throw{code:'network',message:String(e)}}
+      if([429,500,502,503,529].includes(r.status)&&++tries<4){await new Promise(z=>setTimeout(z,2500*tries));continue}break}
     if(r.status===401||r.status===403){let m='';try{m=(await r.json()).error?.message||''}catch(e){}throw{code:r.status===401?'not_granted':'forbidden',message:m}}
-    if(r.status===429)throw{code:'rate_limited'};
-    if(!r.ok){let m='';try{m=(await r.json()).error?.message||''}catch(e){}throw{code:'upstream_error',message:m}}
+    if(!r.ok){let m='';try{m=(await r.json()).error?.message||''}catch(e){}
+      const code=r.status===429?'rate_limited':[500,502,503,529].includes(r.status)?'overloaded':/credit balance|billing/i.test(m)?'no_credit':r.status===404||/model/i.test(m)&&r.status===400?'bad_model':'upstream_error';
+      throw{code,message:'HTTP '+r.status+(m?': '+m:'')}}
     const d=await r.json();
     text+=(d.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
     if(onRound)onRound(round,d);
@@ -863,7 +866,7 @@ function parseJson(text){
 }
 function makeSample(){
   if(!loadCfg().key)return null;
-  const call=(input,opts)=>callAI(input,{maxTokens:4000});
+  const call=(input,opts)=>callAI(input,{maxTokens:opts?.maxTokens||8000});
   call.json=async(input,opts)=>{const {text}=await call(input,opts);return parseJson(text)};
   return call;
 }
@@ -876,7 +879,7 @@ function openSettings(){
   const y=$('#dlgYes'),n=$('#dlgNo');const done=()=>{d.close();y.onclick=n.onclick=null};
   y.onclick=()=>{const k=cleanKey($('#s_key').value);if(k&&!/^sk-ant-/.test(k)){toast('A chave deve começar por «sk-ant-». Vê se copiaste a chave toda.','warn');return}const ok=saveCfg({key:k,model:$('#s_model').value});done();initAI();toast(!k?'Sem chave: a IA fica desligada.':ok?'Chave guardada. A IA está activa.':'IA activa só nesta sessão: o browser bloqueia o armazenamento (janela privada?). Vais ter de a meter outra vez.',ok||!k?'':'warn')};n.onclick=done;d.showModal();
 }
-function aiCopyLocal(code){return code==='no_key'?'Falta a chave da API. Mete-a em «Definições IA».':code==='not_granted'?'A Anthropic recusou a chave (401). Abre «Definições IA» e usa «Testar chave».':code==='forbidden'?'A chave não tem permissão para este pedido (403). Vê os créditos e as permissões em console.anthropic.com.':aiCopy(code)}
+function aiCopyLocal(code){return code==='no_credit'?'A conta Anthropic não tem créditos. Carrega créditos em console.anthropic.com › Billing.':code==='bad_model'?'O modelo escolhido não está disponível para esta chave. Escolhe outro em «Definições IA».':code==='overloaded'?'A Anthropic está sobrecarregada neste momento. Tenta daqui a um minuto.':code==='network'?'Sem ligação à API da Anthropic. Verifica a internet ou se alguma extensão bloqueia api.anthropic.com.':code==='no_key'?'Falta a chave da API. Mete-a em «Definições IA».':code==='not_granted'?'A Anthropic recusou a chave (401). Abre «Definições IA» e usa «Testar chave».':code==='forbidden'?'A chave não tem permissão para este pedido (403). Vê os créditos e as permissões em console.anthropic.com.':aiCopy(code)}
 async function testKey(key,model){try{const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model,max_tokens:5,messages:[{role:'user',content:'ok'}]})});if(r.ok)return{ok:true,msg:'Chave válida ✓'};let m='';try{m=(await r.json()).error?.message||''}catch(e){}return{ok:false,msg:'Erro '+r.status+(m?': '+m:'')}}catch(e){return{ok:false,msg:'Sem ligação à API: '+e}}}
 const cleanKey=k=>(k||'').replace(/[\s"'«»“”]/g,'');
 function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample;const b=$('#btnSettings');if(b)b.textContent=sample?'IA activa ✓':'Definições IA'}
