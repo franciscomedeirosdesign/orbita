@@ -208,6 +208,15 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 .chatbar textarea:focus{outline:none}
 @media (max-width:760px){.brandhero{grid-template-columns:1fr;padding:24px}.chatbar{border-radius:22px}}
 
+
+/* Dropdowns: seta própria, alinhada */
+select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:40px!important;cursor:pointer;text-overflow:ellipsis;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23161616' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center;background-size:12px 8px}
+select::-ms-expand{display:none}
+select:hover{border-color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}}
+.lead.flash{box-shadow:0 0 0 3px var(--magenta);transition:box-shadow .3s}
 /* ===== Design system JIF ===== */
 .toggle{flex-direction:row}
 .toggle input{accent-color:#fff;width:auto}
@@ -352,6 +361,11 @@ footer .hand{color:var(--magenta)}
       <label id="pr_outro_l" hidden>Outro tipo de negócio<input id="pr_outro" placeholder="Ex.: lojas de bicicletas"></label>
       <label>Nº de empresas<input type="number" id="pr_n" min="1" step="1" value="10" class="num"></label>
       <button class="btn primary" id="btnProspect">Pesquisar empresas</button>
+    </div>
+    <div class="toolbar" style="margin-top:-6px">
+      <label style="flex:1;min-width:280px">Procurar uma empresa específica<input id="pr_q" placeholder="Nome, site, @instagram, NIF, telefone, morada ou descrição (ex.: «padaria ao pé do mercado do Bolhão»)"></label>
+      <label style="min-width:170px">Zona (opcional)<input id="pr_q_local" placeholder="Ex.: Porto"></label>
+      <button class="btn" id="btnFind">Procurar</button>
     </div>
     <div id="prStatus" class="small muted" style="margin-bottom:12px"></div>
     <div class="card" style="margin-bottom:16px"><div class="row">
@@ -972,6 +986,39 @@ Em português de Portugal. Não inventes empresas nem URLs.`;
   }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
   finally{btn.disabled=false}
 }
+async function findCompany(){
+  const q=$('#pr_q').value.trim(),zona=$('#pr_q_local').value.trim();
+  if(!q){toast('Escreve o nome ou outro dado da empresa.','warn');$('#pr_q').focus();return}
+  if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
+  const st=$('#prStatus'),btn=$('#btnFind');btn.disabled=true;const today=new Date().toISOString().slice(0,10);
+  st.innerHTML=`<span class="thinking">A procurar «${esc(q)}»${zona?' em '+esc(zona):''}…</span>`;
+  const prompt=`És responsável de prospecção numa agência de design, fotografia e redes sociais em Portugal. Encontra na web a empresa (ou empresas) que corresponde a esta pesquisa: «${q}»${zona?`, na zona de «${zona}»`:''}, em Portugal.
+A pesquisa pode ser o nome (ou parte), um site, um @ ou link de rede social, NIF, telefone, morada ou uma descrição. Faz as pesquisas necessárias (Google, Google Maps, Instagram, Facebook, directórios como Racius/eInforma) e cruza os dados.
+Devolve até 5 candidatas, a mais provável primeiro; se houver uma correspondência exacta, devolve só essa. Indica se está em actividade (Google Maps «encerrado permanentemente», trespasse, insolvência ou sem sinais nos últimos 12 meses = ativo:false).
+Para cada uma: site, morada, telefone, ligações para Instagram, Facebook, LinkedIn e TikTok (só URLs vistos; senão null), tipo de negócio, localidade, e o POTENCIAL como cliente da agência de 1 a 5 (5 = presença digital fraca num negócio viável; 1 = já comunica de forma profissional).
+Responde APENAS com um bloco \`\`\`json contendo um array:
+[{"nome":"","sector":"tipo de negócio, curto e em minúsculas (ex.: cafés e pastelarias)","local":"concelho","site":"url ou null","morada":"","telefone":"","descricao":"1-2 frases sobre o negócio e a presença online","redes":{"instagram":null,"facebook":null,"linkedin":null,"tiktok":null},"potencial":3,"sinais":"meia frase","ativo":true,"atividade":"sinal recente de actividade e data","correspondencia":"exacta | provável | possível","fonte":"url"}]
+Se não encontrares nada, responde []. Português de Portugal. Não inventes empresas nem URLs.`;
+  try{
+    const {text}=await callAI(prompt,{tools:[TOOL_SEARCH(8,zona||'Portugal')],maxTokens:6000});
+    let arr;try{arr=parseJson(text)}catch(e){arr=[]}if(!Array.isArray(arr))arr=[];
+    let added=0,dup=[];let firstId=null;
+    for(const x of arr){
+      if(!x||!x.nome)continue;const nome=String(x.nome).trim();
+      const ex=S.leads.find(l=>l.nome.toLowerCase()===nome.toLowerCase());if(ex){dup.push(ex);firstId=firstId||ex.id;continue}
+      const redes={};for(const k of REDES)redes[k]=normUrl(x.redes?.[k]);
+      const id='L'+(hash(nome+Date.now()+Math.random())%1000000);firstId=firstId||id;
+      S.leads.unshift({id,nome,site:normUrl(x.site)||'',morada:String(x.morada||''),telefone:String(x.telefone||''),sector:String(x.sector||'outros').toLowerCase(),local:String(x.local||zona||''),descricao:String(x.descricao||''),sinais:[x.correspondencia&&x.correspondencia!=='exacta'?'Correspondência '+x.correspondencia:'',String(x.sinais||'')].filter(Boolean).join(' · '),atividade:x.ativo===false?'':String(x.atividade||''),potencial:Math.min(5,Math.max(1,Number(x.potencial)||3)),fonte:normUrl(x.fonte)||'',redes,estado:x.ativo===false?'descartado':'novo',criado:today,analise:null,inativo:x.ativo===false});
+      added++;
+    }
+    commit();
+    ['#pf_q','#pf_sector','#pf_local','#pf_estado'].forEach(s=>{const el=$(s);if(el)el.value=''});renderLeads();
+    st.textContent=added?`${added===1?'Encontrei 1 empresa':'Encontrei '+added+' candidatas'}${dup.length?` (e ${dup.length} que já estava${dup.length>1?'m':''} na lista)`:''}. ${added>1?'Confirma qual é a certa e remove as outras.':'Foi acrescentada à lista e está assinalada.'}`
+      :dup.length?`«${dup[0].nome}» já está na lista.`:'Não encontrei nenhuma empresa com esses dados. Experimenta outro nome, o @ do Instagram ou junta a zona.';
+    if(firstId)setTimeout(()=>{const el=document.querySelector(`.lead[data-id="${firstId}"]`);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2200)}},80);
+  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,120))+')</span>':''}</span>`}
+  finally{btn.disabled=false}
+}
 async function analyseLead(lead,el){
   if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
   const box=$('.an',el);box.innerHTML='<span class="thinking">A visitar o site e as redes…</span>';
@@ -1536,7 +1583,7 @@ function initStudio(){
 
 /* ===== Arranque ===== */
 function renderAll(){writeBrief();renderStudio();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
-const BUILD='20261107021347';
+const BUILD='20261107160418';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
@@ -1564,7 +1611,7 @@ $('#btnZip').onclick=saveZip;
 $('#btnCsv').onclick=()=>copyText(csvAds());
 $('#btnDemo').onclick=async()=>{if(S.brief.marca&&!(await confirmDlg('Carregar exemplo','Substitui o projeto actual pelo exemplo «Café da Ribeira».')))return;S=JSON.parse(JSON.stringify(DEMO));S.plano=buildPlan();S.plano.feito=[0,1,2,3,4,5,6];S.resultados=simulate();commit();renderAll();go(0)};
 $('#btnReset').onclick=async()=>{if(!(await confirmDlg('Novo projeto','Limpa o brief, a pesquisa e os criativos. Se já exportaste, esse ficheiro fica como estava.')))return;S=blank();IMG=null;commit();renderAll()};
-$('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#b_setor').onchange=e=>{$('#b_setor_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#b_setor_outro').focus()};$('#pr_local').onchange=e=>{$('#pr_local_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_local_outro').focus()};$('#pr_sector').onchange=e=>{$('#pr_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_outro').focus()};$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
+$('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#btnFind').onclick=findCompany;$('#pr_q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findCompany()}});$('#b_setor').onchange=e=>{$('#b_setor_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#b_setor_outro').focus()};$('#pr_local').onchange=e=>{$('#pr_local_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_local_outro').focus()};$('#pr_sector').onchange=e=>{$('#pr_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_outro').focus()};$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
 window.addEventListener('resize',()=>{const c=$('#chart');if(c&&S.resultados&&$('#p3').classList.contains('show'))renderOptimize()});
 
 load();
