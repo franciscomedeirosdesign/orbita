@@ -349,7 +349,7 @@ footer .hand{color:var(--magenta)}
   </div>
   <nav class="steps" id="steps" aria-label="Etapas"><div class="steps-pill">
     <button class="step" data-step="4"><span class="n">P</span><div><strong>Prospectar</strong><br><span class="s">Leads por sector e local</span></div></button>
-    <button class="step" data-step="5"><span class="n">1</span><div><strong>Marca</strong><br><span class="s">Estúdio · opcional</span></div></button><button class="step" data-step="0"><span class="n">2</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button>
+    <button class="step" data-step="0"><span class="n">1</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button><button class="step" data-step="5"><span class="n">2</span><div><strong>Marca</strong><br><span class="s">Estúdio · opcional</span></div></button>
     <button class="step" data-step="1"><span class="n">3</span><div><strong>Criar</strong><br><span class="s">Variações e formatos</span></div></button>
     <button class="step" data-step="2"><span class="n">4</span><div><strong>Lançar</strong><br><span class="s">Plano de media</span></div></button>
     <button class="step" data-step="3"><span class="n">5</span><div><strong>Otimizar</strong><br><span class="s">Resultados e aprendizagens</span></div></button>
@@ -391,11 +391,12 @@ footer .hand{color:var(--magenta)}
 
   <!-- E ESTÚDIO -->
   <section class="panel" id="p5">
-    <div class="head"><div><span class="eyebrow">Etapa 1 · Marca · opcional</span><h2>Desenhar a <em>marca</em></h2><p>Do brief à marca completa: logótipos, paleta, tipografia e voz, uma landing page, posts e animações. Depois pede alterações em conversa e vê-as na hora.</p><p class="small" style="margin-top:8px">O cliente já tem uma marca boa? <button class="jif-link" id="stSkip" style="font:600 14px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Salta para o Descobrir</button></p></div></div>
+    <div class="head"><div><span class="eyebrow">Etapa 2 · Marca · opcional</span><h2>Desenhar a <em>marca</em></h2><p>Do brief à marca completa: logótipos, paleta, tipografia e voz, uma landing page, posts e animações. Depois pede alterações em conversa e vê-as na hora.</p><p class="small" style="margin-top:8px">O cliente já tem uma marca boa? <button class="jif-link" id="stSkip" style="font:600 14px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Salta para o Criar</button></p></div></div>
     <div class="toolbar">
       <label style="flex:3;min-width:260px">O que queres criar (opcional)<textarea id="st_prompt" rows="5" placeholder="Ex.: marca jovem e artesanal para uma pastelaria de bairro; tons quentes; nada de rosa"></textarea></label>
       <label style="min-width:180px">Estilo<select id="st_estilo"></select></label>
       <label style="flex:2;min-width:220px">Manter da marca actual<input id="st_manter" placeholder="Ex.: o cobre, o nome escrito à mão"></label>
+      <label style="flex:2;min-width:240px">Ângulo da marca<select id="st_angulo"></select></label>
       <label style="flex:2;min-width:220px">Evitar<input id="st_evitar" placeholder="Ex.: clip-art, letras com sombra"></label>
       <button class="btn primary" id="btnBrand">Gerar marca</button>
     </div>
@@ -405,7 +406,7 @@ footer .hand{color:var(--magenta)}
       <div class="drop" id="stDrop" tabindex="0" role="button" aria-label="Adicionar referências"><input type="file" id="stFiles" multiple accept="image/*,video/*,application/pdf,.svg" hidden><span>Arrasta para aqui ou <u>escolhe ficheiros</u></span><small class="muted">Até 10 referências · vídeos viram uma folha de 4 fotogramas · PDF até 4 MB</small></div>
       <div class="refs" id="stRefs"></div>
     </div>
-    <div id="stOrigem" class="row" style="margin:-4px 0 12px"></div><div id="stStatus" class="small muted" style="margin-bottom:12px"></div>
+    <div id="stDisc"></div><div id="stOrigem" class="row" style="margin:-4px 0 12px"></div><div id="stStatus" class="small muted" style="margin-bottom:12px"></div>
     <div class="row" id="stTabs" style="margin-bottom:16px"></div>
     <div id="st_marca"></div><div id="st_layout" hidden></div><div id="st_posts" hidden></div><div id="st_anim" hidden></div>
     <div class="chatbar"><textarea id="st_chat" rows="1"></textarea><button class="btn primary" id="btnStChat">Aplicar</button></div>
@@ -414,7 +415,7 @@ footer .hand{color:var(--magenta)}
   <!-- 1 DESCOBRIR -->
   <section class="panel" id="p0">
     <div class="head">
-      <div><span class="eyebrow">Etapa 2 · Descobrir</span><h2>Conhecer o <em>público</em></h2><p>Escreve o brief do cliente. A IA devolve o retrato do público, as tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
+      <div><span class="eyebrow">Etapa 1 · Descobrir</span><h2>Conhecer o <em>público</em></h2><p>Escreve o brief do cliente. A IA devolve o retrato do público, as tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
     </div>
     <div class="grid g2" style="grid-template-columns:minmax(300px,2fr) minmax(300px,3fr)">
       <div class="card">
@@ -653,12 +654,13 @@ function renderDiscover(){
       <label class="angle ${S.angulosSel.includes(a.id)?'on':''}"><input type="checkbox" value="${a.id}" ${S.angulosSel.includes(a.id)?'checked':''}>
         <div style="flex:1"><div class="row" style="justify-content:space-between"><h4>${esc(a.titulo)}</h4><span class="pot" title="Potencial ${a.potencial}/5">${[1,2,3,4,5].map(i=>`<i class="${i<=a.potencial?'f':''}"></i>`).join('')}</span></div>
         <p class="small muted">${esc(a.descricao)}</p><p class="quote">«${esc(a.gancho)}»</p></div></label>`).join('')}</div>
-    <div class="row" style="margin-top:14px"><button class="btn primary" id="toCreate">Avançar para Criar →</button></div></div>
+    <div class="row" style="margin-top:14px"><button class="btn primary" id="toBrand">Criar a marca</button><button class="btn" id="toCreate">Saltar para Criar</button><span class="small muted">A marca usa o público, as tendências, o ângulo e o moodboard daqui.</span></div></div>
   <div class="card"><h3>Moodboard</h3>
     <div class="swatches">${m.paleta.map(h=>`<div class="swatch" style="background:${h};color:${dark(h)?'#fff':'#111'};text-shadow:none">${h}</div>`).join('')}</div>
     <div class="words">${m.palavras.map(w=>`<span class="chip">${esc(w)}</span>`).join('')}</div>
     <p class="small muted" style="margin-top:10px">${esc(m.estilo)}</p></div>`;
   $$('#angles input').forEach(i=>i.onchange=()=>{i.closest('.angle').classList.toggle('on',i.checked);S.angulosSel=$$('#angles input:checked').map(x=>x.value);$('#selCount').textContent=S.angulosSel.length;persistLocal()});
+  $('#toBrand').onclick=()=>{readBrief();persistLocal();const m=stEnsure();if(!m.brand){m.angulo=S.angulosSel[0]||m.angulo||''}m.tab='marca';go(5)};
   $('#toCreate').onclick=()=>{if(!S.angulosSel.length){toast('Escolhe pelo menos um ângulo.','warn');return}readBrief();persistLocal();renderCreateTools();go(1)};
 }
 
@@ -1112,7 +1114,7 @@ function renderLeads(){
       <div style="flex:1;min-width:240px"><div class="row"><h3></h3><span class="chip ${est[l.estado]?.[1]||''}">${est[l.estado]?.[0]||l.estado}</span>${a?`<span class="chip accent" title="Após análise do site e redes">Potencial ${a.prioridade}/5</span>`:(l.potencial?`<span class="chip warn" title="Estimado na pesquisa; analisa para confirmar">Potencial ${l.potencial}/5 · est.</span>`:'')}</div>
         <div class="small muted addr"></div>
         <div class="row" style="margin-top:6px"><span class="chip">${esc(l.sector)}</span><span class="chip">${esc(l.local)}</span>${l.site?`<a class="chip" href="${esc(l.site)}" target="_blank" rel="noopener">Site ↗</a>`:'<span class="chip off">Sem site</span>'}${l.fonte?`<a class="chip" href="${esc(l.fonte)}" target="_blank" rel="noopener">Fonte ↗</a>`:''}</div></div>
-      <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm" data-brief>Criar brief</button><button class="btn sm primary" data-studio>Ir para o Estúdio</button><button class="btn sm x" data-del title="Remover">×</button></div></div>
+      <div class="row"><select class="st" style="width:auto">${Object.keys(est).map(k=>`<option value="${k}" ${l.estado===k?'selected':''}>${est[k][0]}</option>`).join('')}</select><button class="btn sm" data-an>${a?'Reanalisar':'Analisar presença'}</button><button class="btn sm" data-brief>Criar brief</button><button class="btn sm primary" data-studio>Brief + marca</button><button class="btn sm x" data-del title="Remover">×</button></div></div>
       <div class="row redes" style="margin-top:10px">${redes}</div>
       <p class="small desc" style="margin-top:8px"></p>
       <div class="an" style="margin-top:6px"></div>`;
@@ -1123,7 +1125,7 @@ function renderLeads(){
       $$('.score .o',el).forEach((o,i)=>o.textContent=a[sc[i][1]].obs);$('.an p',el).textContent=a.abordagem;$('[data-copy]',el).onclick=()=>copyText(a.abordagem)}
     $('.st',el).onchange=e=>{l.estado=e.target.value;commit();renderLeads()};
     $('[data-an]',el).onclick=()=>analyseLead(l,el);
-    $('[data-brief]',el).onclick=()=>leadToBrief(l);$('[data-studio]',el).onclick=()=>leadToBrief(l,5);
+    $('[data-brief]',el).onclick=()=>leadToBrief(l);$('[data-studio]',el).onclick=()=>{leadToBrief(l,0);S.fluxoMarca=true;persistLocal();toast('Primeiro o Descobrir: carrega em «Pesquisar com IA». No fim, «Criar a marca».')};
     $('[data-del]',el).onclick=async()=>{if(await confirmDlg('Remover lead',l.nome)){S.leads=S.leads.filter(x=>x!==l);commit();renderLeads()}};
     host.append(el);
   }
@@ -1271,7 +1273,9 @@ async function refBlocks(onlyImages){
 }
 function withRefs(blocks,prompt){return blocks.length?[{role:'user',content:[...blocks,{type:'text',text:prompt}]}]:prompt}
 function stEnsure(){if(!S.marca)S.marca={brand:null,prompt:'',estilo:ESTILOS[0],tab:'marca',layout:{versoes:[],atual:-1,device:'desktop'},posts:{itens:[]},anim:{tipo:'logo',fmt:'sq',dur:6,texto:''},usarNosAnuncios:true,chat:[]};return S.marca}
-function brandCtx(){const b=S.brief;return `Cliente: ${b.marca||'(sem nome)'}\nSector: ${b.setor||'n/d'}\nProduto/serviço: ${b.produto||'n/d'}\nPúblico: ${b.publico||'n/d'}\nDiferenciais: ${b.diferenciais||'n/d'}\nTom pedido: ${b.tom}\nNotas e diagnóstico: ${b.notas||'—'}`}
+function discCtx(){const d=S.discover;if(!d)return '';const m=S.marca||{};const ang=(d.angulos||[]).find(a=>a.id===(m.angulo||S.angulosSel[0]))||null;
+  return `\nPESQUISA DO DESCOBRIR (usa como base estratégica da marca):\nPúblico: ${d.publico?.resumo||''}\nDores: ${(d.publico?.dores||[]).join('; ')}\nDesejos: ${(d.publico?.desejos||[]).join('; ')}\nTendências: ${(d.mercado?.tendencias||[]).join('; ')}\nConcorrência: ${(d.mercado?.concorrentes||[]).map(c=>c.nome+' ('+c.angulo+')').join('; ')}\n${ang?`Ângulo escolhido para a marca (deve ser o centro do conceito e da tagline): «${ang.titulo}» — ${ang.descricao} Gancho: «${ang.gancho}»\n`:''}Moodboard (ponto de partida, podes afinar): paleta ${(d.moodboard?.paleta||[]).join(', ')}; palavras ${(d.moodboard?.palavras||[]).join(', ')}; estilo ${d.moodboard?.estilo||''}`}
+function brandCtx(){const b=S.brief;return `Cliente: ${b.marca||'(sem nome)'}\nSector: ${b.setor||'n/d'}\nProduto/serviço: ${b.produto||'n/d'}\nPúblico: ${b.publico||'n/d'}\nDiferenciais: ${b.diferenciais||'n/d'}\nTom pedido: ${b.tom}\nNotas e diagnóstico: ${b.notas||'—'}`+discCtx()}
 
 /* --- fontes --- */
 const FONT_W={'Young Serif':'400','Abril Fatface':'400','Anton':'400','Bebas Neue':'400','Righteous':'400','Pacifico':'400','Shrikhand':'400','Gloock':'400','DM Serif Display':'400','Instrument Serif':'400','Space Mono':'400;700','Libre Baskerville':'400;700','Lora':'400;700','Oswald':'400;700','Quicksand':'400;700','Space Grotesk':'400;700','Cormorant Garamond':'400;700','IBM Plex Serif':'400;700','IBM Plex Sans':'400;700','Caveat':'400;700'};
@@ -1351,7 +1355,7 @@ const BRAND_SCHEMA=`{"nome":"","tagline":"frase curta","conceito":"2-3 frases: a
 const SVG_RULES=`Regras dos logótipos: ${(S.marca&&S.marca.nlogos)||3} conceitos MUITO diferentes (ex.: monograma/símbolo + nome; lettering; emblema/selo). SVG válido, viewBox="0 0 480 240", fundo transparente, só formas (path, circle, rect, polygon, ellipse, line, g) e <text>. Texto com font-family igual à fonte de título escolhida e font-weight explícito. Cores só da paleta. Sem <image>, sem scripts, sem URLs externas, sem filtros pesados. Desenha símbolos com intenção (geometria simples, bem equilibrada), centrados na área.`;
 
 async function genBrand(instr){
-  const m=stEnsure();m.prompt=$('#st_prompt').value.trim();m.estilo=$('#st_estilo').value;m.manter=$('#st_manter').value.trim();m.evitar=$('#st_evitar').value.trim();m.nlogos=Number($('#st_nlogos').value)||3;persistLocal();
+  const m=stEnsure();m.prompt=$('#st_prompt').value.trim();m.estilo=$('#st_estilo').value;m.manter=$('#st_manter').value.trim();m.evitar=$('#st_evitar').value.trim();m.nlogos=Number($('#st_nlogos').value)||3;m.angulo=$('#st_angulo').value;persistLocal();
   const refs=await refBlocks(false);const refTxt=refs.length?`\nANEXEI ${refs.length/2} REFERÊNCIAS DE INSPIRAÇÃO (acima). Analisa-as: formas, construção dos símbolos, tipografia, cor, textura, tom, o que têm em comum. Usa-as como direcção criativa SEM copiar nenhum logótipo nem marca existente; respeita as notas de cada uma. Resume em «leitura_referencias» o que tiraste delas.`:'';
   const cur=m.brand&&instr;
   stBusy(cur?'A ajustar a marca…':'A desenhar a marca: conceito, logótipos, paleta e tipografia…');
@@ -1422,6 +1426,10 @@ function renderStudio(){
   $('#stOrigem').innerHTML=(m.origem?`<span class="chip accent">Pré-preenchido com ${esc(m.origem)}</span><span class="small muted">Revê os campos e carrega em «Gerar marca».</span>`:'')+(S.brief.marca?`<button class="jif-link" id="stRefill" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep)">Preencher outra vez com o brief e a análise</button>`:'');
   const rf=$('#stRefill');if(rf)rf.onclick=()=>{readBrief();prefillStudio(null);persistLocal();renderStudio();toast('Campos do Estúdio actualizados.')};
   renderRefs();
+  const d=S.discover;const sa=$('#st_angulo');sa.innerHTML='<option value="">'+(d?'Sem ângulo definido':'Faz o Descobrir para teres ângulos')+'</option>'+(d?.angulos||[]).map(a=>`<option value="${a.id}">${esc(a.titulo)}</option>`).join('');
+  if(d&&!m.angulo&&S.angulosSel[0])m.angulo=S.angulosSel[0];sa.value=m.angulo||'';sa.disabled=!d;
+  $('#stDisc').innerHTML=d?'':`<div class="note warn" style="margin-bottom:14px"><span>✶</span><span>A marca fica melhor com o Descobrir feito antes: público, tendências, ângulo e moodboard. <button class="jif-link" id="stGoDisc" style="font:600 14px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Ir para o Descobrir</button></span></div>`;
+  if($('#stGoDisc'))$('#stGoDisc').onclick=()=>go(0);
   $$('#stTabs [data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===m.tab));
   ST_TABS.forEach(([k])=>$('#st_'+k).hidden=k!==m.tab);
   $('#st_chat').placeholder={marca:'Pede uma alteração à marca (ex.: logótipo mais simples, paleta mais quente, fonte mais elegante)',layout:'Pede uma alteração à página (ex.: hero escuro, mais espaço, junta uma secção de preços)',posts:'Pede uma alteração aos posts (ex.: mais curtos, tom mais divertido, um post de Natal)',anim:'Pede uma alteração à animação (ex.: mais rápida, fundo claro, formato story)'}[m.tab];
@@ -1449,7 +1457,7 @@ function renderBrand(){
       <div class="card"><h3>Voz da marca</h3><p class="vz"></p><div class="row" style="margin:10px 0" id="stWords"></div><ul class="clean" id="stEx"></ul></div>
       <div class="card">${br.leitura?.length?'<h3>O que a IA viu nas referências</h3><ul class="clean" id="stLeit" style="margin-bottom:18px"></ul>':''}<h3>Aplicações</h3><ul class="clean" id="stApl"></ul>
         <label class="toggle ${S.marca.usarNosAnuncios?'on':''}" style="margin-top:14px"><input type="checkbox" id="stUseAds" ${S.marca.usarNosAnuncios?'checked':''}> Usar esta marca nos anúncios (Criar)</label>
-        <div class="row" style="margin-top:14px"><button class="btn sm primary" id="btnKit">Descarregar kit de marca (.zip)</button><button class="btn sm" id="btnToLayout">Criar layout web</button></div></div>
+        <div class="row" style="margin-top:14px"><button class="btn sm primary" id="btnKit">Descarregar kit de marca (.zip)</button><button class="btn sm" id="btnToLayout">Criar layout web</button><button class="btn sm" id="btnToAds">Seguir para Criar anúncios</button></div></div>
     </div>`;
   $('.brandhero p',host).textContent=br.tagline;$('.bh-c',host).textContent=br.conceito;
   $('.ty-t',host).textContent=br.tagline||br.nome;$('.ty-b',host).textContent=br.voz.exemplos[0]||br.conceito;$('.vz',host).textContent=br.voz.descricao;
@@ -1469,7 +1477,7 @@ function renderBrand(){
     $('[data-png]',d).onclick=async()=>{const cv=await logoCanvas(l.svg);cv.toBlob(b=>downloads.save({filename:`${slug(br.nome)}_logo_${i+1}.png`,data:b}),'image/png')};
     lg.append(d)});
   $('#stUseAds').onchange=e=>{S.marca.usarNosAnuncios=e.target.checked;e.target.closest('.toggle').classList.toggle('on',e.target.checked);commit();renderAds()};
-  $('#btnKit').onclick=brandKit;$('#btnToLayout').onclick=()=>{S.marca.tab='layout';renderStudio();if(!S.marca.layout.versoes.length)genLayout()};
+  $('#btnKit').onclick=brandKit;$('#btnToAds').onclick=()=>$('#stSkip').click();$('#btnToLayout').onclick=()=>{S.marca.tab='layout';renderStudio();if(!S.marca.layout.versoes.length)genLayout()};
 }
 async function logoCanvas(svg,w=1600){const img=await svgImage(svg,w);const cv=document.createElement('canvas');cv.width=w;cv.height=Math.round(w*vbRatio(svg));cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);return cv}
 
@@ -1643,18 +1651,18 @@ function initStudio(){
   $('#st_estilo').innerHTML=ESTILOS.map(e=>`<option>${e}</option>`).join('');
   const dz=$('#stDrop'),fi=$('#stFiles');dz.onclick=e=>{if(e.target!==fi)fi.click()};dz.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fi.click()}};fi.onchange=()=>{addRefs(fi.files);fi.value=''};
   ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));dz.addEventListener('drop',e=>addRefs(e.dataTransfer.files));
-  $('#st_nlogos').onchange=e=>{stEnsure().nlogos=Number(e.target.value)||3;persistLocal()};
+  $('#st_nlogos').onchange=e=>{stEnsure().nlogos=Number(e.target.value)||3;persistLocal()};$('#st_angulo').onchange=e=>{stEnsure().angulo=e.target.value;persistLocal()};
   $('#stTabs').innerHTML=ST_TABS.map(([k,v])=>`<button class="chip" data-tab="${k}" aria-pressed="false">${v}</button>`).join('');
   $$('#stTabs [data-tab]').forEach(b=>b.onclick=()=>{stEnsure().tab=b.dataset.tab;persistLocal();renderStudio()});
   $('#btnBrand').onclick=async()=>{if(S.marca?.brand&&!(await confirmDlg('Gerar marca nova','Substitui a marca actual por uma nova. O layout, os posts e a animação passam a usar a nova marca.')))return;genBrand()};
-  $('#stSkip').onclick=()=>go(0);
+  $('#stSkip').onclick=()=>{if(!S.discover){toast('Faz primeiro o Descobrir.','warn');go(0);return}if(!S.angulosSel.length){toast('Escolhe pelo menos um ângulo no Descobrir.','warn');go(0);return}renderCreateTools();go(1)};
   $('#btnStChat').onclick=stChat;$('#st_chat').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();stChat()}});
   $('#st_prompt').onchange=()=>{stEnsure().prompt=$('#st_prompt').value;persistLocal()};$('#st_manter').onchange=()=>{stEnsure().manter=$('#st_manter').value;persistLocal()};$('#st_evitar').onchange=()=>{stEnsure().evitar=$('#st_evitar').value;persistLocal()};$('#st_estilo').onchange=()=>{stEnsure().estilo=$('#st_estilo').value;persistLocal()};
 }
 
 /* ===== Arranque ===== */
 function renderAll(){writeBrief();renderStudio();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
-const BUILD='20261107161421';
+const BUILD='20261107162156';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
