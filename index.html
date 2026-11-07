@@ -349,10 +349,10 @@ footer .hand{color:var(--magenta)}
   </div>
   <nav class="steps" id="steps" aria-label="Etapas"><div class="steps-pill">
     <button class="step" data-step="4"><span class="n">P</span><div><strong>Prospectar</strong><br><span class="s">Leads por sector e local</span></div></button>
-    <button class="step" data-step="5"><span class="n">E</span><div><strong>Estúdio</strong><br><span class="s">Marca, layout, posts, animação</span></div></button><button class="step" data-step="0"><span class="n">1</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button>
-    <button class="step" data-step="1"><span class="n">2</span><div><strong>Criar</strong><br><span class="s">Variações e formatos</span></div></button>
-    <button class="step" data-step="2"><span class="n">3</span><div><strong>Lançar</strong><br><span class="s">Plano de media</span></div></button>
-    <button class="step" data-step="3"><span class="n">4</span><div><strong>Otimizar</strong><br><span class="s">Resultados e aprendizagens</span></div></button>
+    <button class="step" data-step="5"><span class="n">1</span><div><strong>Marca</strong><br><span class="s">Estúdio · opcional</span></div></button><button class="step" data-step="0"><span class="n">2</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button>
+    <button class="step" data-step="1"><span class="n">3</span><div><strong>Criar</strong><br><span class="s">Variações e formatos</span></div></button>
+    <button class="step" data-step="2"><span class="n">4</span><div><strong>Lançar</strong><br><span class="s">Plano de media</span></div></button>
+    <button class="step" data-step="3"><span class="n">5</span><div><strong>Otimizar</strong><br><span class="s">Resultados e aprendizagens</span></div></button>
   </div></nav>
 </header>
 
@@ -391,7 +391,7 @@ footer .hand{color:var(--magenta)}
 
   <!-- E ESTÚDIO -->
   <section class="panel" id="p5">
-    <div class="head"><div><span class="eyebrow">Estúdio · Marca e design</span><h2>Desenhar a <em>marca</em></h2><p>Do brief à marca completa: logótipos, paleta, tipografia e voz, uma landing page, posts e animações. Depois pede alterações em conversa e vê-as na hora.</p></div></div>
+    <div class="head"><div><span class="eyebrow">Etapa 1 · Marca · opcional</span><h2>Desenhar a <em>marca</em></h2><p>Do brief à marca completa: logótipos, paleta, tipografia e voz, uma landing page, posts e animações. Depois pede alterações em conversa e vê-as na hora.</p><p class="small" style="margin-top:8px">O cliente já tem uma marca boa? <button class="jif-link" id="stSkip" style="font:600 14px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Salta para o Descobrir</button></p></div></div>
     <div class="toolbar">
       <label style="flex:3;min-width:260px">O que queres criar (opcional)<textarea id="st_prompt" rows="5" placeholder="Ex.: marca jovem e artesanal para uma pastelaria de bairro; tons quentes; nada de rosa"></textarea></label>
       <label style="min-width:180px">Estilo<select id="st_estilo"></select></label>
@@ -414,7 +414,7 @@ footer .hand{color:var(--magenta)}
   <!-- 1 DESCOBRIR -->
   <section class="panel" id="p0">
     <div class="head">
-      <div><span class="eyebrow">Etapa 1 · Descobrir</span><h2>Conhecer a <em>marca</em></h2><p>Escreve o brief do cliente. A IA devolve o retrato do público, as tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
+      <div><span class="eyebrow">Etapa 2 · Descobrir</span><h2>Conhecer o <em>público</em></h2><p>Escreve o brief do cliente. A IA devolve o retrato do público, as tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
     </div>
     <div class="grid g2" style="grid-template-columns:minmax(300px,2fr) minmax(300px,3fr)">
       <div class="card">
@@ -461,7 +461,7 @@ footer .hand{color:var(--magenta)}
   <!-- 2 CRIAR -->
   <section class="panel" id="p1">
     <div class="head">
-      <div><span class="eyebrow">Etapa 2 · Criar</span><h2>Criar as <em>peças</em></h2><p>Escolhe os ângulos, o número de variações e os formatos. A IA escreve os textos e a app monta cada anúncio com o moodboard. Podes trocar o fundo por uma fotografia tua.</p></div>
+      <div><span class="eyebrow">Etapa 3 · Criar</span><h2>Criar as <em>peças</em></h2><p>Escolhe os ângulos, o número de variações e os formatos. A IA escreve os textos e a app monta cada anúncio com o moodboard. Podes trocar o fundo por uma fotografia tua.</p></div>
     </div>
     <div class="toolbar">
       <label>Variações por ângulo<select id="c_n"><option>2</option><option selected>3</option><option>4</option></select></label>
@@ -482,7 +482,7 @@ footer .hand{color:var(--magenta)}
   <!-- 3 LANÇAR -->
   <section class="panel" id="p2">
     <div class="head">
-      <div><span class="eyebrow">Etapa 3 · Lançar</span><h2>Pôr tudo a <em>rodar</em></h2><p>O plano de media sai do orçamento e dos canais que escolheste. Por agora a publicação é simulada: a app prepara o plano e a lista de verificação, e tu publicas à mão em cada plataforma.</p></div>
+      <div><span class="eyebrow">Etapa 4 · Lançar</span><h2>Pôr tudo a <em>rodar</em></h2><p>O plano de media sai do orçamento e dos canais que escolheste. Por agora a publicação é simulada: a app prepara o plano e a lista de verificação, e tu publicas à mão em cada plataforma.</p></div>
     </div>
     <div id="launchOut" class="stack"></div>
   </section>
@@ -490,7 +490,7 @@ footer .hand{color:var(--magenta)}
   <!-- 4 OTIMIZAR -->
   <section class="panel" id="p3">
     <div class="head">
-      <div><span class="eyebrow">Etapa 4 · Otimizar</span><h2>Dar mais uma <em>volta</em></h2><p>Resultados por variação. Nesta versão os números são simulados a partir do potencial de cada ângulo, para testar o ciclo; com as APIs ligadas, entram os dados reais. A IA lê a tabela, aponta o vencedor e propõe a próxima iteração.</p></div>
+      <div><span class="eyebrow">Etapa 5 · Otimizar</span><h2>Dar mais uma <em>volta</em></h2><p>Resultados por variação. Nesta versão os números são simulados a partir do potencial de cada ângulo, para testar o ciclo; com as APIs ligadas, entram os dados reais. A IA lê a tabela, aponta o vencedor e propõe a próxima iteração.</p></div>
     </div>
     <div id="optOut" class="stack"></div>
   </section>
@@ -1647,13 +1647,14 @@ function initStudio(){
   $('#stTabs').innerHTML=ST_TABS.map(([k,v])=>`<button class="chip" data-tab="${k}" aria-pressed="false">${v}</button>`).join('');
   $$('#stTabs [data-tab]').forEach(b=>b.onclick=()=>{stEnsure().tab=b.dataset.tab;persistLocal();renderStudio()});
   $('#btnBrand').onclick=async()=>{if(S.marca?.brand&&!(await confirmDlg('Gerar marca nova','Substitui a marca actual por uma nova. O layout, os posts e a animação passam a usar a nova marca.')))return;genBrand()};
+  $('#stSkip').onclick=()=>go(0);
   $('#btnStChat').onclick=stChat;$('#st_chat').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();stChat()}});
   $('#st_prompt').onchange=()=>{stEnsure().prompt=$('#st_prompt').value;persistLocal()};$('#st_manter').onchange=()=>{stEnsure().manter=$('#st_manter').value;persistLocal()};$('#st_evitar').onchange=()=>{stEnsure().evitar=$('#st_evitar').value;persistLocal()};$('#st_estilo').onchange=()=>{stEnsure().estilo=$('#st_estilo').value;persistLocal()};
 }
 
 /* ===== Arranque ===== */
 function renderAll(){writeBrief();renderStudio();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
-const BUILD='20261107161217';
+const BUILD='20261107161421';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
