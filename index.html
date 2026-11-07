@@ -183,6 +183,19 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 }
 
 
+
+.packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-items:start}
+.jif-pack{display:grid;gap:10px;padding:24px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);align-content:start}
+.jif-pack__name{font:600 22px/1.1 var(--display);color:var(--magenta-deep);letter-spacing:-.01em}
+.jif-pack__desc{font:400 14.5px/1.4 var(--body);margin:0}
+.jif-pack__price{display:flex;align-items:baseline;gap:6px;padding-top:12px;border-top:1px solid var(--line);font:400 14px/1 var(--body)}
+.jif-pack__price strong{font:700 40px/1 var(--display);letter-spacing:-.04em;color:var(--magenta)}
+.jif-pack ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;font:400 14px/1.3 var(--body)}
+.jif-pack li{padding-left:16px;position:relative}.jif-pack li::before{content:"";position:absolute;left:0;top:.42em;width:7px;height:7px;border-radius:50%;background:var(--magenta)}
+.jif-pack--featured{background:var(--magenta);border-color:var(--magenta);color:#fff}
+.jif-pack--featured .jif-pack__name,.jif-pack--featured .jif-pack__price strong{color:#fff}.jif-pack--featured .jif-pack__price{border-color:rgba(255,255,255,.35)}.jif-pack--featured li::before{background:#fff}
+.jif-badge{justify-self:start;font:600 11px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:999px;background:var(--blush-strong);color:var(--magenta-deep)}
+.jif-pack--featured .jif-badge{background:#fff}
 /* Estúdio */
 .insp{margin-bottom:16px}
 .drop{margin-top:12px;border:2px dashed var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;text-align:center;font-family:var(--display);font-weight:600;transition:border-color .2s,background .2s}
@@ -438,7 +451,11 @@ footer .hand{color:var(--magenta)}
             <label style="flex:1">Tom de voz
               <select id="b_tom"><option>Próximo e directo</option><option>Premium e sóbrio</option><option>Divertido</option><option>Técnico e informativo</option><option>Inspirador</option></select>
             </label>
-            <label style="flex:1">Orçamento mensal (€)<input id="b_orcamento" type="number" min="50" step="50" value="600" class="num"></label>
+            <label style="flex:1">Investimento disponível<select id="b_invest"></select></label>
+          </div>
+          <div class="row" style="gap:12px">
+            <label style="flex:1">Por mês, se for avença (€)<input id="b_mensal" type="number" min="0" step="50" placeholder="Opcional" class="num"></label>
+            <label style="flex:1">Prioridade do cliente<select id="b_prio"><option>Ainda não sabe</option><option>Marca e imagem</option><option>Redes sociais e conteúdo</option><option>Site ou loja online</option><option>Vender mais / anúncios</option><option>Fotografia</option></select></label>
           </div>
           <div>
             <div class="small muted" style="margin-bottom:6px;font-weight:500">Canais</div>
@@ -456,6 +473,12 @@ footer .hand{color:var(--magenta)}
         </div>
       </div>
       <div id="discoverOut" class="stack"></div>
+    </div>
+    <div class="card" id="svcCard" style="margin-top:16px">
+      <div class="row" style="justify-content:space-between;align-items:flex-end"><div><span class="eyebrow">Proposta JIF</span><h3>Que serviço da JIF encaixa?</h3><p class="small muted" style="margin-top:6px;max-width:70ch">Cruza o investimento, a prioridade, o diagnóstico da lead e a pesquisa com o catálogo da JIF. Preços indicativos, sem IVA.</p></div>
+      <div class="row"><button class="btn primary" id="btnSvc">Avaliar com IA</button><button class="btn" id="btnSvcCat">Ver catálogo</button></div></div>
+      <div id="svcStatus" class="small muted" style="margin-top:10px"></div>
+      <div id="svcOut" style="margin-top:14px"></div>
     </div>
   </section>
 
@@ -485,6 +508,7 @@ footer .hand{color:var(--magenta)}
     <div class="head">
       <div><span class="eyebrow">Etapa 4 · Lançar</span><h2>Pôr tudo a <em>rodar</em></h2><p>O plano de media sai do orçamento e dos canais que escolheste. Por agora a publicação é simulada: a app prepara o plano e a lista de verificação, e tu publicas à mão em cada plataforma.</p></div>
     </div>
+    <div class="toolbar"><label style="max-width:260px">Media para anúncios (€/mês)<input id="b_orcamento" type="number" min="50" step="50" value="600" class="num"></label><span class="small muted" style="align-self:center">Só o valor pago às plataformas. Os serviços JIF estão no Descobrir.</span></div>
     <div id="launchOut" class="stack"></div>
   </section>
 
@@ -517,7 +541,7 @@ const CANAIS = {meta:'Meta', tiktok:'TikTok', google:'Google Display'};
 
 const blank = () => ({
   v:1, iteracao:1, etapa:0, estado:'rascunho',
-  brief:{marca:'',setor:'',produto:'',objetivo:'Vendas online',publico:'',diferenciais:'',tom:'Próximo e directo',orcamento:600,canais:['meta','google'],notas:''},
+  brief:{marca:'',setor:'',produto:'',objetivo:'Vendas online',publico:'',diferenciais:'',tom:'Próximo e directo',orcamento:600,invest:'nao',mensal:0,prio:'Ainda não sabe',canais:['meta','google'],notas:''},
   discover:null, angulosSel:[], criar:{n:3,tpl:'bloco',fmts:['meta_feed','meta_story','gdn_land']},
   ads:[], plano:null, resultados:null, analise:null, historico:[],
   prospect:{local:'',sector:'',n:10}, leads:[]
@@ -530,7 +554,7 @@ let sample=null, artifactCap=null, downloads=null;
 /* ===== Exemplo ===== */
 const DEMO = {
   v:1, iteracao:1, etapa:0, estado:'ativa',
-  brief:{marca:'Café da Ribeira',setor:'torrefação artesanal',produto:'Subscrição mensal de café em grão (250 g ou 500 g), torrado na semana do envio',objetivo:'Vendas online',publico:'30–50 anos, Porto e Lisboa, trabalham a partir de casa pelo menos 2 dias por semana, já têm moinho ou máquina de espresso, valorizam origem e consistência mais do que preço.',diferenciais:'Torrefação no Porto desde 2016; lotes rastreáveis até à quinta; envio grátis acima de 25 €; primeira entrega com -20 %; 4,8★ em 310 avaliações.',tom:'Próximo e directo',orcamento:600,canais:['meta','google'],notas:''},
+  brief:{invest:'3k',mensal:500,prio:'Vender mais / anúncios',marca:'Café da Ribeira',setor:'torrefação artesanal',produto:'Subscrição mensal de café em grão (250 g ou 500 g), torrado na semana do envio',objetivo:'Vendas online',publico:'30–50 anos, Porto e Lisboa, trabalham a partir de casa pelo menos 2 dias por semana, já têm moinho ou máquina de espresso, valorizam origem e consistência mais do que preço.',diferenciais:'Torrefação no Porto desde 2016; lotes rastreáveis até à quinta; envio grátis acima de 25 €; primeira entrega com -20 %; 4,8★ em 310 avaliações.',tom:'Próximo e directo',orcamento:600,canais:['meta','google'],notas:''},
   discover:{
     publico:{resumo:'Profissionais em teletrabalho que já investiram em equipamento e sentem que o café de supermercado não lhe faz justiça. Compram por hábito, mudam por decepção.',dores:['Café que chega velho e sem data de torra','Ficar sem café a meio da semana','Não saber de onde vem o grão','Pagar 12 € por um pacote medíocre'],desejos:['Rotina de manhã que compense','Consistência chávena após chávena','Sentir que apoia um produtor local']},
     mercado:{tendencias:['Subscrições com pausa livre e frequência ajustável','Transparência de origem como argumento principal','Conteúdo de bastidores (torra, cupping) a gerar mais confiança do que packshots'],concorrentes:[{nome:'Marcas de supermercado premium',angulo:'Preço e conveniência'},{nome:'Torrefações nacionais com loja online',angulo:'Origem e especialidade'},{nome:'Marketplaces de café',angulo:'Variedade e descoberta'}]},
@@ -586,18 +610,18 @@ function readBrief(){
   const b=S.brief;
   b.marca=$('#b_marca').value.trim();b.setor=pickValue('#b_setor','#b_setor_outro');b.produto=$('#b_produto').value.trim();
   b.objetivo=$('#b_objetivo').value;b.publico=$('#b_publico').value.trim();b.diferenciais=$('#b_diferenciais').value.trim();
-  b.tom=$('#b_tom').value;b.orcamento=Math.max(50,Number($('#b_orcamento').value)||0);b.notas=$('#b_notas').value.trim();
+  b.tom=$('#b_tom').value;b.orcamento=Math.max(50,Number($('#b_orcamento').value)||0);b.invest=$('#b_invest').value;b.mensal=Number($('#b_mensal').value)||0;b.prio=$('#b_prio').value;b.notas=$('#b_notas').value.trim();
   b.canais=$$('#b_canais input:checked').map(i=>i.value);
 }
 function writeBrief(){
   const b=S.brief;
   $('#b_marca').value=b.marca;pickSet('#b_setor','#b_setor_outro','#b_setor_outro_l',b.setor);$('#b_produto').value=b.produto;$('#b_objetivo').value=b.objetivo;
-  $('#b_publico').value=b.publico;$('#b_diferenciais').value=b.diferenciais;$('#b_tom').value=b.tom;$('#b_orcamento').value=b.orcamento;$('#b_notas').value=b.notas;
+  $('#b_publico').value=b.publico;$('#b_diferenciais').value=b.diferenciais;$('#b_tom').value=b.tom;$('#b_orcamento').value=b.orcamento;$('#b_invest').value=b.invest||'nao';$('#b_mensal').value=b.mensal||'';$('#b_prio').value=b.prio||'Ainda não sabe';$('#b_notas').value=b.notas;
   $$('#b_canais input').forEach(i=>{i.checked=b.canais.includes(i.value);i.closest('.toggle').classList.toggle('on',i.checked)});
 }
 function briefText(){
   const b=S.brief;
-  return `Marca: ${b.marca}\nSetor: ${b.setor}\nProduto/serviço: ${b.produto}\nObjetivo: ${b.objetivo}\nPúblico-alvo: ${b.publico}\nDiferenciais e provas: ${b.diferenciais}\nTom de voz: ${b.tom}\nOrçamento mensal: ${b.orcamento} €\nCanais: ${b.canais.map(c=>CANAIS[c]).join(', ')}${b.notas?`\nAprendizagens da iteração anterior: ${b.notas}`:''}`;
+  return `Marca: ${b.marca}\nSetor: ${b.setor}\nProduto/serviço: ${b.produto}\nObjetivo: ${b.objetivo}\nPúblico-alvo: ${b.publico}\nDiferenciais e provas: ${b.diferenciais}\nTom de voz: ${b.tom}\nInvestimento do cliente: ${investLabel(b.invest)}${b.mensal?' · '+b.mensal+' €/mês':''}\nMedia para anúncios: ${b.orcamento} €/mês\nCanais: ${b.canais.map(c=>CANAIS[c]).join(', ')}${b.notas?`\nAprendizagens da iteração anterior: ${b.notas}`:''}`;
 }
 
 /* ===== Navegação ===== */
@@ -1048,7 +1072,7 @@ Avalia de 0 (inexistente) a 5 (profissional e consistente) e responde APENAS com
 "prioridade" de 1 a 5: 5 = presença fraca mas negócio com aspecto viável (grande oportunidade); 1 = já têm tudo bem feito.
 Acrescenta ao mesmo JSON a chave "brief", com o que conseguires apurar do site, das redes e das avaliações (para preparar uma campanha para este cliente; não inventes factos, usa "" se não souberes):
 "brief":{"produto":"produto ou serviço principal a promover, concreto","objetivo":"um de: Vendas online | Leads / pedidos de contacto | Notoriedade | Visitas à loja | Instalações de app | Reservas / marcações","publico":"quem são os clientes: idades, zona, interesses, ocasiões","diferenciais":"o que os distingue: especialidades, história, preços, prémios, o que os clientes elogiam nas avaliações","tom":"um de: Próximo e directo | Premium e sóbrio | Divertido | Técnico e informativo | Inspirador","canais":["meta","google","tiktok"],"orcamento":300,"horario":"","precos":"faixa de preços se visível","avaliacoes":"nota média e nº de avaliações Google se visível","marca_visual":"cores, tipografia e estilo actuais (para o moodboard)","estilo":"um de: Minimal e limpo | Artesanal e caloroso | Editorial | Ousado e colorido | Premium e sóbrio | Retro | Tecnológico | Divertido","manter":"elementos da marca actual que vale a pena manter (cores, símbolo, nome, mascote…) ou \"\"","evitar":"o que não funciona hoje e deve ser evitado na nova marca"}
-"canais": só os que fazem sentido para este negócio. "orcamento": orçamento mensal de media realista em euros para uma PME deste tipo.`;
+"canais": só os que fazem sentido para este negócio. "orcamento": orçamento mensal de media realista em euros para uma PME deste tipo.\nAcrescenta ainda em "brief": "investimento": escalão provável que este negócio consegue investir numa agência, pela dimensão aparente (um de: 500 | 1k | 3k | 5k | 10k | 10kp, onde 500 = menos de 500€, 1k = 500–1000€, 3k = 1–3K, 5k = 3–5K, 10k = 5–10K, 10kp = mais de 10K) e "prioridade": um de: Marca e imagem | Redes sociais e conteúdo | Site ou loja online | Vender mais / anúncios | Fotografia.`;
   try{
     const {text}=await callAI(prompt,{tools:[TOOL_FETCH(5),TOOL_SEARCH(3,lead.local)],beta:'web-fetch-2025-09-10',maxTokens:6000});
     const a=parseJson(text);if(!a||!a.logo)throw{code:'invalid_json',text};
@@ -1073,6 +1097,9 @@ function leadToBrief(l,dest){
   const can=(Array.isArray(ab.canais)?ab.canais:[]).map(c=>clean(c).toLowerCase()).filter(c=>['meta','google','tiktok'].includes(c));
   b.canais=can.length?can:(['meta',...(l.redes?.tiktok?['tiktok']:[]),'google']);
   const orc=Number(ab.orcamento);if(orc>=50)b.orcamento=Math.round(orc/50)*50;
+  if(INVEST.some(x=>x[0]===ab.investimento))b.invest=ab.investimento;
+  const PRIOS=['Marca e imagem','Redes sociais e conteúdo','Site ou loja online','Vender mais / anúncios','Fotografia'];if(PRIOS.includes(ab.prioridade))b.prio=ab.prioridade;
+  S.servicos=null;
   const sc=a.logo?`Diagnóstico de presença: logótipo ${a.logo.nota}/5 (${a.logo.obs}); identidade ${a.identidade.nota}/5 (${a.identidade.obs}); redes ${a.redes.nota}/5 (${a.redes.obs}); comunicação ${a.comunicacao.nota}/5 (${a.comunicacao.obs}); site ${a.site.nota}/5 (${a.site.obs}).`:'';
   const redes=REDES.filter(k=>l.redes?.[k]).map(k=>`${k}: ${l.redes[k]}`).join(' · ');
   b.notas=[
@@ -1661,8 +1688,81 @@ function initStudio(){
 }
 
 /* ===== Arranque ===== */
-function renderAll(){writeBrief();renderStudio();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
-const BUILD='20261107162156';
+function renderAll(){writeBrief();renderServices();renderStudio();renderStatus();renderDiscover();renderCreateTools();renderAds();renderLaunch();renderOptimize();pickSet('#pr_local','#pr_local_outro','#pr_local_outro_l',S.prospect?.local||'');setSector(S.prospect?.sector||'');$('#pr_n').value=S.prospect?.n||10;renderLeads();go(S.etapa||0)}
+
+/* ===== Serviços JIF ===== */
+const JIF_SERV={"copy": {"n": "Copywriting para Website", "p": 50, "m": 0, "d": "Para marcas que querem comunicar melhor o que fazem.", "inc": ["Textos das páginas do site", "Alinhados com a arquitetura do site"], "u": "/página", "cat": "cont"}, "blog": {"n": "Artigos para Blog", "p": 50, "m": 0, "d": "Para marcas que querem partilhar conhecimento e reforçar a presença online. Em PT ou EN.", "inc": ["Pesquisa e redação", "Estrutura do artigo", "Otimização SEO básica"], "u": "/artigo", "cat": "cont"}, "evx": {"n": "Eventos Sociais", "p": 100, "m": 0, "d": "Aniversários, batizados e outras festas.", "inc": ["Captura e edição", "Horário a combinar"], "u": "", "cat": "ev"}, "evd": {"n": "Fotografia de Casamento", "p": 800, "m": 0, "d": "Casamentos com até 80 convidados.", "inc": ["Captura e edição", "Cobertura até 10 h"], "u": "", "cat": "ev"}, "logo": {"n": "Logo Express", "p": 390, "m": 0, "d": "Fazemos o teu logótipo. É para marcas que começam agora.", "inc": ["Logótipo + 2 variações", "Paleta de cor", "1 ronda de revisão"], "u": "", "cat": "brand"}, "id": {"n": "Identidade Essencial", "p": 850, "m": 0, "d": "Criamos a imagem base da tua marca. Tens um guia simples para a usar.", "inc": ["Logótipo e variações", "Paleta e tipografia", "Mini manual (PDF)", "2 rondas de revisão"], "u": "", "cat": "brand"}, "idc": {"n": "Identidade Completa", "p": 1900, "m": 0, "d": "Criamos a imagem completa da tua marca. Preparamos todas as peças que usas.", "inc": ["Tudo da Essencial", "Manual de marca completo", "Papelaria e assinatura de email", "Templates para redes"], "u": "", "cat": "brand"}, "m360": {"n": "Marca 360º", "p": 2400, "m": 0, "d": "Criamos a tua marca e gerimos as redes. Também fotografamos um evento.", "inc": ["Identidade Essencial", "3 meses de Conteúdo Mensal", "1 cobertura de evento", "Sessão fotográfica de marca"], "u": "", "cat": "brand"}, "reb": {"n": "Rebranding", "p": 4900, "m": 0, "d": "Mudamos a imagem de uma marca que já existe. Planeamos a mudança contigo.", "inc": ["Auditoria e estratégia de marca", "Nova identidade completa", "Plano de transição", "Lançamento nas redes"], "u": "", "cat": "brand"}, "diag": {"n": "Consultoria de Marketing", "p": 200, "m": 0, "d": "Uma radiografia ao teu plano de marketing.", "inc": ["Angariação e retenção de clientes", "Canais de comunicação", "Conteúdos do site e das redes", "Relatório com melhorias e sugestões"], "u": "", "cat": "mkt"}, "mm": {"n": "Marketing Mensal", "p": 690, "m": 1, "d": "Fazemos o plano de marketing e os anúncios. Mostramos os resultados todos os meses.", "inc": ["Plano mensal de marketing", "Gestão de anúncios (Meta)", "Newsletter mensal", "Relatório de resultados"], "u": "", "cat": "mkt"}, "camp": {"n": "Campanha de Lançamento", "p": 2900, "m": 0, "d": "Lançamos o teu produto ou marca. Fazemos a ideia, as peças e os anúncios.", "inc": ["Conceito e mote da campanha", "Peças para redes e impressão", "Anúncios durante 1 mês", "Relatório final"], "u": "", "cat": "mkt"}, "cs": {"n": "Redes Sociais", "p": 150, "m": 1, "d": "Presença regular nas redes sociais, sem dores de cabeça.", "inc": ["Calendário de criação e publicação", "Textos das publicações", "Gestão da rede: respostas e mensagens", "Relatório mensal"], "u": "", "cat": "soc"}, "ct": {"n": "Conteúdo Mensal", "p": 450, "m": 1, "d": "Publicamos todas as semanas em 2 redes. Fazemos também reels.", "inc": ["Estratégia e calendário", "12 publicações + 4 reels", "Gestão de 2 redes", "Relatório mensal"], "u": "", "cat": "soc"}, "cp": {"n": "Conteúdo Pro", "p": 890, "m": 1, "d": "Publicamos muitas vezes e fazemos fotos todos os meses. Respondemos à tua comunidade.", "inc": ["16 publicações + 8 reels", "Sessão fotográfica mensal", "Gestão de comunidade", "Relatório e reunião mensal"], "u": "", "cat": "soc"}, "ev": {"n": "Fotografia Corporate", "p": 100, "m": 0, "d": "Eventos empresariais, produto e arquitetura. Imagens próprias para comunicares os teus produtos e serviços.", "inc": ["Direção criativa", "Sessão fotográfica", "Seleção e edição de imagens"], "u": "/sessão", "cat": "ev"}, "pa": {"n": "Peça Avulsa", "p": 150, "m": 0, "d": "Fazemos uma peça gráfica: um cartaz, um flyer, um menu ou um convite.", "inc": ["1 peça de design", "Adaptação a 2 formatos", "2 rondas de revisão"], "u": "", "cat": "design"}, "kit": {"n": "Kit de Design", "p": 650, "m": 0, "d": "Fazemos as peças do dia a dia: cartão de visita, papel de carta e templates.", "inc": ["Cartão de visita", "Papel de carta e assinatura", "5 templates para redes"], "u": "", "cat": "design"}, "ed": {"n": "Editorial", "p": 50, "m": 0, "d": "Brochuras, catálogos, flyers, apresentações, e-books e guias. Para apresentares produtos e serviços.", "inc": ["Organização da informação", "Redação e copywriting", "Paginação e design editorial"], "u": "/peça", "cat": "cont"}, "lp": {"n": "Landing Page", "p": 900, "m": 0, "d": "Fazemos uma página web. Ela apresenta a tua oferta e recebe contactos.", "inc": ["1 página responsiva", "Formulário de contacto", "SEO base e analytics"], "u": "", "cat": "web"}, "site": {"n": "Site Institucional", "p": 2200, "m": 0, "d": "Fazemos o site da tua marca. Tu mudas o conteúdo.", "inc": ["Até 6 páginas", "Gestão de conteúdos", "PT / EN", "SEO base"], "u": "", "cat": "web"}, "loja": {"n": "Site + Loja", "p": 4500, "m": 0, "d": "Fazemos o site e a loja online. Recebes pagamentos e envias encomendas.", "inc": ["Site institucional", "Loja online até 50 produtos", "Pagamentos e envios", "Formação de 2 h"], "u": "", "cat": "web"}, "anual": {"n": "Estúdio Dedicado", "p": 1200, "m": 1, "d": "Somos a tua equipa criativa todo o ano. Fazemos marca, conteúdo e design.", "inc": ["Branding, conteúdo e design contínuos", "Fotografia de eventos incluída", "Reunião estratégica mensal", "Prioridade na agenda"], "u": "", "cat": "big"}};
+const SERV_CAT={brand:'Branding',cont:'Conteúdo',soc:'Redes sociais',mkt:'Marketing',design:'Design',web:'Web',ev:'Fotografia',big:'Parcerias'};
+const INVEST=[['nao','Ainda não sabe',null],['500','Menos de 500 €',500],['1k','500 € – 1K',1000],['3k','1K – 3K',3000],['5k','3K – 5K',5000],['10k','5K – 10K',10000],['10kp','Mais de 10K',1e9]];
+const investLabel=k=>(INVEST.find(x=>x[0]===k)||INVEST[0])[1];
+const investMax=k=>(INVEST.find(x=>x[0]===k)||INVEST[0])[2];
+const eurS=v=>v==null?'sob consulta':v.toLocaleString('pt-PT')+'€';
+const svcPrice=x=>{const v=JIF_SERV[x];return v?`desde ${eurS(v.p)}${v.m?'/mês':(v.u||'')}`:''};
+function leadForBrief(){const b=S.brief;return S.leads.find(l=>l.analise&&b.marca&&l.nome.replace(/\s*\(exemplo fictício\)/,'')===b.marca)||null}
+function ruleServices(){ // sugestão rápida sem IA
+  const b=S.brief,a=leadForBrief()?.analise,max=investMax(b.invest)??1e9,mens=b.mensal||0;
+  const low=k=>a&&a[k]&&a[k].nota<=2,pr=b.prio||'';
+  const need={brand:pr==='Marca e imagem'||low('logo')||low('identidade'),soc:pr==='Redes sociais e conteúdo'||low('redes')||low('comunicacao'),web:pr==='Site ou loja online'||low('site'),mkt:pr==='Vender mais / anúncios',ev:pr==='Fotografia'};
+  const fits=k=>{const v=JIF_SERV[k];return v&&(v.m?(mens?v.p<=mens:v.p*3<=max):v.p<=max)};
+  const pick=list=>list.filter(fits).slice(-1)[0]||list[0];
+  let principal;
+  if(need.brand&&need.soc&&fits('m360'))principal='m360';
+  else if(need.brand)principal=pick(['logo','id','idc','reb'].filter(k=>k!=='reb'||max>=4900));
+  else if(need.soc)principal=pick(['cs','ct','cp']);
+  else if(need.web)principal=pick(['lp','site','loja']);
+  else if(need.mkt)principal=pick(['diag','mm','camp']);
+  else if(need.ev)principal='ev';
+  else principal=max<=500?'diag':'id';
+  const comp=[];if(need.soc&&principal!=='m360'&&!['cs','ct','cp'].includes(principal))comp.push(pick(['cs','ct','cp']));if(need.web&&!['lp','site','loja'].includes(principal))comp.push(pick(['lp','site']));if(!comp.length&&principal!=='ev')comp.push('ev');
+  return {fonte:'regras',principal:{id:principal,porque:'Sugestão rápida pelas notas do diagnóstico, pela prioridade e pelo escalão de investimento. Usa «Avaliar com IA» para uma proposta fundamentada.'},complementares:comp.slice(0,2).map(id=>({id,porque:'',quando:''})),alternativa:null,faseamento:[],argumento:''};
+}
+async function evalServices(){
+  readBrief();persistLocal();
+  if(!loadCfg().key){S.servicos=ruleServices();commit();renderServices();toast('Sem chave da API: mostrei uma sugestão rápida por regras.','warn');return}
+  const st=$('#svcStatus'),btn=$('#btnSvc');btn.disabled=true;st.innerHTML='<span class="thinking">A cruzar o cliente com o catálogo da JIF…</span>';
+  const lead=leadForBrief(),a=lead?.analise;const d=S.discover;
+  const cat=Object.entries(JIF_SERV).map(([k,v])=>`${k} · ${v.n} (${SERV_CAT[v.cat]||'Outros'}) · ${svcPrice(k)} · ${v.d} Inclui: ${v.inc.join(', ')}`).join('\n');
+  const prompt=`És director de contas da JIF studio (Porto: branding, conteúdos, redes sociais, web e fotografia). Recomenda o serviço da JIF que melhor serve este cliente e cabe no investimento dele.
+CLIENTE (brief):\n${briefText()}\nPrioridade do cliente: ${S.brief.prio||'não indicada'}
+${a?`DIAGNÓSTICO DA PRESENÇA: logótipo ${a.logo?.nota}/5 (${a.logo?.obs}); identidade ${a.identidade?.nota}/5 (${a.identidade?.obs}); redes ${a.redes?.nota}/5 (${a.redes?.obs}); comunicação ${a.comunicacao?.nota}/5 (${a.comunicacao?.obs}); site ${a.site?.nota}/5 (${a.site?.obs}). Oportunidades: ${(a.oportunidades||[]).join('; ')}`:'Sem diagnóstico da presença.'}
+${d?`PESQUISA: público ${d.publico?.resumo||''}; tendências ${(d.mercado?.tendencias||[]).join('; ')}`:''}
+${S.marca?.brand?`Já há uma proposta de marca no Estúdio («${S.marca.brand.nome}»).`:''}
+CATÁLOGO (id · nome · preço · descrição):\n${cat}
+Regras: respeita o investimento (pontual = total do projeto; mensal = avença). Se o investimento não chegar ao ideal, propõe o melhor possível agora e faseia o resto. Não inventes serviços nem preços fora do catálogo. Português de Portugal. O «argumento» fala directamente com o cliente, por tu, na voz da JIF.
+Responde APENAS com um bloco \`\`\`json:
+{"principal":{"id":"","porque":"2-3 frases ligadas ao diagnóstico e ao investimento","adaptacao":"o que ajustar no package para este cliente"},"complementares":[{"id":"","porque":"1 frase","quando":"agora | mês 2 | depois"}],"alternativa":{"id":"","porque":"opção mais económica ou mais ambiciosa, 1 frase"},"faseamento":["Mês 1: …","Mês 2–3: …"],"total_pontual":0,"total_mensal":0,"encaixe":"dentro | no limite | acima","argumento":"frase curta para abrir a proposta ao cliente"}`;
+  try{const {text}=await callAI(prompt,{maxTokens:2500});const o=parseJson(text);const ok=id=>!!JIF_SERV[id];
+    if(!o||!ok(o.principal?.id))throw{code:'invalid_json',message:'serviço fora do catálogo'};
+    S.servicos={fonte:'ia',principal:o.principal,complementares:(o.complementares||[]).filter(c=>ok(c.id)&&c.id!==o.principal.id).slice(0,3),alternativa:ok(o.alternativa?.id)?o.alternativa:null,faseamento:(o.faseamento||[]).map(String).slice(0,5),total_pontual:Number(o.total_pontual)||0,total_mensal:Number(o.total_mensal)||0,encaixe:String(o.encaixe||''),argumento:String(o.argumento||'')};
+    commit();st.textContent='';renderServices()}
+  catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,140))+')</span>':''}</span>`}
+  finally{btn.disabled=false}
+}
+function packCard(id,{featured,badge,porque,extra}={}){const v=JIF_SERV[id];if(!v)return '';
+  return `<article class="jif-pack ${featured?'jif-pack--featured':''}">${badge?`<span class="jif-badge">${esc(badge)}</span>`:''}<div class="small" style="font:600 11px var(--display);letter-spacing:.12em;text-transform:uppercase;opacity:.7">${esc(SERV_CAT[v.cat]||'')}</div><h3 class="jif-pack__name" style="margin:0">${esc(v.n)}</h3><p class="jif-pack__desc">${esc(v.d)}</p><p class="jif-pack__price" style="margin:0">desde <strong>${v.p==null?'—':v.p.toLocaleString('pt-PT')+'€'}</strong>${v.m?'/mês':esc(v.u||'')}</p><ul>${v.inc.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>${porque?`<p class="jif-pack__desc" style="border-top:1px solid ${featured?'rgba(255,255,255,.35)':'var(--line)'};padding-top:12px"><b>Porquê:</b> ${esc(porque)}</p>`:''}${extra||''}</article>`}
+function renderServices(){
+  const out=$('#svcOut');if(!out)return;const r=S.servicos;const b=S.brief;
+  if(!r){out.innerHTML=`<p class="small muted">Indica o investimento e a prioridade no brief e carrega em «Avaliar com IA». Investimento actual: <b>${esc(investLabel(b.invest))}</b>${b.mensal?` · ${b.mensal}€/mês`:''}.</p>`;return}
+  const p=r.principal;
+  out.innerHTML=`${r.argumento?`<p style="font:800 clamp(22px,2.4vw,30px)/1.1 var(--display);letter-spacing:-.03em;max-width:40ch;margin-bottom:16px">«${esc(r.argumento)}»</p>`:''}
+    <div class="packs">${packCard(p.id,{featured:true,badge:'Recomendado',porque:p.porque,extra:p.adaptacao?`<p class="jif-pack__desc"><b>Ajustar:</b> ${esc(p.adaptacao)}</p>`:''})}
+    ${r.complementares.map(c=>packCard(c.id,{badge:c.quando?'Complemento · '+c.quando:'Complemento',porque:c.porque})).join('')}
+    ${r.alternativa?packCard(r.alternativa.id,{badge:'Alternativa',porque:r.alternativa.porque}):''}</div>
+    <div class="row" style="margin-top:16px;gap:24px;align-items:flex-start">
+      ${r.faseamento?.length?`<div style="flex:2;min-width:260px"><h4>Faseamento</h4><ul class="clean">${r.faseamento.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`:''}
+      ${(r.total_pontual||r.total_mensal)?`<div style="flex:1;min-width:200px"><h4>Valor estimado</h4><p style="font:800 30px/1 var(--display);letter-spacing:-.04em;margin-top:6px">${r.total_pontual?r.total_pontual.toLocaleString('pt-PT')+'€':''}${r.total_pontual&&r.total_mensal?' + ':''}${r.total_mensal?r.total_mensal.toLocaleString('pt-PT')+'€/mês':''}</p><p class="small muted" style="margin-top:6px">Investimento do cliente: ${esc(investLabel(b.invest))}${b.mensal?' · '+b.mensal+'€/mês':''}${r.encaixe?` · <b>${esc(r.encaixe)}</b>`:''}. Preços indicativos, sem IVA.</p></div>`:''}
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn sm" id="svcCopy">Copiar resumo da proposta</button>${r.fonte==='regras'?'<span class="small muted">Sugestão rápida por regras.</span>':''}</div>`;
+  $('#svcCopy').onclick=()=>{const L=[`Proposta JIF para ${b.marca}`,r.argumento?`«${r.argumento}»`:'',`Recomendado: ${JIF_SERV[p.id].n} (${svcPrice(p.id)}) — ${p.porque}`,...r.complementares.map(c=>`Complemento: ${JIF_SERV[c.id].n} (${svcPrice(c.id)})${c.quando?' · '+c.quando:''} — ${c.porque}`),r.alternativa?`Alternativa: ${JIF_SERV[r.alternativa.id].n} (${svcPrice(r.alternativa.id)}) — ${r.alternativa.porque}`:'',...(r.faseamento||[]),(r.total_pontual||r.total_mensal)?`Valor estimado: ${r.total_pontual?r.total_pontual+'€':''}${r.total_mensal?' + '+r.total_mensal+'€/mês':''} (indicativo, sem IVA)`:''].filter(Boolean).join('\n');copyText(L)};
+}
+function showCatalog(){const d=$('#dlg');$('#dlgT').textContent='Catálogo JIF';
+  $('#dlgB').innerHTML=Object.entries(SERV_CAT).map(([c,nome])=>{const ks=Object.keys(JIF_SERV).filter(k=>JIF_SERV[k].cat===c);return ks.length?`<h4 style="margin:14px 0 6px">${esc(nome)}</h4><ul class="clean">${ks.map(k=>`<li><b>${esc(JIF_SERV[k].n)}</b> · ${esc(svcPrice(k))}<br><span class="small muted">${esc(JIF_SERV[k].d)}</span></li>`).join('')}</ul>`:''}).join('')+'<p class="small muted" style="margin-top:12px">Preços indicativos, sem IVA.</p>';
+  const y=$('#dlgYes'),n=$('#dlgNo');const done=()=>{d.close();y.onclick=n.onclick=null};y.onclick=n.onclick=done;d.showModal()}
+function initServices(){$('#b_invest').innerHTML=INVEST.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');$('#btnSvc').onclick=evalServices;$('#btnSvcCat').onclick=showCatalog;
+  ['#b_invest','#b_mensal','#b_prio'].forEach(id=>$(id).addEventListener('change',()=>{readBrief();commit();renderServices()}));
+  $('#b_orcamento').addEventListener('change',()=>{readBrief();S.plano=null;commit();renderLaunch()})}
+
+const BUILD='20261107162807';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
@@ -1670,7 +1770,7 @@ async function checkUpdate(){
       d.innerHTML='<span>✶</span><span>Há uma versão nova da Órbita.</span><button class="btn sm primary" style="margin-left:8px">Actualizar</button>';$('button',d).onclick=()=>location.replace(location.pathname+'?v='+Date.now());document.body.append(d)}}catch(e){}
 }
 setTimeout(checkUpdate,1500);setInterval(checkUpdate,5*60*1000);
-initStudio();
+initServices();initStudio();
 function load(){
   let saved=null;try{saved=JSON.parse($('#saved-state').textContent)}catch(e){}
   const local=loadLocal();
