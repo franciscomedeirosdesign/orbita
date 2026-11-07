@@ -369,11 +369,13 @@ footer .hand{color:var(--magenta)}
   <section class="panel" id="p5">
     <div class="head"><div><span class="eyebrow">Estúdio · Marca e design</span><h2>Desenhar a <em>marca</em></h2><p>Do brief à marca completa: logótipos, paleta, tipografia e voz, uma landing page, posts e animações. Depois pede alterações em conversa e vê-as na hora.</p></div></div>
     <div class="toolbar">
-      <label style="flex:3;min-width:260px">O que queres criar (opcional)<textarea id="st_prompt" rows="2" placeholder="Ex.: marca jovem e artesanal para uma pastelaria de bairro; tons quentes; nada de rosa"></textarea></label>
+      <label style="flex:3;min-width:260px">O que queres criar (opcional)<textarea id="st_prompt" rows="5" placeholder="Ex.: marca jovem e artesanal para uma pastelaria de bairro; tons quentes; nada de rosa"></textarea></label>
       <label style="min-width:180px">Estilo<select id="st_estilo"></select></label>
+      <label style="flex:2;min-width:220px">Manter da marca actual<input id="st_manter" placeholder="Ex.: o cobre, o nome escrito à mão"></label>
+      <label style="flex:2;min-width:220px">Evitar<input id="st_evitar" placeholder="Ex.: clip-art, letras com sombra"></label>
       <button class="btn primary" id="btnBrand">Gerar marca</button>
     </div>
-    <div id="stStatus" class="small muted" style="margin-bottom:12px"></div>
+    <div id="stOrigem" class="row" style="margin:-4px 0 12px"></div><div id="stStatus" class="small muted" style="margin-bottom:12px"></div>
     <div class="row" id="stTabs" style="margin-bottom:16px"></div>
     <div id="st_marca"></div><div id="st_layout" hidden></div><div id="st_posts" hidden></div><div id="st_anim" hidden></div>
     <div class="chatbar"><textarea id="st_chat" rows="1"></textarea><button class="btn primary" id="btnStChat">Aplicar</button></div>
@@ -980,7 +982,7 @@ Avalia de 0 (inexistente) a 5 (profissional e consistente) e responde APENAS com
 {"ativo":true,"atividade":"sinal mais recente de actividade e data","logo":{"nota":0,"obs":"1 frase"},"identidade":{"nota":0,"obs":"paleta, tipografia, consistência entre site e redes"},"redes":{"nota":0,"obs":"quais existem, frequência aparente, qualidade das fotos","encontradas":{"instagram":"url ou null","facebook":null,"linkedin":null,"tiktok":null}},"comunicacao":{"nota":0,"obs":"clareza da oferta, texto, call-to-action, fotografia"},"site":{"nota":0,"obs":"existe? moderno? funciona em telemóvel?"},"prioridade":1,"oportunidades":["3 serviços concretos que a nossa agência podia vender"],"abordagem":"2 frases de abertura para um primeiro contacto, em português de Portugal, concretas e sem bajulação"}
 "prioridade" de 1 a 5: 5 = presença fraca mas negócio com aspecto viável (grande oportunidade); 1 = já têm tudo bem feito.
 Acrescenta ao mesmo JSON a chave "brief", com o que conseguires apurar do site, das redes e das avaliações (para preparar uma campanha para este cliente; não inventes factos, usa "" se não souberes):
-"brief":{"produto":"produto ou serviço principal a promover, concreto","objetivo":"um de: Vendas online | Leads / pedidos de contacto | Notoriedade | Visitas à loja | Instalações de app | Reservas / marcações","publico":"quem são os clientes: idades, zona, interesses, ocasiões","diferenciais":"o que os distingue: especialidades, história, preços, prémios, o que os clientes elogiam nas avaliações","tom":"um de: Próximo e directo | Premium e sóbrio | Divertido | Técnico e informativo | Inspirador","canais":["meta","google","tiktok"],"orcamento":300,"horario":"","precos":"faixa de preços se visível","avaliacoes":"nota média e nº de avaliações Google se visível","marca_visual":"cores, tipografia e estilo actuais (para o moodboard)"}
+"brief":{"produto":"produto ou serviço principal a promover, concreto","objetivo":"um de: Vendas online | Leads / pedidos de contacto | Notoriedade | Visitas à loja | Instalações de app | Reservas / marcações","publico":"quem são os clientes: idades, zona, interesses, ocasiões","diferenciais":"o que os distingue: especialidades, história, preços, prémios, o que os clientes elogiam nas avaliações","tom":"um de: Próximo e directo | Premium e sóbrio | Divertido | Técnico e informativo | Inspirador","canais":["meta","google","tiktok"],"orcamento":300,"horario":"","precos":"faixa de preços se visível","avaliacoes":"nota média e nº de avaliações Google se visível","marca_visual":"cores, tipografia e estilo actuais (para o moodboard)","estilo":"um de: Minimal e limpo | Artesanal e caloroso | Editorial | Ousado e colorido | Premium e sóbrio | Retro | Tecnológico | Divertido","manter":"elementos da marca actual que vale a pena manter (cores, símbolo, nome, mascote…) ou \"\"","evitar":"o que não funciona hoje e deve ser evitado na nova marca"}
 "canais": só os que fazem sentido para este negócio. "orcamento": orçamento mensal de media realista em euros para uma PME deste tipo.`;
   try{
     const {text}=await callAI(prompt,{tools:[TOOL_FETCH(5),TOOL_SEARCH(3,lead.local)],beta:'web-fetch-2025-09-10',maxTokens:6000});
@@ -1021,8 +1023,9 @@ function leadToBrief(l){
     !a.logo&&l.sinais?'Sinais: '+l.sinais:''
   ].filter(Boolean).join('\n');
   S.discover=null;S.angulosSel=[];S.ads=[];S.plano=null;S.resultados=null;S.analise=null;S.estado='rascunho';S.iteracao=1;
-  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();go(0);
-  toast(l.analise?'Brief preenchido com a análise. Revê e carrega em «Pesquisar com IA».':'Brief preenchido com os dados da lead. Analisa a presença primeiro para um brief mais completo.');
+  S.marca=null;prefillStudio(l);
+  commit();writeBrief();renderDiscover();renderAds();renderLaunch();renderOptimize();renderStudio();go(0);
+  toast(l.analise?'Brief e Estúdio preenchidos com a análise. Revê e carrega em «Pesquisar com IA» ou vai ao Estúdio.':'Brief preenchido com os dados da lead. Analisa a presença primeiro para um brief mais completo.');
 }
 
 function renderLeads(){
@@ -1135,6 +1138,28 @@ const ANIM_FMT={sq:{w:1080,h:1080,nome:'Quadrado 1:1'},st:{w:1080,h:1920,nome:'S
 const POST_FMT={feed:{w:1080,h:1350,nome:'Feed 4:5'},story:{w:1080,h:1920,nome:'Story 9:16'}};
 let ANIM_RAF=null,ANIM_T0=0;
 
+
+const TOM_ESTILO={'Próximo e directo':'Artesanal e caloroso','Premium e sóbrio':'Premium e sóbrio','Divertido':'Divertido','Técnico e informativo':'Minimal e limpo','Inspirador':'Editorial'};
+function prefillStudio(lead){
+  const m=stEnsure(),b=S.brief;
+  lead=lead||S.leads.find(l=>l.analise&&b.marca&&l.nome.replace(/\s*\(exemplo fictício\)/,'')===b.marca)||null;
+  const a=lead?.analise||{},ab=a.brief||{};
+  const est=ESTILOS.find(e=>e.toLowerCase()===String(ab.estilo||'').toLowerCase())||TOM_ESTILO[b.tom]||ESTILOS[0];
+  const linhas=[
+    `${a.logo?'Rebranding':'Identidade'} para ${b.marca||'o cliente'}${b.setor?' ('+b.setor+')':''}${lead?.local?', em '+lead.local:''}.`,
+    b.produto?`Produto/serviço principal: ${b.produto}.`:'',
+    b.publico?`Público: ${b.publico}`:'',
+    a.logo?`Diagnóstico: logótipo ${a.logo.nota}/5 (${a.logo.obs}); identidade ${a.identidade.nota}/5 (${a.identidade.obs}).`:'',
+    ab.marca_visual?`Marca actual: ${ab.marca_visual}.`:'',
+    a.oportunidades?.length?`Oportunidades: ${a.oportunidades.join('; ')}.`:'',
+    `Tom: ${b.tom}.`
+  ].filter(Boolean);
+  m.prompt=linhas.join('\n');m.estilo=est;
+  m.manter=String(ab.manter||'');m.evitar=String(ab.evitar||'');
+  m.origem=lead?`a análise de «${lead.nome.replace(/\s*\(exemplo fictício\)/,'')}»`:(b.marca?`o brief de «${b.marca}»`:'');
+  m.tab='marca';
+  if(m.anim&&!m.anim.texto)m.anim.texto='';
+}
 function stEnsure(){if(!S.marca)S.marca={brand:null,prompt:'',estilo:ESTILOS[0],tab:'marca',layout:{versoes:[],atual:-1,device:'desktop'},posts:{itens:[]},anim:{tipo:'logo',fmt:'sq',dur:6,texto:''},usarNosAnuncios:true,chat:[]};return S.marca}
 function brandCtx(){const b=S.brief;return `Cliente: ${b.marca||'(sem nome)'}\nSector: ${b.setor||'n/d'}\nProduto/serviço: ${b.produto||'n/d'}\nPúblico: ${b.publico||'n/d'}\nDiferenciais: ${b.diferenciais||'n/d'}\nTom pedido: ${b.tom}\nNotas e diagnóstico: ${b.notas||'—'}`}
 
@@ -1216,11 +1241,11 @@ const BRAND_SCHEMA=`{"nome":"","tagline":"frase curta","conceito":"2-3 frases: a
 const SVG_RULES=`Regras dos logótipos: 3 conceitos MUITO diferentes (ex.: monograma/símbolo + nome; lettering; emblema/selo). SVG válido, viewBox="0 0 480 240", fundo transparente, só formas (path, circle, rect, polygon, ellipse, line, g) e <text>. Texto com font-family igual à fonte de título escolhida e font-weight explícito. Cores só da paleta. Sem <image>, sem scripts, sem URLs externas, sem filtros pesados. Desenha símbolos com intenção (geometria simples, bem equilibrada), centrados na área.`;
 
 async function genBrand(instr){
-  const m=stEnsure();m.prompt=$('#st_prompt').value.trim();m.estilo=$('#st_estilo').value;persistLocal();
+  const m=stEnsure();m.prompt=$('#st_prompt').value.trim();m.estilo=$('#st_estilo').value;m.manter=$('#st_manter').value.trim();m.evitar=$('#st_evitar').value.trim();persistLocal();
   const cur=m.brand&&instr;
   stBusy(cur?'A ajustar a marca…':'A desenhar a marca: conceito, logótipos, paleta e tipografia…');
   const prompt=cur?`És director de arte de um estúdio de branding em Portugal. Esta é a marca actual em JSON:\n${JSON.stringify(m.brand)}\n\nPedido de alteração: «${instr}»\nAplica APENAS o que foi pedido e mantém o resto. Fontes permitidas: ${FONTES.join(', ')}.\n${SVG_RULES}\nResponde APENAS com um bloco \`\`\`json com a marca completa no mesmo formato:\n${BRAND_SCHEMA}`
-  :`És director de arte de um estúdio de branding em Portugal. Cria uma identidade visual para este cliente.\n${brandCtx()}\nEstilo pretendido: ${m.estilo}.\n${m.prompt?'Indicações do designer: '+m.prompt+'\n':''}Escolhe 2 fontes Google desta lista (título e texto, bom contraste entre si): ${FONTES.join(', ')}.\nPaleta de 5 cores com bom contraste (pelo menos uma escura para texto e uma clara para fundo, uma de destaque).\n${SVG_RULES}\nTexto em português de Portugal. Responde APENAS com um bloco \`\`\`json:\n${BRAND_SCHEMA}`;
+  :`És director de arte de um estúdio de branding em Portugal. Cria uma identidade visual para este cliente.\n${brandCtx()}\nEstilo pretendido: ${m.estilo}.\n${m.prompt?'Indicações do designer: '+m.prompt+'\n':''}${m.manter?'Manter da marca actual: '+m.manter+'\n':''}${m.evitar?'Evitar: '+m.evitar+'\n':''}Escolhe 2 fontes Google desta lista (título e texto, bom contraste entre si): ${FONTES.join(', ')}.\nPaleta de 5 cores com bom contraste (pelo menos uma escura para texto e uma clara para fundo, uma de destaque).\n${SVG_RULES}\nTexto em português de Portugal. Responde APENAS com um bloco \`\`\`json:\n${BRAND_SCHEMA}`;
   try{const {text}=await stAI(prompt,{maxTokens:12000});const br=normBrand(parseJson(text));if(cur)br.logoSel=Math.min(m.brand.logoSel||0,br.logos.length-1);
     m.brand=br;commit();stBusy('');renderStudio();toast(cur?'Marca actualizada.':'Marca criada. Escolhe o logótipo e passa ao layout.')}
   catch(e){stErr(e)}
@@ -1280,7 +1305,10 @@ function stChat(){const inp=$('#st_chat');const t=inp.value.trim();if(!t)return;
 
 /* --- render --- */
 function renderStudio(){
-  const m=stEnsure();$('#st_prompt').value=m.prompt||'';$('#st_estilo').value=m.estilo||ESTILOS[0];
+  const m=stEnsure();if(!m.brand&&!m.prompt&&S.brief.marca)prefillStudio(null);
+  $('#st_prompt').value=m.prompt||'';$('#st_estilo').value=m.estilo||ESTILOS[0];$('#st_manter').value=m.manter||'';$('#st_evitar').value=m.evitar||'';
+  $('#stOrigem').innerHTML=(m.origem?`<span class="chip accent">Pré-preenchido com ${esc(m.origem)}</span><span class="small muted">Revê os campos e carrega em «Gerar marca».</span>`:'')+(S.brief.marca?`<button class="jif-link" id="stRefill" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep)">Preencher outra vez com o brief e a análise</button>`:'');
+  const rf=$('#stRefill');if(rf)rf.onclick=()=>{readBrief();prefillStudio(null);persistLocal();renderStudio();toast('Campos do Estúdio actualizados.')};
   $$('#stTabs [data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===m.tab));
   ST_TABS.forEach(([k])=>$('#st_'+k).hidden=k!==m.tab);
   $('#st_chat').placeholder={marca:'Pede uma alteração à marca (ex.: logótipo mais simples, paleta mais quente, fonte mais elegante)',layout:'Pede uma alteração à página (ex.: hero escuro, mais espaço, junta uma secção de preços)',posts:'Pede uma alteração aos posts (ex.: mais curtos, tom mais divertido, um post de Natal)',anim:'Pede uma alteração à animação (ex.: mais rápida, fundo claro, formato story)'}[m.tab];
@@ -1503,7 +1531,7 @@ function initStudio(){
   $$('#stTabs [data-tab]').forEach(b=>b.onclick=()=>{stEnsure().tab=b.dataset.tab;persistLocal();renderStudio()});
   $('#btnBrand').onclick=async()=>{if(S.marca?.brand&&!(await confirmDlg('Gerar marca nova','Substitui a marca actual por uma nova. O layout, os posts e a animação passam a usar a nova marca.')))return;genBrand()};
   $('#btnStChat').onclick=stChat;$('#st_chat').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();stChat()}});
-  $('#st_prompt').onchange=()=>{stEnsure().prompt=$('#st_prompt').value;persistLocal()};$('#st_estilo').onchange=()=>{stEnsure().estilo=$('#st_estilo').value;persistLocal()};
+  $('#st_prompt').onchange=()=>{stEnsure().prompt=$('#st_prompt').value;persistLocal()};$('#st_manter').onchange=()=>{stEnsure().manter=$('#st_manter').value;persistLocal()};$('#st_evitar').onchange=()=>{stEnsure().evitar=$('#st_evitar').value;persistLocal()};$('#st_estilo').onchange=()=>{stEnsure().estilo=$('#st_estilo').value;persistLocal()};
 }
 
 /* ===== Arranque ===== */
