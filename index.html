@@ -410,7 +410,7 @@ footer .hand{color:var(--magenta)}
       <label style="flex:1;min-width:140px">Estado<select id="pf_estado"><option value="">Todos</option><option value="novo">Novo</option><option value="analisado">Analisado</option><option value="contactado">Contactado</option><option value="cliente">Cliente</option><option value="descartado">Descartado</option></select></label>
       <label style="flex:1;min-width:140px">Ordenar<select id="pf_ord"><option value="prio">Potencial de cliente</option><option value="nome">Nome</option><option value="data">Mais recentes</option></select></label>
       <label style="flex:2;min-width:160px">Procurar<input id="pf_q" placeholder="Nome ou morada"></label>
-      <div class="row" style="align-self:end"><span class="small muted" id="leadCount"></span><button class="btn sm" id="btnLeadsCsv">Copiar CSV</button></div>
+      <div class="row" style="align-self:end"><label class="toggle on" style="min-height:38px;padding:8px 14px"><input type="checkbox" id="pf_ativos" checked> Só em actividade</label><button class="btn sm" id="btnVerify">Verificar actividade</button><span class="small muted" id="leadCount"></span><button class="btn sm" id="btnLeadsCsv">Copiar CSV</button></div>
     </div></div>
     <div id="leads" class="stack"></div>
   </section>
@@ -1028,7 +1028,7 @@ Em português de Portugal. Não inventes empresas nem URLs.`;
       if(!Array.isArray(arr))arr=[];
       let newHere=0;
       for(const x of arr){
-        if(!x||!x.nome||x.ativo===false)continue;const nome=String(x.nome).trim();
+        if(!x||!x.nome||x.ativo===false||!String(x.atividade||'').trim())continue;const nome=String(x.nome).trim();
         if(S.leads.some(l=>l.nome.toLowerCase()===nome.toLowerCase()))continue;
         const redes={};for(const k of REDES)redes[k]=normUrl(x.redes?.[k]);
         S.leads.unshift({id:'L'+(hash(nome+Date.now()+Math.random())%1000000),nome,site:normUrl(x.site)||'',morada:String(x.morada||''),telefone:String(x.telefone||''),sector,local,descricao:String(x.descricao||''),sinais:String(x.sinais||''),atividade:String(x.atividade||''),potencial:Math.min(5,Math.max(1,Number(x.potencial)||3)),fonte:normUrl(x.fonte)||'',redes,estado:'novo',criado:today,analise:null});
@@ -1039,6 +1039,31 @@ Em português de Portugal. Não inventes empresas nem URLs.`;
     }
     st.textContent=added?`${added} empresas adicionadas, ordenadas por potencial de cliente.${added<n?' Não encontrei mais com estes critérios; experimenta outra zona ou um tipo parecido.':''}`:'Não apareceu nenhuma empresa nova. Experimenta outro tipo de negócio ou outra zona.';
   }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
+  finally{btn.disabled=false}
+}
+async function verifyActive(){
+  if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
+  const todo=S.leads.filter(l=>!l.inativo&&!l.verificado);
+  if(!todo.length){toast('Todas as empresas da lista já foram verificadas.');return}
+  const st=$('#prStatus'),btn=$('#btnVerify');btn.disabled=true;let fechadas=0,ok=0;const today=new Date().toISOString().slice(0,10);
+  try{
+    for(let i=0;i<todo.length;i+=8){
+      const lote=todo.slice(i,i+8);st.innerHTML=`<span class="thinking">A verificar se estão em actividade… ${Math.min(i+8,todo.length)} de ${todo.length}</span>`;
+      const lista=lote.map((l,k)=>`${k+1}. ${l.nome} — ${l.local}${l.morada?' ('+l.morada+')':''}${l.site?' · '+l.site:''}`).join('\n');
+      const prompt=`Hoje é ${today}. Verifica na web se cada um destes negócios em Portugal continua EM ACTIVIDADE.
+Sinais de encerrado: Google Maps «encerrado permanentemente»/«fechado definitivamente», trespasse, insolvência ou dissolução (Racius/eInforma), site em baixo e redes paradas há mais de 12 meses.
+Sinais de actividade: avaliações ou fotos recentes no Google, publicações nos últimos meses, horário actualizado, notícias recentes.
+${lista}
+Responde APENAS com um bloco \`\`\`json: [{"n":1,"ativo":true,"atividade":"sinal mais recente e data aproximada","confianca":"alta | media | baixa"}]. Se não encontrares sinal de actividade nos últimos 12 meses, ativo:false.`;
+      const {text}=await callAI(prompt,{tools:[TOOL_SEARCH(Math.min(16,lote.length*2),lote[0].local||'Portugal')],maxTokens:3000});
+      let arr;try{arr=parseJson(text)}catch(e){arr=[]}
+      for(const r of (Array.isArray(arr)?arr:[])){const l=lote[(Number(r.n)||0)-1];if(!l)continue;l.verificado=today;
+        if(r.ativo===false){l.inativo=true;l.ativoVerif=false;if(l.estado==='novo'||l.estado==='analisado')l.estado='descartado';l.atividade='';fechadas++}
+        else{l.ativoVerif=true;if(r.atividade)l.atividade=String(r.atividade);ok++}}
+      commit();renderLeads();
+    }
+    st.textContent=`Verificação feita: ${ok} em actividade${fechadas?`, ${fechadas} ${fechadas===1?'parece encerrada e foi descartada':'parecem encerradas e foram descartadas'}`:''}.`;
+  }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,120))+')</span>':''}</span>`}
   finally{btn.disabled=false}
 }
 async function findCompany(){
@@ -1057,9 +1082,10 @@ Se não encontrares nada, responde []. Português de Portugal. Não inventes emp
   try{
     const {text}=await callAI(prompt,{tools:[TOOL_SEARCH(8,zona||'Portugal')],maxTokens:6000});
     let arr;try{arr=parseJson(text)}catch(e){arr=[]}if(!Array.isArray(arr))arr=[];
-    let added=0,dup=[];let firstId=null;
+    let added=0,dup=[],fechadas=[];let firstId=null;
     for(const x of arr){
       if(!x||!x.nome)continue;const nome=String(x.nome).trim();
+      if(x.ativo===false){fechadas.push(nome);continue}
       const ex=S.leads.find(l=>l.nome.toLowerCase()===nome.toLowerCase());if(ex){dup.push(ex);firstId=firstId||ex.id;continue}
       const redes={};for(const k of REDES)redes[k]=normUrl(x.redes?.[k]);
       const id='L'+(hash(nome+Date.now()+Math.random())%1000000);firstId=firstId||id;
@@ -1069,7 +1095,8 @@ Se não encontrares nada, responde []. Português de Portugal. Não inventes emp
     commit();
     ['#pf_q','#pf_sector','#pf_local','#pf_estado'].forEach(s=>{const el=$(s);if(el)el.value=''});renderLeads();
     st.textContent=added?`${added===1?'Encontrei 1 empresa':'Encontrei '+added+' candidatas'}${dup.length?` (e ${dup.length} que já estava${dup.length>1?'m':''} na lista)`:''}. ${added>1?'Confirma qual é a certa e remove as outras.':'Foi acrescentada à lista e está assinalada.'}`
-      :dup.length?`«${dup[0].nome}» já está na lista.`:'Não encontrei nenhuma empresa com esses dados. Experimenta outro nome, o @ do Instagram ou junta a zona.';
+      :dup.length?`«${dup[0].nome}» já está na lista.`:fechadas.length?`${fechadas.map(n=>'«'+n+'»').join(', ')} ${fechadas.length===1?'parece encerrada':'parecem encerradas'}: não ${fechadas.length===1?'a':'as'} juntei à lista.`:'Não encontrei nenhuma empresa com esses dados. Experimenta outro nome, o @ do Instagram ou junta a zona.';
+    if(added&&fechadas.length)st.textContent+=` Descartei ${fechadas.length} encerrada${fechadas.length>1?'s':''}.`;
     if(firstId)setTimeout(()=>{const el=document.querySelector(`.lead[data-id="${firstId}"]`);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2200)}},80);
   }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,120))+')</span>':''}</span>`}
   finally{btn.disabled=false}
@@ -1139,7 +1166,8 @@ function renderLeads(){
   const keep=(sel,vals)=>{const cur=sel.value;sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option>${esc(v)}</option>`).join('');sel.value=vals.includes(cur)?cur:''};
   keep($('#pf_sector'),sectors);keep($('#pf_local'),locais);
   const fs=$('#pf_sector').value,fl=$('#pf_local').value,fe=$('#pf_estado').value,q=$('#pf_q').value.trim().toLowerCase(),ord=$('#pf_ord').value;
-  let L=S.leads.filter(l=>(!fs||l.sector===fs)&&(!fl||l.local===fl)&&(!fe||l.estado===fe)&&(!q||(l.nome+' '+l.morada).toLowerCase().includes(q)));
+  const soAt=$('#pf_ativos')?.checked;
+  let L=S.leads.filter(l=>(!fs||l.sector===fs)&&(!fl||l.local===fl)&&(!fe||l.estado===fe)&&(!q||(l.nome+' '+l.morada).toLowerCase().includes(q))&&(!soAt||(!l.inativo&&l.ativoVerif!==false)));
   const pot=l=>l.analise?.prioridade??l.potencial??0;
   if(ord==='nome')L.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));else if(ord==='prio')L.sort((a,b)=>pot(b)-pot(a)||a.nome.localeCompare(b.nome,'pt'));
   $('#leadCount').textContent=`${L.length} de ${S.leads.length}`;
@@ -1886,7 +1914,7 @@ function initServices(){$('#b_invest').innerHTML=INVEST.map(x=>`<option value="$
   ['#b_invest','#b_mensal','#b_prio'].forEach(id=>$(id).addEventListener('change',()=>{readBrief();commit();renderServices()}));
   $('#b_orcamento').addEventListener('change',()=>{readBrief();S.plano=null;commit();renderLaunch()})}
 
-const BUILD='20261107183748';
+const BUILD='20261108234712';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
@@ -1914,7 +1942,7 @@ $('#btnZip').onclick=saveZip;
 $('#btnCsv').onclick=()=>copyText(csvAds());
 $('#btnDemo').onclick=async()=>{if(S.brief.marca&&!(await confirmDlg('Carregar exemplo','Substitui o projeto actual pelo exemplo «Café da Ribeira».')))return;S=JSON.parse(JSON.stringify(DEMO));S.plano=buildPlan();S.plano.feito=[0,1,2,3,4,5,6];S.resultados=simulate();commit();renderAll();go(0)};
 $('#btnReset').onclick=async()=>{if(!(await confirmDlg('Novo projeto','Limpa o brief, a pesquisa e os criativos. Se já exportaste, esse ficheiro fica como estava.')))return;S=blank();IMG=null;commit();renderAll()};
-$('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#btnFind').onclick=findCompany;$('#pr_q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findCompany()}});$('#b_setor').onchange=e=>{$('#b_setor_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#b_setor_outro').focus()};$('#pr_local').onchange=e=>{$('#pr_local_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_local_outro').focus()};$('#pr_sector').onchange=e=>{$('#pr_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_outro').focus()};$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
+$('#btnSettings').onclick=openSettings;$('#btnProspect').onclick=prospect;$('#btnFind').onclick=findCompany;$('#btnVerify').onclick=verifyActive;$('#pf_ativos').onchange=e=>{e.target.closest('.toggle').classList.toggle('on',e.target.checked);renderLeads()};$('#pr_q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findCompany()}});$('#b_setor').onchange=e=>{$('#b_setor_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#b_setor_outro').focus()};$('#pr_local').onchange=e=>{$('#pr_local_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_local_outro').focus()};$('#pr_sector').onchange=e=>{$('#pr_outro_l').hidden=e.target.value!=='__outro';if(e.target.value==='__outro')$('#pr_outro').focus()};$('#btnLeadsCsv').onclick=()=>copyText(leadsCsv());['#pf_sector','#pf_local','#pf_estado','#pf_ord'].forEach(s=>$(s).onchange=renderLeads);$('#pf_q').oninput=renderLeads;$('#btnExport').onclick=exportProject;$('#btnImport').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''};
 window.addEventListener('resize',()=>{const c=$('#chart');if(c&&S.resultados&&$('#p3').classList.contains('show'))renderOptimize()});
 
 load();
