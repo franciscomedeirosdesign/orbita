@@ -209,6 +209,10 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 .ly-cartaz{background:var(--magenta)!important}.ly-cartaz i{background:#fff!important}.ly-cartaz i:nth-child(1){left:10%;top:18%;width:50%;height:16px}.ly-cartaz i:nth-child(2){left:10%;top:44%;width:66%;height:16px}.ly-cartaz i:nth-child(3){left:10%;bottom:14%;width:22%;height:8px;border-radius:8px}
 .on-sec{background:var(--ink);color:var(--surface);border-color:var(--ink)}.on-sec button{background:none;border:0;color:inherit;cursor:pointer;padding:0 0 0 6px;font-size:13px;opacity:.7}.on-sec button:hover{opacity:1}
 .off-sec{border-style:dashed;cursor:pointer;background:transparent}
+
+.btn.busy,.btn.busy:disabled{background:var(--surface)!important;color:var(--ink)!important;box-shadow:inset 0 0 0 1.5px var(--ink)!important;opacity:1;cursor:progress}
+.btn.busy::after{border:2px solid var(--magenta);border-right-color:transparent;border-radius:50%;width:12px;height:12px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 /* Estúdio */
 .insp{margin-bottom:16px}
 .drop{margin-top:12px;border:2px dashed var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;text-align:center;font-family:var(--display);font-weight:600;transition:border-color .2s,background .2s}
@@ -323,7 +327,7 @@ main{max-width:1320px;padding:32px var(--gutter) 90px}
 .btn.primary:hover{background:var(--magenta);color:#fff;filter:none}
 .btn.primary:hover::after{border-left-color:#fff}
 .btn.sm{min-height:38px;padding:0 15px;font-size:16px}
-.btn:disabled{background:rgba(22,22,22,.1);color:rgba(22,22,22,.45);box-shadow:none;transform:none}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .top-actions .btn.sm{min-height:36px}
 
 .chip{border-radius:var(--pill);padding:5px 12px;font:600 12.5px/1 var(--display);border:1.5px solid var(--line);background:var(--surface)}
@@ -1103,7 +1107,7 @@ Se não encontrares nada, responde []. Português de Portugal. Não inventes emp
 }
 async function rewriteApproach(l,btn){
   if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
-  const a=l.analise;btn.disabled=true;btn.textContent='A escrever…';
+  const a=l.analise;btn.disabled=true;btn.classList.add('busy');btn.textContent='A escrever…';const box=btn.closest('div').parentElement;box.querySelector('.rw-err')?.remove();
   const prompt=`Escreve a mensagem de primeiro contacto da JIF studio para «${l.nome}» (${l.sector}, ${l.local}).
 Diagnóstico da presença: logótipo ${a.logo?.nota}/5 (${a.logo?.obs}); identidade ${a.identidade?.nota}/5 (${a.identidade?.obs}); redes ${a.redes?.nota}/5 (${a.redes?.obs}); comunicação ${a.comunicacao?.nota}/5 (${a.comunicacao?.obs}); site ${a.site?.nota}/5 (${a.site?.obs}). Oportunidades: ${(a.oportunidades||[]).join('; ')}.
 ${S.servicos&&S.brief.marca&&l.nome.includes(S.brief.marca)?`Serviço já recomendado: ${JIF_SERV[S.servicos.principal.id]?.n}.`:''}
@@ -1112,7 +1116,8 @@ Mensagem pronta a enviar (email ou DM), 90 a 140 palavras, português de Portuga
 Catálogo: ${Object.entries(JIF_SERV).map(([k,v])=>v.n+' '+svcPrice(k)).join('; ')}.
 Blocos separados por linha em branco. Sem assinatura. Responde só com a mensagem.`;
   try{const {text}=await callAI(prompt,{maxTokens:800});const t=String(text).replace(/^```\w*\n?|```$/g,'').trim();if(t){a.abordagem=t;commit();renderLeads();toast('Abordagem reescrita.')}}
-  catch(e){toast(aiCopyLocal(e.code),'warn')}finally{btn.disabled=false;btn.textContent='Reescrever'}
+  catch(e){const d=document.createElement('div');d.className='note warn rw-err';d.style.marginTop='10px';d.innerHTML=`<span>✶</span><span>${esc(aiCopyLocal(e.code))}${e.message?` <span class="muted">(${esc(String(e.message).slice(0,140))})</span>`:''} <button class="jif-link" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Abrir Definições IA</button></span>`;$('button',d).onclick=openSettings;box.append(d)}
+  finally{btn.disabled=false;btn.classList.remove('busy');btn.textContent='Reescrever'}
 }
 async function analyseLead(lead,el){
   if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
@@ -1934,7 +1939,7 @@ function initServices(){$('#b_invest').innerHTML=INVEST.map(x=>`<option value="$
   ['#b_invest','#b_mensal','#b_prio'].forEach(id=>$(id).addEventListener('change',()=>{readBrief();commit();renderServices()}));
   $('#b_orcamento').addEventListener('change',()=>{readBrief();S.plano=null;commit();renderLaunch()})}
 
-const BUILD='20261109001431';
+const BUILD='20261109002405';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
