@@ -1120,7 +1120,7 @@ Mensagem pronta a enviar (email ou DM), 90 a 140 palavras, português de Portuga
 1) cumprimento curto com o nome do negócio; 2) apresentação da JIF numa frase (estúdio criativo no Porto, quatro pessoas, branding, conteúdos, redes sociais, web e fotografia, «Damos a volta à tua marca»); 3) uma ou duas observações concretas do diagnóstico, sem soar a crítica; 4) proposta: o serviço da JIF que mais faz sentido, pelo nome e com o preço «desde», e o resultado que traz; 5) convite para conversa de descoberta de 30 minutos, sem compromisso (videochamada ou café no Porto).
 Catálogo: ${Object.entries(JIF_SERV).map(([k,v])=>v.n+' '+svcPrice(k)).join('; ')}.
 Blocos separados por linha em branco. Sem assinatura. Responde só com a mensagem.`;
-  try{const {text}=await callAI(prompt,{maxTokens:800});const t=cleanMsg(text);if(t.length>40){a.abordagem=t;commit();renderLeads();toast('Abordagem reescrita.')}else throw{code:'invalid_json',message:'resposta vazia'}}
+  try{let r=await callAI(prompt,{maxTokens:4000});if(r.truncated)r=await callAI(prompt,{maxTokens:12000});if(r.truncated)throw{code:'invalid_json',message:'a resposta ficou cortada'};const t=cleanMsg(r.text);if(t.length>40){a.abordagem=t;commit();renderLeads();toast('Abordagem reescrita.')}else throw{code:'invalid_json',message:'resposta vazia'}}
   catch(e){const d=document.createElement('div');d.className='note warn rw-err';d.style.marginTop='10px';d.innerHTML=`<span>✶</span><span>${esc(aiCopyLocal(e.code))}${e.message?` <span class="muted">(${esc(String(e.message).slice(0,140))})</span>`:''} <button class="jif-link" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Abrir Definições IA</button></span>`;$('button',d).onclick=openSettings;box.append(d)}
   finally{btn.disabled=false;btn.classList.remove('busy');btn.textContent='Reescrever'}
 }
@@ -1944,7 +1944,7 @@ function initServices(){$('#b_invest').innerHTML=INVEST.map(x=>`<option value="$
   ['#b_invest','#b_mensal','#b_prio'].forEach(id=>$(id).addEventListener('change',()=>{readBrief();commit();renderServices()}));
   $('#b_orcamento').addEventListener('change',()=>{readBrief();S.plano=null;commit();renderLaunch()})}
 
-const BUILD='20261109002859';
+const BUILD='20261109003036';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
