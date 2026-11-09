@@ -1105,6 +1105,11 @@ Se não encontrares nada, responde []. Português de Portugal. Não inventes emp
   }catch(e){st.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(String(e.message).slice(0,120))+')</span>':''}</span>`}
   finally{btn.disabled=false}
 }
+function cleanMsg(t){t=String(t||'').trim();
+  const f=t.match(/```(?:\w+)?\s*([\s\S]*?)```/);if(f)t=f[1].trim();
+  if(/^\{[\s\S]*\}$/.test(t)){try{const o=JSON.parse(t);t=o.abordagem||o.mensagem||o.texto||o.message||t}catch(e){}}
+  t=String(t).replace(/\\n/g,'\n').replace(/\r/g,'').replace(/^["“«]|["”»]$/g,'').replace(/\*\*(.+?)\*\*/g,'$1').replace(/^#+\s*/gm,'').replace(/\n{3,}/g,'\n\n').trim();
+  return t}
 async function rewriteApproach(l,btn){
   if(!loadCfg().key){toast('Mete a tua chave da API em «Definições IA».','warn');openSettings();return}
   const a=l.analise;btn.disabled=true;btn.classList.add('busy');btn.textContent='A escrever…';const box=btn.closest('div').parentElement;box.querySelector('.rw-err')?.remove();
@@ -1115,7 +1120,7 @@ Mensagem pronta a enviar (email ou DM), 90 a 140 palavras, português de Portuga
 1) cumprimento curto com o nome do negócio; 2) apresentação da JIF numa frase (estúdio criativo no Porto, quatro pessoas, branding, conteúdos, redes sociais, web e fotografia, «Damos a volta à tua marca»); 3) uma ou duas observações concretas do diagnóstico, sem soar a crítica; 4) proposta: o serviço da JIF que mais faz sentido, pelo nome e com o preço «desde», e o resultado que traz; 5) convite para conversa de descoberta de 30 minutos, sem compromisso (videochamada ou café no Porto).
 Catálogo: ${Object.entries(JIF_SERV).map(([k,v])=>v.n+' '+svcPrice(k)).join('; ')}.
 Blocos separados por linha em branco. Sem assinatura. Responde só com a mensagem.`;
-  try{const {text}=await callAI(prompt,{maxTokens:800});const t=String(text).replace(/^```\w*\n?|```$/g,'').trim();if(t){a.abordagem=t;commit();renderLeads();toast('Abordagem reescrita.')}}
+  try{const {text}=await callAI(prompt,{maxTokens:800});const t=cleanMsg(text);if(t.length>40){a.abordagem=t;commit();renderLeads();toast('Abordagem reescrita.')}else throw{code:'invalid_json',message:'resposta vazia'}}
   catch(e){const d=document.createElement('div');d.className='note warn rw-err';d.style.marginTop='10px';d.innerHTML=`<span>✶</span><span>${esc(aiCopyLocal(e.code))}${e.message?` <span class="muted">(${esc(String(e.message).slice(0,140))})</span>`:''} <button class="jif-link" style="font:600 13px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Abrir Definições IA</button></span>`;$('button',d).onclick=openSettings;box.append(d)}
   finally{btn.disabled=false;btn.classList.remove('busy');btn.textContent='Reescrever'}
 }
@@ -1139,10 +1144,10 @@ Acrescenta ao mesmo JSON a chave "brief", com o que conseguires apurar do site, 
 "brief":{"produto":"produto ou serviço principal a promover, concreto","objetivo":"um de: Vendas online | Leads / pedidos de contacto | Notoriedade | Visitas à loja | Instalações de app | Reservas / marcações","publico":"quem são os clientes: idades, zona, interesses, ocasiões","diferenciais":"o que os distingue: especialidades, história, preços, prémios, o que os clientes elogiam nas avaliações","tom":"um de: Próximo e directo | Premium e sóbrio | Divertido | Técnico e informativo | Inspirador","canais":["meta","google","tiktok"],"orcamento":300,"horario":"","precos":"faixa de preços se visível","avaliacoes":"nota média e nº de avaliações Google se visível","marca_visual":"cores, tipografia e estilo actuais (para o moodboard)","estilo":"um de: Minimal e limpo | Artesanal e caloroso | Editorial | Ousado e colorido | Premium e sóbrio | Retro | Tecnológico | Divertido","manter":"elementos da marca actual que vale a pena manter (cores, símbolo, nome, mascote…) ou \"\"","evitar":"o que não funciona hoje e deve ser evitado na nova marca"}
 "canais": só os que fazem sentido para este negócio. "orcamento": orçamento mensal de media realista em euros para uma PME deste tipo.\nAcrescenta ainda em "brief": "investimento": escalão provável que este negócio consegue investir numa agência, pela dimensão aparente (um de: 500 | 1k | 3k | 5k | 10k | 10kp, onde 500 = menos de 500€, 1k = 500–1000€, 3k = 1–3K, 5k = 3–5K, 10k = 5–10K, 10kp = mais de 10K) e "prioridade": um de: Marca e imagem | Redes sociais e conteúdo | Site ou loja online | Vender mais / anúncios | Fotografia.`;
   try{
-    const {text}=await callAI(prompt,{tools:[TOOL_FETCH(5),TOOL_SEARCH(3,lead.local)],beta:'web-fetch-2025-09-10',maxTokens:6000});
+    const {text}=await callAI(prompt,{tools:[TOOL_FETCH(5),TOOL_SEARCH(3,lead.local)],beta:'web-fetch-2025-09-10',maxTokens:9000});
     const a=parseJson(text);if(!a||!a.logo)throw{code:'invalid_json',text};
     for(const k of ['logo','identidade','redes','comunicacao','site']){a[k]=a[k]||{};a[k].nota=Math.min(5,Math.max(0,Number(a[k].nota)||0));a[k].obs=String(a[k].obs||'')}
-    a.prioridade=Math.min(5,Math.max(1,Number(a.prioridade)||3));a.oportunidades=(a.oportunidades||[]).map(String).slice(0,4);a.abordagem=String(a.abordagem||'');a.brief=a.brief&&typeof a.brief==='object'?a.brief:{};
+    a.prioridade=Math.min(5,Math.max(1,Number(a.prioridade)||3));a.oportunidades=(a.oportunidades||[]).map(String).slice(0,4);a.abordagem=cleanMsg(a.abordagem);a.brief=a.brief&&typeof a.brief==='object'?a.brief:{};
     const enc=a.redes.encontradas||{};for(const k of REDES){const u=normUrl(enc[k]);if(u&&!lead.redes[k])lead.redes[k]=u}
     if(a.atividade)lead.atividade=String(a.atividade);if(a.ativo===false){lead.estado='descartado';lead.analise=a;commit();renderLeads();toast(`«${lead.nome}» parece estar encerrado. Marquei como descartado.`,'warn');return}lead.analise=a;lead.potencial=a.prioridade;if(lead.estado==='novo')lead.estado='analisado';commit();renderLeads();
   }catch(e){box.innerHTML=`<span style="color:var(--bad)">${esc(aiCopyLocal(e.code))}${e.message?' <span class="muted">('+esc(e.message.slice(0,120))+')</span>':''}</span>`}
@@ -1215,7 +1220,7 @@ function renderLeads(){
     if(a){const sc=[['Logótipo','logo'],['Identidade visual','identidade'],['Redes sociais','redes'],['Comunicação','comunicacao'],['Site','site']];
       $('.an',el).innerHTML=`<div class="scores">${sc.map(([n,k])=>`<div class="score"><div class="l">${n}</div><div class="b">${[1,2,3,4,5].map(i=>`<i class="${i<=a[k].nota?'f':''}"></i>`).join('')}</div><div class="o"></div></div>`).join('')}</div>
         <div class="grid g2"><div><h4>Oportunidades</h4><ul class="clean">${a.oportunidades.map(o=>`<li>${esc(o)}</li>`).join('')}</ul></div><div><h4>Abordagem sugerida</h4><p class="small"></p><div class="row" style="margin-top:6px"><button class="btn sm" data-copy>Copiar</button><button class="btn sm" data-rewrite>Reescrever</button></div></div></div>`;
-      $$('.score .o',el).forEach((o,i)=>o.textContent=a[sc[i][1]].obs);$('.an p',el).textContent=a.abordagem;$('.an p',el).style.whiteSpace='pre-line';$('[data-copy]',el).onclick=()=>copyText(a.abordagem);$('[data-rewrite]',el).onclick=e=>rewriteApproach(l,e.target)}
+      $$('.score .o',el).forEach((o,i)=>o.textContent=a[sc[i][1]].obs);$('.an p',el).textContent=cleanMsg(a.abordagem);$('.an p',el).style.whiteSpace='pre-line';$('[data-copy]',el).onclick=()=>copyText(cleanMsg(a.abordagem));$('[data-rewrite]',el).onclick=e=>rewriteApproach(l,e.target)}
     $('.st',el).onchange=e=>{l.estado=e.target.value;commit();renderLeads()};
     $('[data-an]',el).onclick=()=>analyseLead(l,el);
     $('[data-brief]',el).onclick=()=>leadToBrief(l);$('[data-studio]',el).onclick=()=>{leadToBrief(l,0);S.fluxoMarca=true;persistLocal();toast('Primeiro o Descobrir: carrega em «Pesquisar com IA». No fim, «Criar a marca».')};
@@ -1939,7 +1944,7 @@ function initServices(){$('#b_invest').innerHTML=INVEST.map(x=>`<option value="$
   ['#b_invest','#b_mensal','#b_prio'].forEach(id=>$(id).addEventListener('change',()=>{readBrief();commit();renderServices()}));
   $('#b_orcamento').addEventListener('change',()=>{readBrief();S.plano=null;commit();renderLaunch()})}
 
-const BUILD='20261109002405';
+const BUILD='20261109002859';
 async function checkUpdate(){
   if(BUILD.startsWith('__')||location.protocol==='file:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
