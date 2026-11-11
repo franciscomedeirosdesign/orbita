@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Órbita Campanhas</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/orbita-icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0C0C0E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=IBM+Plex+Serif:wght@400;500&family=Old+Standard+TT:ital@1&family=Caveat:wght@600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -297,6 +301,7 @@ label{font:600 13px/1.2 var(--display);color:var(--ink-2);letter-spacing:.01em}
 .top{background:var(--surface);border-bottom:1px solid var(--line)}
 .top-row{padding:14px var(--gutter)}
 .brand .mark{display:none}
+.brand .mark-img{width:40px;height:40px;border-radius:10px;display:block;flex:none}
 .brand h1{font:800 30px/1 var(--display);letter-spacing:-.06em}
 .brand h1 em{font-family:var(--accentf);font-style:italic;font-weight:400;color:var(--magenta);letter-spacing:-.02em}
 .brand small{font:600 11px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--magenta-deep);margin-top:6px}
@@ -367,7 +372,7 @@ footer .hand{color:var(--magenta)}
 <header class="top">
   <div class="top-row">
     <div class="brand">
-      <div class="mark" aria-hidden="true"></div>
+      <img class="mark-img" src="icons/orbita-icon-192.png" alt="" width="40" height="40">
       <div><h1><em>Ó</em>rbita</h1><small>JIF studio · Damos a volta à tua marca</small></div>
     </div>
     <div class="status-line" id="statusLine"></div>
