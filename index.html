@@ -559,10 +559,13 @@ label.angle>div{min-width:0}
 .head--orb::after{display:none}
 .head--orb .hero-orb{flex:none;width:156px;height:156px;border-radius:36px;box-shadow:0 18px 40px rgba(12,12,14,.22)}
 @media (max-width:900px){.head--orb .hero-orb{width:112px;height:112px;border-radius:26px}}
-@media (max-width:620px){.head--orb .hero-orb{display:none}}
+@media (max-width:620px){.head--orb{align-items:flex-start}.head--orb .hero-orb{width:72px;height:72px;border-radius:17px;margin-top:22px}}
 
 /* menu: sem órbita duplicada atrás do logo */
 .brand::after{display:none!important}
+
+/* menu: sem ícone, só o nome */
+.brand .mark-img{display:none!important}
 </style>
 </head>
 <body>
