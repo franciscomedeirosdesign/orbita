@@ -258,6 +258,56 @@ html[data-theme="dark"] .menu,html[data-theme="dark"] .dd__list{background:var(-
 .av-name i{margin-left:.14em;font:italic 400 1.1em/.8 var(--font-accent);letter-spacing:-.02em;color:var(--magenta)}
 .av-txt .eyebrow{font-size:10px;letter-spacing:.16em}
 @media (max-width:620px){.av-txt .eyebrow{display:none}.av-name{font-size:24px}}
+
+/* ===== A Volta: UI v2 ===== */
+.top{gap:14px;flex-wrap:nowrap}
+.timer{gap:10px}
+.tclock{display:inline-flex;align-items:baseline;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(var(--tint),.06);font-variant-numeric:tabular-nums}
+.tclock small{font:600 12px/1 var(--font-display);color:var(--ink-muted);letter-spacing:0}
+.hero{position:relative}
+.hero-mark{position:absolute;right:0;top:-12px;width:180px;height:180px;pointer-events:none}
+.hero-mark img{width:100%;height:100%;filter:drop-shadow(0 24px 40px rgba(0,0,0,.35));transform:rotate(-6deg)}
+.hero h1{max-width:calc(100% - 200px)}
+.tips{gap:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.tip{border:0;border-radius:0;border-left:1px solid var(--line);padding:18px 20px}
+.tip:first-child{border-left:0}
+.tip b{font-size:17px;color:var(--ink);margin-bottom:6px}
+.tip b::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--magenta);margin-right:8px;vertical-align:2px}
+/* caminho com órbita tracejada */
+.path ol{position:relative}
+.path ol::before{content:"";position:absolute;left:21px;top:18px;bottom:18px;border-left:2px dashed var(--line);z-index:0}
+.path .jif-chip{border-color:transparent;background:transparent;position:relative;z-index:1}
+.path .jif-chip:hover{background:rgba(var(--tint),.05)}
+.path .dot{box-shadow:0 0 0 4px var(--surface);background:var(--surface-alt)}
+.path li.is-cur .jif-chip{border-color:var(--line);background:rgba(var(--tint),.04)}
+.path li.is-done .dot{font-size:0}
+.path li.is-done .dot::before{content:"✓";font-size:13px;font-weight:800}
+/* secções */
+.sec__cnt{font:700 13px/1 var(--font-display);padding:8px 12px;border-radius:999px;background:rgba(var(--tint),.06);color:var(--ink-muted);font-variant-numeric:tabular-nums}
+.sec__cnt.ok{background:var(--magenta);color:#fff}
+.q{padding:var(--space-6) 0;gap:10px}
+.q__txt{font-size:21px;line-height:1.25}
+.q.is-ans .q__txt::before{content:"✓";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--magenta);color:#fff;font:800 12px/1 var(--font-display);margin-right:10px;vertical-align:3px}
+.q textarea{min-height:88px;border-radius:14px}
+.sec__next{display:flex;flex-direction:column;align-items:flex-end;gap:6px;margin-top:var(--space-8);margin-left:auto;width:max-content;max-width:100%;padding:14px 20px;border-radius:16px;border:1.5px solid var(--line);text-decoration:none;color:var(--ink);transition:border-color .2s,background .2s}
+.sec__next span{font:600 12px/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--magenta)}
+.sec__next span::after{content:" →"}
+.sec__next strong{font:800 22px/1 var(--font-display);letter-spacing:-.03em}
+.sec__next:hover{border-color:var(--magenta);background:rgba(252,56,136,.08)}
+/* telemóvel: topo sem transbordar */
+html,body{overflow-x:hidden}
+@media (max-width:900px){.hero-mark{width:110px;height:110px;top:-8px}.hero h1{max-width:calc(100% - 100px)}.tips{grid-template-columns:1fr 1fr}.tip:nth-child(3){border-left:0}.tip:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:620px){
+  .top{gap:8px;padding-left:12px;padding-right:12px}
+  .brand .av-mark{width:38px;height:38px}
+  .av-name{font-size:22px}
+  #tReset,.tclock small,#bMd{display:none}
+  .tclock{padding:8px 10px}
+  .timer .jif-btn--sm{padding:0 14px}
+  .hero-mark{display:none}.hero h1{max-width:100%}
+  .tips{grid-template-columns:1fr}.tip{border-left:0!important;border-top:1px solid var(--line)}.tip:first-child{border-top:0}
+  .sec__next{width:100%;align-items:flex-start}
+}
 </style>
 </head>
 <body>
@@ -265,7 +315,7 @@ html[data-theme="dark"] .menu,html[data-theme="dark"] .dd__list{background:var(-
 <header class="top">
   <a class="brand" href="#" aria-label="A Volta — guia de entrevista JIF"><img src="icons/avolta-192.png?v=2" alt="" width="44" height="44" class="av-mark"><span class="av-txt"><span class="av-name">a <i>volta</i></span><span class="eyebrow">Entrevista · JIF studio</span></span></a>
   <div class="top__prog"><span id="progTxt">0%</span><div class="bar"><i id="progBar"></i></div></div>
-  <div class="timer"><span id="clock">00:00</span>
+  <div class="timer"><span class="tclock"><span id="clock">00:00</span><small>/ ~58 min</small></span>
     <button class="jif-btn jif-btn--secondary jif-btn--sm" id="tStart" type="button">Iniciar</button>
     <button class="jif-link" id="tReset" type="button" title="Repor cronómetro">Repor</button>
   </div>
@@ -292,10 +342,10 @@ html[data-theme="dark"] .menu,html[data-theme="dark"] .dd__list{background:var(-
   </nav>
 
   <main>
-    <section class="hero">
+    <section class="hero"><div class="hero-mark" aria-hidden="true"><img src="icons/avolta-512.png?v=2" alt=""></div>
       <p class="eyebrow">Entrevista ao cliente · JIF</p>
       <h1>Conhecer a marca antes de lhe dar a <span class="acc">volta.</span></h1>
-      <p class="lead">Segue o caminho por ordem, mas deixa a conversa respirar. Tudo fica guardado neste dispositivo.</p>
+      <p class="lead">Segue o caminho por ordem, mas deixa a conversa respirar. As notas ficam guardadas neste dispositivo.</p>
       <div class="meta">
         <label class="fld"><span>Cliente / marca</span><input data-m="cliente" placeholder="Nome da marca"></label>
         <label class="fld"><span>Pessoa entrevistada</span><input data-m="pessoa" placeholder="Nome e cargo"></label>
@@ -414,7 +464,7 @@ function draw(){
   $('#sections').innerHTML=SECS.map((s,si)=>`
   <section class="sec" id="s-${s.id}">
     <p class="eyebrow sec__n">${String(si+1).padStart(2,'0')}</p>
-    <div class="sec__hd"><h2 class="sec__t">${s.t}</h2><span class="sec__min">~${s.min} min</span></div>
+    <div class="sec__hd"><h2 class="sec__t">${s.t}</h2><span class="sec__cnt" id="cnt-${s.id}"></span><span class="sec__min">~${s.min} min</span></div>
     <p class="sec__goal">${s.goal}</p>
     ${s.scales?`<div class="blk" id="b-${s.id}-scales">${blkHd(s.id,'scales')}<div class="scales">${s.scales.map(([a,b],i)=>`<label class="sc"><span>${a}</span><input type="range" min="1" max="5" step="1" data-sc="${s.id}-${i}" value="${S.sc[s.id+'-'+i]||3}" aria-label="${a} a ${b}"><span>${b}</span></label>`).join('')}</div></div>`:''}
     ${s.checks?`<div class="blk" id="b-${s.id}-checks">${blkHd(s.id,'checks')}<div class="checks">${s.checks.map(c=>`<button type="button" class="jif-chip" data-ck="${esc(c)}" aria-pressed="${!!S.ck[c]}">${c}</button>`).join('')}</div></div>`:''}
@@ -426,6 +476,7 @@ function draw(){
         <textarea data-q="${qid(s,i)}" placeholder="${esc(q.ph||'Notas…')}">${esc(S.a[qid(s,i)]||'')}</textarea>
       </div>`).join('')}
     ${s.steps?`<div class="blk" id="b-${s.id}-steps" style="margin-top:var(--space-6)">${blkHd(s.id,'steps')}<div class="steps">${[['cli','O cliente envia'],['jif','A JIF faz']].map(([k,h])=>`<div class="col"><p class="eyebrow">${h}</p><ul data-st="${k}"></ul><button type="button" class="jif-link" data-add="${k}">Acrescentar passo</button></div>`).join('')}</div></div>`:''}
+    <a class="sec__next" href="#${si<SECS.length-1?'s-'+SECS[si+1].id:'s-pend'}"><span>Seguinte</span><strong>${si<SECS.length-1?SECS[si+1].t:'Antes de despedir'}</strong></a>
   </section>`).join('');
   $('#path').innerHTML=SECS.map((s,si)=>`<li data-p="${s.id}"><a class="jif-chip" href="#s-${s.id}"><span class="dot">${si+1}</span><span class="nm">${s.t}</span><span class="mn">${s.min} min</span></a></li>`).join('')+`<li data-p="pend"><a class="jif-chip" href="#s-pend"><span class="dot">✓</span><span class="nm">Antes de despedir</span></a></li>`;
   $('#total').textContent=`Duração prevista: ~${SECS.reduce((a,s)=>a+s.min,0)} min`;
@@ -461,7 +512,7 @@ function refresh(){
   SECS.forEach(s=>{let a=0;s.qs.forEach((q,i)=>{const k=qid(s,i),v=(S.a[k]||'').trim();tot++;
       const el=document.getElementById('q-'+k);if(el){el.classList.toggle('is-ans',!!v);el.classList.toggle('is-empty',!v)}
       if(v){ans++;a++}else if(q.k)pend.push(['q-'+k,s.t,q.t])});
-    const li=document.querySelector(`[data-p="${s.id}"]`);if(li){li.classList.toggle('is-done',a===s.qs.length);li.classList.toggle('is-part',a>0&&a<s.qs.length)}});
+    const cn=document.getElementById('cnt-'+s.id);if(cn){cn.textContent=`${a}/${s.qs.length}`;cn.classList.toggle('ok',a===s.qs.length)}const li=document.querySelector(`[data-p="${s.id}"]`);if(li){li.classList.toggle('is-done',a===s.qs.length);li.classList.toggle('is-part',a>0&&a<s.qs.length)}});
   const p=Math.round(ans/tot*100);$('#progBar').style.width=p+'%';$('#progTxt').textContent=`${ans}/${tot} · ${p}%`;
   const L=a=>`<ul>${a.map(([k,s,t])=>`<li><a href="#${k}"><span>${s} · </span>${t}</a></li>`).join('')}</ul>`;
   $('#pend').innerHTML=(flag.length?`<div><p class="eyebrow">Marcadas para voltar</p>${L(flag)}</div>`:'')+(pend.length?`<div><p class="eyebrow">Essenciais sem resposta</p>${L(pend)}</div>`:'')+(!flag.length&&!pend.length?'<p>Tudo o que é essencial está respondido. Confirma os próximos passos e as datas.</p>':'');
