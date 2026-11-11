@@ -553,6 +553,13 @@ label.angle>div{min-width:0}
 .step.done .n{font-size:0}
 .step.done .n::before{content:"✓";font-size:13px;font-weight:800}
 @media (max-width:700px){.onb{flex-direction:column;align-items:flex-start}.stepnav a{min-width:0;flex:1}.stepnav a strong{font-size:18px}}
+
+/* Prospectar: logo animado à direita do título */
+.head--orb{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);flex-wrap:nowrap}
+.head--orb::after{display:none}
+.head--orb .hero-orb{flex:none;width:156px;height:156px;border-radius:36px;box-shadow:0 18px 40px rgba(12,12,14,.22)}
+@media (max-width:900px){.head--orb .hero-orb{width:112px;height:112px;border-radius:26px}}
+@media (max-width:620px){.head--orb .hero-orb{display:none}}
 </style>
 </head>
 <body>
@@ -589,8 +596,9 @@ label.angle>div{min-width:0}
 
   <!-- P PROSPECTAR -->
   <section class="panel" id="p4">
-    <div class="head">
+    <div class="head head--orb">
       <div><span class="eyebrow">Etapa 1 · Prospectar</span><h2>Quem precisa de uma <em>volta</em>?</h2><p>Encontra pequenas empresas com presença fraca: são as que mais precisam de uma volta. A IA dá a cada uma uma nota de potencial e põe as melhores no topo.</p></div>
+      <svg class="hero-orb" viewBox="0 0 512 512" aria-hidden="true"><defs><radialGradient id="obg2" cx="80%" cy="0%" r="120%"><stop offset="0" stop-color="#2E3138"/><stop offset=".7" stop-color="#0C0C0E"/></radialGradient></defs><rect width="512" height="512" rx="118" fill="url(#obg2)"/><g transform="translate(66 66) scale(1.9)"><g transform="rotate(-24 100 100)"><ellipse cx="100" cy="100" rx="92" ry="34" fill="none" stroke="#FC3888" stroke-width="12"/><circle r="15" fill="#FC3888" stroke="#0C0C0E" stroke-width="6" opacity="0"><animateMotion dur="6s" repeatCount="indefinite" path="M8 100 A92 34 0 0 0 192 100 A92 34 0 0 0 8 100"/><animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.5" values="0;1"/></circle></g><circle cx="100" cy="100" r="54" fill="#fff"/><g transform="rotate(-24 100 100)"><path d="M 8 100 A 92 34 0 0 0 192 100" fill="none" stroke="#FC3888" stroke-width="12"/><circle r="15" fill="#FC3888" stroke="#0C0C0E" stroke-width="6" opacity="0"><animateMotion dur="6s" repeatCount="indefinite" path="M8 100 A92 34 0 0 0 192 100 A92 34 0 0 0 8 100"/><animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.5" values="1;0"/></circle></g></g></svg>
     </div>
     <div class="card find">
       <div class="find-hd"><h3>Encontrar empresas</h3><div class="seg" role="tablist"><button type="button" role="tab" class="on" data-find="a" aria-selected="true">Por sector e zona</button><button type="button" role="tab" data-find="b" aria-selected="false">Empresa específica</button></div></div>
@@ -2203,6 +2211,6 @@ function stepNav(n){if(!window.ORDER)return;
   if(x)x.onclick=()=>{document.getElementById('aiNote').hidden=true;try{localStorage.setItem('orbita.onb','off')}catch(e){}};
   setTimeout(()=>stepNav(S.etapa??4),0)})();
 </script>
-<script>if(matchMedia("(prefers-reduced-motion: reduce)").matches){var _m=document.querySelector(".brand .mark-img");_m&&_m.pauseAnimations&&_m.pauseAnimations()}</script>
+<script>if(matchMedia("(prefers-reduced-motion: reduce)").matches){document.querySelectorAll(".brand .mark-img,.hero-orb").forEach(function(v){v.pauseAnimations&&v.pauseAnimations()})}</script>
 </body>
 </html>
