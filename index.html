@@ -518,6 +518,41 @@ footer{padding:var(--s4) var(--s5)}
 label.angle{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:14px;text-align:left}
 label.angle>input{flex:none;margin:3px 0 0;width:18px;height:18px;accent-color:var(--magenta)}
 label.angle>div{min-width:0}
+
+/* ===== Mais simples de usar ===== */
+.onb{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s3);margin:0 0 var(--s4);border-radius:20px;background:var(--ink);color:#fff;position:relative;overflow:hidden}
+.onb::after{content:"";position:absolute;right:-60px;top:-70px;width:220px;height:220px;border-radius:50%;border:2px solid rgba(252,56,136,.35);transform:scaleY(.4) rotate(-24deg)}
+.onb[hidden]{display:none}
+.onb-txt{display:flex;flex-direction:column;gap:6px;max-width:62ch;position:relative;z-index:1}
+.onb-txt .eyebrow{color:var(--magenta);margin:0}
+.onb-txt strong{font:800 24px/1.1 var(--display);letter-spacing:-.03em}
+.onb-txt span:last-child{font-size:15px;color:rgba(255,255,255,.72)}
+.onb-act{display:flex;gap:var(--s1);flex-wrap:wrap;position:relative;z-index:1}
+.onb .btn{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px #fff}
+.onb .btn.primary{background:var(--magenta);box-shadow:none}
+.onb .btn:hover{background:#fff;color:var(--ink)}
+.onb .btn.x{width:44px;min-height:44px}
+/* navegação entre etapas no fim de cada uma */
+.stepnav{display:flex;justify-content:space-between;align-items:center;gap:var(--s2);margin-top:var(--s5);padding-top:var(--s3);border-top:1px solid var(--line)}
+.stepnav .lbl{font:600 12px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);display:block;margin-bottom:6px}
+.stepnav a{display:flex;flex-direction:column;text-decoration:none;color:var(--ink);padding:14px 18px;border-radius:16px;border:1.5px solid var(--line);min-width:220px;transition:border-color .2s,background .2s}
+.stepnav a:hover{border-color:var(--ink)}
+.stepnav a strong{font:800 22px/1 var(--display);letter-spacing:-.03em}
+.stepnav a.next{text-align:right;background:var(--ink);color:#fff;border-color:var(--ink)}
+.stepnav a.next .lbl{color:var(--magenta)}
+.stepnav a.next:hover{background:var(--magenta);border-color:var(--magenta)}
+.stepnav a.next:hover .lbl{color:#fff}
+.stepnav .sp{flex:1}
+/* progresso na barra lateral e etapas feitas com visto */
+.prog{display:none}
+@media (min-width:1100px){
+  .prog{display:block;padding:0 12px var(--s2);font:600 13px/1 var(--display);color:var(--ink-2)}
+  .prog i{display:block;height:4px;border-radius:4px;background:var(--surface-2);margin-top:10px;overflow:hidden}
+  .prog i b{display:block;height:100%;background:var(--magenta);border-radius:4px;transition:width .4s}
+}
+.step.done .n{font-size:0}
+.step.done .n::before{content:"✓";font-size:13px;font-weight:800}
+@media (max-width:700px){.onb{flex-direction:column;align-items:flex-start}.stepnav a{min-width:0;flex:1}.stepnav a strong{font-size:18px}}
 </style>
 </head>
 <body>
@@ -550,7 +585,7 @@ label.angle>div{min-width:0}
 </header>
 
 <main>
-  <div id="aiNote" class="note warn" hidden style="cursor:pointer" onclick="openSettings()" title="Abrir Definições IA"><span>⚠</span><span>Para usares a IA, mete a tua chave da API da Anthropic em «Definições IA». Fica guardada só neste browser. Sem chave, usa «Carregar exemplo» para ver como funciona.</span></div>
+  <div id="aiNote" class="onb" hidden><div class="onb-txt"><span class="eyebrow">Começa aqui</span><strong>Liga a IA para pesquisar, escrever e desenhar.</strong><span>Precisas de uma chave da API da Anthropic; fica guardada só neste browser. Sem chave, podes explorar o exemplo.</span></div><div class="onb-act"><button class="btn primary" type="button" id="onbKey">Ligar a IA</button><button class="btn" type="button" id="onbDemo">Ver exemplo</button><button class="btn x" type="button" id="onbX" aria-label="Fechar" title="Fechar">×</button></div></div>
 
   <!-- P PROSPECTAR -->
   <section class="panel" id="p4">
@@ -809,7 +844,7 @@ function briefText(){
 }
 
 /* ===== Navegação ===== */
-function go(n){S.etapa=n;if(n===5)setTimeout(renderStudio,0);else if(typeof stopAnim==='function')stopAnim();$$('.panel').forEach(p=>p.classList.toggle('show',p.id==='p'+n));$$('.step').forEach(s=>{const i=Number(s.dataset.step);s.classList.toggle('active',i===n);s.classList.toggle('done',i<4&&i<n&&stepDone(i))});window.scrollTo({top:0});persistLocal()}
+function go(n){S.etapa=n;if(n===5)setTimeout(renderStudio,0);else if(typeof stopAnim==='function')stopAnim();$$('.panel').forEach(p=>p.classList.toggle('show',p.id==='p'+n));$$('.step').forEach(s=>{const i=Number(s.dataset.step);s.classList.toggle('active',i===n);s.classList.toggle('done',i<4&&i<n&&stepDone(i))});window.scrollTo({top:0});persistLocal();if(typeof stepNav==='function')stepNav(n)}
 function stepDone(i){return [!!S.discover,S.ads.length>0,!!S.plano,!!S.resultados][i]}
 function renderStatus(){
   const el=$('#statusLine');const b=S.brief;
@@ -1162,7 +1197,7 @@ function openSettings(){
 function aiCopyLocal(code){return code==='no_credit'?'A conta Anthropic não tem créditos. Carrega créditos em console.anthropic.com › Billing.':code==='bad_model'?'O modelo escolhido não está disponível para esta chave. Escolhe outro em «Definições IA».':code==='overloaded'?'A Anthropic está sobrecarregada neste momento. Tenta daqui a um minuto.':code==='network'?'Sem ligação à API da Anthropic. Verifica a internet ou se alguma extensão bloqueia api.anthropic.com.':code==='no_key'?'Falta a chave da API. Mete-a em «Definições IA».':code==='not_granted'?'A Anthropic recusou a chave (401). Abre «Definições IA» e usa «Testar chave».':code==='forbidden'?'A chave não tem permissão para este pedido (403). Vê os créditos e as permissões em console.anthropic.com.':aiCopy(code)}
 async function testKey(key,model){try{const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model,max_tokens:5,messages:[{role:'user',content:'ok'}]})});if(r.ok)return{ok:true,msg:'Chave válida ✓'};let m='';try{m=(await r.json()).error?.message||''}catch(e){}return{ok:false,msg:'Erro '+r.status+(m?': '+m:'')}}catch(e){return{ok:false,msg:'Sem ligação à API: '+e}}}
 const cleanKey=k=>(k||'').replace(/[\s"'«»“”]/g,'');
-function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample;const b=$('#btnSettings');if(b)b.textContent=sample?'IA activa ✓':'Definições IA'}
+function initAI(){sample=makeSample();$('#aiNote').hidden=!!sample||(()=>{try{return localStorage.getItem('orbita.onb')==='off'}catch(e){return false}})();const b=$('#btnSettings');if(b)b.textContent=sample?'IA activa ✓':'Definições IA'}
 
 /* ===== PROSPECTAR ===== */
 const REDES=['instagram','facebook','linkedin','tiktok'];
@@ -2148,6 +2183,25 @@ renderLaunch();
 /* refino: separadores da pesquisa e menu Projeto */
 document.querySelectorAll('[data-find]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-find]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});document.querySelectorAll('.find .pane').forEach(p=>p.hidden=p.dataset.pane!==b.dataset.find)}));
 (()=>{const m=document.getElementById('projMenu');if(!m)return;m.querySelectorAll('.pm button').forEach(b=>b.addEventListener('click',()=>m.open=false));document.addEventListener('click',e=>{if(m.open&&!m.contains(e.target))m.open=false})})();
+
+/* ===== navegação entre etapas, progresso e onboarding ===== */
+var ORDER=[4,0,5,1,2,3];
+var stepName=n=>{const b=document.querySelector(`.step[data-step="${n}"] strong`);return b?b.textContent:''};
+function stepNav(n){if(!window.ORDER)return;
+  const k=ORDER.indexOf(n);const prev=ORDER[k-1],next=ORDER[k+1];
+  const p=document.getElementById('p'+n);if(!p)return;
+  let nav=p.querySelector(':scope > .stepnav');if(!nav){nav=document.createElement('nav');nav.className='stepnav';nav.setAttribute('aria-label','Navegar entre etapas');p.append(nav)}
+  nav.innerHTML=(prev!==undefined?`<a href="#" class="prev" data-go="${prev}"><span class="lbl">← Etapa ${k}</span><strong>${stepName(prev)}</strong></a>`:'<span class="sp"></span>')+(next!==undefined?`<a href="#" class="next" data-go="${next}"><span class="lbl">Seguinte · etapa ${k+2} →</span><strong>${stepName(next)}</strong></a>`:'');
+  nav.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();const t=Number(a.dataset.go);document.querySelector(`.step[data-step="${t}"]`).click()});
+  const done=[!!(S.leads&&S.leads.length),!!S.discover,!!(S.marca&&S.marca.brand),S.ads.length>0,!!S.plano,!!S.resultados].filter(Boolean).length;
+  let pr=document.getElementById('prog');if(!pr){pr=document.createElement('div');pr.id='prog';pr.className='prog';const st=document.getElementById('steps');st.insertBefore(pr,st.querySelector('.steps-pill'))}
+  [[4,!!(S.leads&&S.leads.length)],[0,!!S.discover],[5,!!(S.marca&&S.marca.brand)],[1,S.ads.length>0],[2,!!S.plano],[3,!!S.resultados]].forEach(([i,v])=>{const b=document.querySelector(`.step[data-step="${i}"]`);if(b)b.classList.toggle('done',v&&i!==n)});
+  pr.innerHTML=`${done} de 6 etapas com trabalho<i><b style="width:${Math.round(done/6*100)}%"></b></i>`;
+}
+(()=>{const k=document.getElementById('onbKey'),d=document.getElementById('onbDemo'),x=document.getElementById('onbX');
+  if(k)k.onclick=()=>openSettings();if(d)d.onclick=()=>document.getElementById('btnDemo').click();
+  if(x)x.onclick=()=>{document.getElementById('aiNote').hidden=true;try{localStorage.setItem('orbita.onb','off')}catch(e){}};
+  setTimeout(()=>stepNav(S.etapa??4),0)})();
 </script>
 </body>
 </html>
