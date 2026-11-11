@@ -365,6 +365,89 @@ footer{padding:28px var(--gutter);max-width:none;background:var(--ink);color:#bb
 footer .hand{color:var(--magenta)}
 @media (max-width:900px){.steps-pill{border-radius:24px;flex-wrap:nowrap}.step span.s{display:none}}
 @media (prefers-reduced-motion:reduce){.btn,.btn::after,.step{transition:none}}
+
+/* ===== Refino de layout (nov 2026) ===== */
+/* topo: uma linha limpa, acções no menu Projeto */
+.top{box-shadow:0 1px 0 var(--line);border-bottom:0}
+.top-row{padding:12px var(--gutter);gap:20px;flex-wrap:nowrap}
+.brand small{display:none}
+.brand h1{font-size:26px}
+.top-actions{gap:10px;flex-wrap:nowrap}
+.status-line{display:flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap}
+.projmenu{position:relative}
+.projmenu>summary{list-style:none;cursor:pointer}
+.projmenu>summary::-webkit-details-marker{display:none}
+.projmenu>summary::after{transform:rotate(90deg)}
+.projmenu[open]>summary::after{transform:rotate(-90deg)}
+.projmenu .pm{position:absolute;right:0;top:calc(100% + 8px);z-index:30;min-width:220px;padding:6px;display:grid;gap:2px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow-float),0 0 0 1px var(--line)}
+.projmenu .pm .btn{justify-content:flex-start;box-shadow:none;border:0;background:none;min-height:42px;width:100%;font-size:16px}
+.projmenu .pm .btn::after{display:none}
+.projmenu .pm .btn:hover{background:var(--blush);color:var(--ink)}
+.projmenu .pm hr{border:0;border-top:1px solid var(--line);margin:4px 8px}
+/* etapas: só o nome, numeradas 1–6 */
+.steps{padding:0 var(--gutter) 12px;justify-content:center}
+.steps-pill{box-shadow:inset 0 0 0 1px var(--line);background:var(--surface-2)}
+.step .s,.step br{display:none}
+.step{padding:7px 16px 7px 7px}
+.step strong{font-size:15px}
+/* aviso da IA com respiro */
+#aiNote{margin:0 0 32px}
+/* cabeçalhos das etapas mais compactos */
+.head{margin:0 0 24px}
+.head p{font-size:16px;max-width:60ch;margin-top:10px}
+h2{font-size:clamp(36px,4.2vw,60px)}
+.card{padding:24px}
+.stack{gap:16px}
+.small{font-size:14px;line-height:1.5}
+/* Prospectar: um bloco de pesquisa com separadores + lista */
+.find{padding:20px 24px;margin-bottom:36px;background:var(--surface-2)}
+.find-hd{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.find .toolbar{background:none;border:0;padding:0;margin:0}
+.find #prStatus:not(:empty){margin-top:12px}
+.seg{display:inline-flex;padding:4px;border-radius:var(--pill);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.seg button{border:0;background:none;padding:9px 16px;border-radius:var(--pill);font:600 14px/1 var(--display);color:var(--ink-2);cursor:pointer}
+.seg button.on{background:var(--ink);color:var(--surface)}
+.leads-hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.leads-hd h3{font-size:28px}
+.leads-hd .cnt{font:600 14px/1 var(--display);color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--pill);padding:5px 10px;vertical-align:5px;margin-left:6px;letter-spacing:0}
+.filters{margin-bottom:20px}
+.filters .row{gap:12px;align-items:flex-end}
+.filters label{flex:1;min-width:140px}
+#leads.stack{gap:20px}
+.lead .an:empty{display:none}
+/* cartão de lead: hierarquia clara */
+.lead h3{font-size:24px}
+.lead .row .btn.sm:not(.primary):not(.x){box-shadow:inset 0 0 0 1.5px var(--line)}
+.lead .row .btn.sm:not(.primary):not(.x):hover{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.lead .redes{gap:6px}
+.lead .an{margin-top:16px!important;padding-top:16px;border-top:1px solid var(--line)}
+.lead .an .grid.g2{margin-top:16px;align-items:start}
+.abord{border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:var(--surface-2)}
+.abord>summary{cursor:pointer;font:700 15px/1.2 var(--display);list-style:none;display:flex;justify-content:space-between;align-items:center}
+.abord>summary::-webkit-details-marker{display:none}
+.abord>summary::after{content:"+";font:400 22px/1 var(--display);color:var(--magenta)}
+.abord[open]>summary::after{content:"–"}
+.abord p{margin-top:10px}
+/* Criar: um cartão por texto, formatos lado a lado */
+.ads{grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:20px}
+.ad .cv{display:flex;gap:12px;align-items:flex-end;padding:16px;place-items:unset}
+.ad figure{margin:0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ad figure canvas{width:100%;height:auto;display:block}
+.ad figcaption{display:flex;justify-content:space-between;align-items:center;gap:6px;font:500 11px/1.2 var(--display);color:var(--ink-2)}
+.ad figcaption span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dlb{border:1px solid var(--line);background:var(--surface);border-radius:var(--pill);font:600 11px/1 var(--display);padding:4px 8px;cursor:pointer;color:var(--ink)}
+.dlb:hover{border-color:var(--magenta);color:var(--magenta-deep)}
+.ad .meta{padding:16px 18px;gap:8px;font-size:14px}
+.ad .meta .t{font:700 18px/1.2 var(--display);letter-spacing:-.02em}
+@media (max-width:1100px){.status-line{display:none}}
+@media (max-width:900px){
+  .top-row{flex-wrap:wrap;gap:12px}
+  .top-actions{width:auto;margin-left:auto;overflow:visible}
+  .steps{justify-content:flex-start}
+  .ads{grid-template-columns:1fr}
+  .find-hd .seg{width:100%}.seg button{flex:1}
+}
+@media (max-width:520px){.brand h1{font-size:22px}.top-actions .btn.sm{padding:0 11px;font-size:14px}}
 </style>
 </head>
 <body>
@@ -375,19 +458,24 @@ footer .hand{color:var(--magenta)}
       <img class="mark-img" src="icons/orbita-icon-192.png" alt="" width="40" height="40">
       <div><h1><em>Ó</em>rbita</h1><small>JIF studio · Damos a volta à tua marca</small></div>
     </div>
-    <div class="status-line" id="statusLine"></div>
     <div class="top-actions">
-      <button class="btn sm" id="btnDemo" title="Carrega um projeto de exemplo completo">Carregar exemplo</button>
-      <button class="btn sm" id="btnReset">Novo projeto</button>
-      <button class="btn sm" id="btnImport">Importar</button><button class="btn sm" id="btnExport">Exportar projeto</button><button class="btn sm primary" id="btnSettings">Definições IA</button><input type="file" id="importFile" accept="application/json" hidden>
+      <div class="status-line" id="statusLine"></div>
+      <details class="projmenu" id="projMenu"><summary class="btn sm">Projeto</summary><div class="pm">
+        <button class="btn sm" id="btnReset">Novo projeto</button>
+        <button class="btn sm" id="btnImport">Importar (.json)</button>
+        <button class="btn sm" id="btnExport">Exportar (.json)</button>
+        <hr>
+        <button class="btn sm" id="btnDemo" title="Carrega um projeto de exemplo completo">Carregar exemplo</button>
+      </div></details>
+      <button class="btn sm primary" id="btnSettings">Definições IA</button><input type="file" id="importFile" accept="application/json" hidden>
     </div>
   </div>
   <nav class="steps" id="steps" aria-label="Etapas"><div class="steps-pill">
-    <button class="step" data-step="4"><span class="n">P</span><div><strong>Prospectar</strong><br><span class="s">Leads por sector e local</span></div></button>
-    <button class="step" data-step="0"><span class="n">1</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button><button class="step" data-step="5"><span class="n">2</span><div><strong>Marca</strong><br><span class="s">Estúdio · opcional</span></div></button>
-    <button class="step" data-step="1"><span class="n">3</span><div><strong>Criar</strong><br><span class="s">Variações e formatos</span></div></button>
-    <button class="step" data-step="2"><span class="n">4</span><div><strong>Lançar</strong><br><span class="s">Plano de media</span></div></button>
-    <button class="step" data-step="3"><span class="n">5</span><div><strong>Otimizar</strong><br><span class="s">Resultados e aprendizagens</span></div></button>
+    <button class="step" data-step="4"><span class="n">1</span><div><strong>Prospectar</strong><br><span class="s">Leads por sector e local</span></div></button>
+    <button class="step" data-step="0"><span class="n">2</span><div><strong>Descobrir</strong><br><span class="s">Público, ângulos, moodboard</span></div></button><button class="step" data-step="5"><span class="n">3</span><div><strong>Marca</strong><br><span class="s">Estúdio · opcional</span></div></button>
+    <button class="step" data-step="1"><span class="n">4</span><div><strong>Criar</strong><br><span class="s">Variações e formatos</span></div></button>
+    <button class="step" data-step="2"><span class="n">5</span><div><strong>Lançar</strong><br><span class="s">Plano de media</span></div></button>
+    <button class="step" data-step="3"><span class="n">6</span><div><strong>Otimizar</strong><br><span class="s">Resultados e aprendizagens</span></div></button>
   </div></nav>
 </header>
 
@@ -397,9 +485,11 @@ footer .hand{color:var(--magenta)}
   <!-- P PROSPECTAR -->
   <section class="panel" id="p4">
     <div class="head">
-      <div><span class="eyebrow">Prospectar · Leads</span><h2>Quem precisa de uma <em>volta</em>?</h2><p>Escolhe o tipo de negócio e a zona. A IA procura pequenas e médias empresas em actividade, dá a cada uma uma nota de potencial (presença fraca = boa oportunidade) e põe as melhores no topo. «Analisar presença» visita o site e as redes e afina a nota. Se voltares a pesquisar com os mesmos critérios, aparecem empresas novas.</p></div>
+      <div><span class="eyebrow">Etapa 1 · Prospectar</span><h2>Quem precisa de uma <em>volta</em>?</h2><p>Encontra pequenas empresas com presença fraca: são as que mais precisam de uma volta. A IA dá a cada uma uma nota de potencial e põe as melhores no topo.</p></div>
     </div>
-    <div class="toolbar">
+    <div class="card find">
+      <div class="find-hd"><h3>Encontrar empresas</h3><div class="seg" role="tablist"><button type="button" role="tab" class="on" data-find="a" aria-selected="true">Por sector e zona</button><button type="button" role="tab" data-find="b" aria-selected="false">Empresa específica</button></div></div>
+    <div class="toolbar pane" data-pane="a">
       <label>Localização<select id="pr_local"><option value="">Escolher…</option><optgroup label="Porto"><option>Porto</option><option>Vila Nova de Gaia</option><option>Matosinhos</option><option>Maia</option><option>Gondomar</option><option>Valongo</option><option>Póvoa de Varzim</option><option>Vila do Conde</option><option>Santo Tirso</option><option>Trofa</option><option>Paredes</option><option>Penafiel</option><option>Paços de Ferreira</option><option>Lousada</option><option>Felgueiras</option><option>Amarante</option><option>Marco de Canaveses</option><option>Baião</option></optgroup><optgroup label="Braga"><option>Braga</option><option>Guimarães</option><option>Barcelos</option><option>Famalicão</option><option>Esposende</option><option>Vila Verde</option><option>Fafe</option><option>Póvoa de Lanhoso</option><option>Amares</option><option>Vizela</option><option>Cabeceiras de Basto</option><option>Celorico de Basto</option></optgroup><optgroup label="Aveiro"><option>Aveiro</option><option>Santa Maria da Feira</option><option>Oliveira de Azeméis</option><option>Ovar</option><option>Espinho</option><option>São João da Madeira</option><option>Águeda</option><option>Ílhavo</option><option>Estarreja</option><option>Vale de Cambra</option><option>Oliveira do Bairro</option><option>Anadia</option></optgroup><optgroup label="Viana do Castelo"><option>Viana do Castelo</option><option>Ponte de Lima</option><option>Caminha</option><option>Valença</option><option>Vila Nova de Cerveira</option><option>Arcos de Valdevez</option><option>Monção</option><option>Ponte da Barca</option></optgroup><optgroup label="Vila Real"><option>Vila Real</option><option>Chaves</option><option>Peso da Régua</option><option>Valpaços</option><option>Vila Pouca de Aguiar</option></optgroup><optgroup label="Bragança"><option>Bragança</option><option>Mirandela</option><option>Macedo de Cavaleiros</option><option>Miranda do Douro</option></optgroup><optgroup label="Viseu"><option>Viseu</option><option>Lamego</option><option>Tondela</option><option>Mangualde</option><option>Castro Daire</option><option>São Pedro do Sul</option><option>Cinfães</option></optgroup><optgroup label="Guarda"><option>Guarda</option><option>Seia</option><option>Gouveia</option><option>Trancoso</option><option>Sabugal</option></optgroup><optgroup label="Coimbra"><option>Coimbra</option><option>Figueira da Foz</option><option>Cantanhede</option><option>Montemor-o-Velho</option><option>Lousã</option><option>Penacova</option><option>Mira</option></optgroup><optgroup label="Leiria"><option>Leiria</option><option>Marinha Grande</option><option>Pombal</option><option>Alcobaça</option><option>Caldas da Rainha</option><option>Nazaré</option><option>Batalha</option><option>Óbidos</option><option>Peniche</option></optgroup><optgroup label="Castelo Branco"><option>Castelo Branco</option><option>Covilhã</option><option>Fundão</option></optgroup><optgroup label="Santarém"><option>Santarém</option><option>Tomar</option><option>Torres Novas</option><option>Abrantes</option><option>Entroncamento</option><option>Ourém</option><option>Cartaxo</option><option>Rio Maior</option><option>Almeirim</option></optgroup><optgroup label="Lisboa"><option>Lisboa</option><option>Sintra</option><option>Cascais</option><option>Oeiras</option><option>Loures</option><option>Amadora</option><option>Odivelas</option><option>Vila Franca de Xira</option><option>Mafra</option><option>Torres Vedras</option><option>Alenquer</option><option>Lourinhã</option></optgroup><optgroup label="Setúbal"><option>Setúbal</option><option>Almada</option><option>Seixal</option><option>Barreiro</option><option>Montijo</option><option>Palmela</option><option>Sesimbra</option><option>Moita</option><option>Alcochete</option><option>Grândola</option><option>Santiago do Cacém</option><option>Sines</option></optgroup><optgroup label="Portalegre"><option>Portalegre</option><option>Elvas</option><option>Ponte de Sor</option><option>Campo Maior</option></optgroup><optgroup label="Évora"><option>Évora</option><option>Montemor-o-Novo</option><option>Estremoz</option><option>Vendas Novas</option><option>Reguengos de Monsaraz</option></optgroup><optgroup label="Beja"><option>Beja</option><option>Odemira</option><option>Moura</option><option>Serpa</option></optgroup><optgroup label="Faro"><option>Faro</option><option>Loulé</option><option>Portimão</option><option>Albufeira</option><option>Olhão</option><option>Lagos</option><option>Tavira</option><option>Silves</option><option>Lagoa</option><option>Vila Real de Santo António</option></optgroup><optgroup label="Madeira"><option>Funchal</option><option>Câmara de Lobos</option><option>Santa Cruz</option><option>Machico</option><option>Porto Santo</option></optgroup><optgroup label="Açores"><option>Ponta Delgada</option><option>Angra do Heroísmo</option><option>Horta</option><option>Ribeira Grande</option></optgroup><option value="__outro">Outro (escrever)…</option></select></label>
       <label id="pr_local_outro_l" hidden>Outra localização<input id="pr_local_outro" placeholder="Ex.: Afurada"></label>
       <label>Tipo de negócio<select id="pr_sector"><option value="">Escolher…</option><optgroup label="Restauração e alimentação"><option>restaurantes</option><option>cafés e pastelarias</option><option>padarias</option><option>bares e cervejarias</option><option>take-away e food trucks</option><option>catering</option><option>mercearias e lojas gourmet</option><option>vinhos e enoturismo</option></optgroup><optgroup label="Saúde e bem-estar"><option>clínicas dentárias</option><option>clínicas médicas e fisioterapia</option><option>clínicas de estética</option><option>farmácias</option><option>óticas</option><option>clínicas veterinárias</option><option>ginásios e estúdios</option><option>psicologia e terapias</option></optgroup><optgroup label="Beleza"><option>cabeleireiros e barbearias</option><option>salões de beleza e unhas</option><option>estúdios de tatuagem</option></optgroup><optgroup label="Comércio"><option>lojas de roupa e calçado</option><option>joalharias e relojoarias</option><option>lojas de decoração e mobiliário</option><option>floristas</option><option>livrarias e papelarias</option><option>lojas de brinquedos e puericultura</option><option>lojas de desporto</option><option>lojas de animais</option><option>lojas de telemóveis e informática</option></optgroup><optgroup label="Serviços profissionais"><option>escritórios de advogados</option><option>contabilidade</option><option>consultoria</option><option>arquitetura e design de interiores</option><option>imobiliárias</option><option>seguros e mediação de crédito</option><option>agências de viagens</option><option>escolas de condução</option><option>centros de explicações e formação</option><option>creches e colégios</option></optgroup><optgroup label="Casa e construção"><option>construção civil</option><option>remodelações</option><option>carpintarias e marcenarias</option><option>canalizadores e eletricistas</option><option>serralharias</option><option>jardinagem</option><option>empresas de limpeza</option><option>cozinhas e móveis por medida</option><option>climatização e energia solar</option></optgroup><optgroup label="Automóvel"><option>oficinas automóveis</option><option>stands de automóveis</option><option>lavagem automóvel</option><option>rent-a-car</option></optgroup><optgroup label="Turismo e lazer"><option>alojamento local e hotéis</option><option>turismo e atividades</option><option>eventos e animação</option><option>fotografia e vídeo</option><option>escolas de música e dança</option><option>escolas de surf e desportos</option></optgroup><optgroup label="Indústria e produção"><option>metalomecânica</option><option>têxtil e confeção</option><option>mobiliário</option><option>agricultura e produtores locais</option><option>transportes e logística</option></optgroup><option value="__outro">Outro (escrever)…</option></select></label>
@@ -407,26 +497,28 @@ footer .hand{color:var(--magenta)}
       <label>Nº de empresas<input type="number" id="pr_n" min="1" step="1" value="10" class="num"></label>
       <button class="btn primary" id="btnProspect">Pesquisar empresas</button>
     </div>
-    <div class="toolbar" style="margin-top:-6px">
-      <label style="flex:1;min-width:280px">Procurar uma empresa específica<input id="pr_q" placeholder="Nome, site, @instagram, NIF, telefone, morada ou descrição (ex.: «padaria ao pé do mercado do Bolhão»)"></label>
+    <div class="toolbar pane" data-pane="b" hidden>
+      <label style="flex:1;min-width:280px">Nome, site ou descrição<input id="pr_q" placeholder="Nome, site, @instagram, NIF, telefone, morada ou descrição (ex.: «padaria ao pé do mercado do Bolhão»)"></label>
       <label style="min-width:170px">Zona (opcional)<input id="pr_q_local" placeholder="Ex.: Porto"></label>
-      <button class="btn" id="btnFind">Procurar</button>
+      <button class="btn primary" id="btnFind">Procurar</button>
     </div>
-    <div id="prStatus" class="small muted" style="margin-bottom:12px"></div>
-    <div class="card" style="margin-bottom:16px"><div class="row">
+    <div id="prStatus" class="small muted"></div>
+    </div>
+    <div class="leads-hd"><h3>As tuas leads <span class="cnt" id="leadCount"></span></h3><div class="row"><button class="btn sm" id="btnVerify">Verificar actividade</button><button class="btn sm" id="btnLeadsCsv">Copiar CSV</button></div></div>
+    <div class="filters"><div class="row">
       <label style="flex:1;min-width:140px">Sector<select id="pf_sector"><option value="">Todos</option></select></label>
       <label style="flex:1;min-width:140px">Local<select id="pf_local"><option value="">Todos</option></select></label>
       <label style="flex:1;min-width:140px">Estado<select id="pf_estado"><option value="">Todos</option><option value="novo">Novo</option><option value="analisado">Analisado</option><option value="contactado">Contactado</option><option value="cliente">Cliente</option><option value="descartado">Descartado</option></select></label>
       <label style="flex:1;min-width:140px">Ordenar<select id="pf_ord"><option value="prio">Potencial de cliente</option><option value="nome">Nome</option><option value="data">Mais recentes</option></select></label>
       <label style="flex:2;min-width:160px">Procurar<input id="pf_q" placeholder="Nome ou morada"></label>
-      <div class="row" style="align-self:end"><label class="toggle on" style="min-height:38px;padding:8px 14px"><input type="checkbox" id="pf_ativos" checked> Só em actividade</label><button class="btn sm" id="btnVerify">Verificar actividade</button><span class="small muted" id="leadCount"></span><button class="btn sm" id="btnLeadsCsv">Copiar CSV</button></div>
+      <label class="toggle on" style="align-self:end;min-height:44px;padding:8px 14px"><input type="checkbox" id="pf_ativos" checked> Só em actividade</label>
     </div></div>
     <div id="leads" class="stack"></div>
   </section>
 
   <!-- E ESTÚDIO -->
   <section class="panel" id="p5">
-    <div class="head"><div><span class="eyebrow">Etapa 2 · Marca · opcional</span><h2>Desenhar a <em>marca</em></h2><p>Do brief à marca completa: logótipos, paleta, tipografia e voz, uma landing page, posts e animações. Depois pede alterações em conversa e vê-as na hora.</p><p class="small" style="margin-top:8px">O cliente já tem uma marca boa? <button class="jif-link" id="stSkip" style="font:600 14px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Salta para o Criar</button></p></div></div>
+    <div class="head"><div><span class="eyebrow">Etapa 3 · Marca · opcional</span><h2>Desenhar a <em>marca</em></h2><p>Do brief à marca completa: logótipos, paleta, tipografia e voz, uma landing page, posts e animações. Depois pede alterações em conversa e vê-as na hora.</p><p class="small" style="margin-top:8px">O cliente já tem uma marca boa? <button class="jif-link" id="stSkip" style="font:600 14px var(--display);text-decoration:underline;background:none;border:0;cursor:pointer;color:var(--magenta-deep);padding:0">Salta para o Criar</button></p></div></div>
     <div class="toolbar">
       <label style="flex:3;min-width:260px">O que queres criar (opcional)<textarea id="st_prompt" rows="5" placeholder="Ex.: marca jovem e artesanal para uma pastelaria de bairro; tons quentes; nada de rosa"></textarea></label>
       <label style="min-width:180px">Estilo<select id="st_estilo"></select></label>
@@ -450,7 +542,7 @@ footer .hand{color:var(--magenta)}
   <!-- 1 DESCOBRIR -->
   <section class="panel" id="p0">
     <div class="head">
-      <div><span class="eyebrow">Etapa 1 · Descobrir</span><h2>Conhecer o <em>público</em></h2><p>Escreve o brief do cliente. A IA devolve o retrato do público, as tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
+      <div><span class="eyebrow">Etapa 2 · Descobrir</span><h2>Conhecer o <em>público</em></h2><p>Escreve o brief do cliente. A IA devolve o retrato do público, as tendências, ângulos criativos com potencial e um moodboard de partida.</p></div>
     </div>
     <div class="grid g2" style="grid-template-columns:minmax(300px,2fr) minmax(300px,3fr)">
       <div class="card">
@@ -507,7 +599,7 @@ footer .hand{color:var(--magenta)}
   <!-- 2 CRIAR -->
   <section class="panel" id="p1">
     <div class="head">
-      <div><span class="eyebrow">Etapa 3 · Criar</span><h2>Criar as <em>peças</em></h2><p>Escolhe os ângulos, o número de variações e os formatos. A IA escreve os textos e a app monta cada anúncio com o moodboard. Podes trocar o fundo por uma fotografia tua.</p></div>
+      <div><span class="eyebrow">Etapa 4 · Criar</span><h2>Criar as <em>peças</em></h2><p>Escolhe os ângulos, o número de variações e os formatos. A IA escreve os textos e a app monta cada anúncio com o moodboard. Podes trocar o fundo por uma fotografia tua.</p></div>
     </div>
     <div class="toolbar">
       <label>Variações por ângulo<select id="c_n"><option>2</option><option selected>3</option><option>4</option></select></label>
@@ -528,7 +620,7 @@ footer .hand{color:var(--magenta)}
   <!-- 3 LANÇAR -->
   <section class="panel" id="p2">
     <div class="head">
-      <div><span class="eyebrow">Etapa 4 · Lançar</span><h2>Pôr tudo a <em>rodar</em></h2><p>O plano de media sai do orçamento e dos canais que escolheste. Por agora a publicação é simulada: a app prepara o plano e a lista de verificação, e tu publicas à mão em cada plataforma.</p></div>
+      <div><span class="eyebrow">Etapa 5 · Lançar</span><h2>Pôr tudo a <em>rodar</em></h2><p>O plano de media sai do orçamento e dos canais que escolheste. Por agora a publicação é simulada: a app prepara o plano e a lista de verificação, e tu publicas à mão em cada plataforma.</p></div>
     </div>
     <div class="toolbar"><label style="max-width:260px">Media para anúncios (€/mês)<input id="b_orcamento" type="number" min="50" step="50" value="600" class="num"></label><span class="small muted" style="align-self:center">Só o valor pago às plataformas. Os serviços JIF estão no Descobrir.</span></div>
     <div id="launchOut" class="stack"></div>
@@ -537,7 +629,7 @@ footer .hand{color:var(--magenta)}
   <!-- 4 OTIMIZAR -->
   <section class="panel" id="p3">
     <div class="head">
-      <div><span class="eyebrow">Etapa 5 · Otimizar</span><h2>Dar mais uma <em>volta</em></h2><p>Resultados por variação. Nesta versão os números são simulados a partir do potencial de cada ângulo, para testar o ciclo; com as APIs ligadas, entram os dados reais. A IA lê a tabela, aponta o vencedor e propõe a próxima iteração.</p></div>
+      <div><span class="eyebrow">Etapa 6 · Otimizar</span><h2>Dar mais uma <em>volta</em></h2><p>Resultados por variação. Nesta versão os números são simulados a partir do potencial de cada ângulo, para testar o ciclo; com as APIs ligadas, entram os dados reais. A IA lê a tabela, aponta o vencedor e propõe a próxima iteração.</p></div>
     </div>
     <div id="optOut" class="stack"></div>
   </section>
@@ -793,14 +885,12 @@ function renderAds(){
   if(!S.ads.length){host.innerHTML=`<div class="card flat" style="grid-column:1/-1"><h3>Sem variações</h3><p class="muted">Escolhe os formatos e carrega em «Gerar variações». Cada texto aparece em todos os formatos que escolheres.</p></div>`;return}
   const ang=id=>(S.discover?.angulos.find(a=>a.id===id)||{}).titulo||id;
   host.innerHTML='';let count=0;
-  for(const ad of S.ads)for(const f of fmts){
-    count++;const el=document.createElement('article');el.className='ad';
-    el.innerHTML=`<div class="cv"><canvas style="width:${f.w>=f.h?'100%':'60%'}"></canvas></div><div class="meta"><div class="row" style="justify-content:space-between"><span class="chip accent">${esc(ang(ad.angulo))}</span><span class="mono muted">${ad.id} · ${f.w}×${f.h}</span></div><div class="t"></div><div class="small muted tx"></div><div class="small"><strong>Vídeo:</strong> <span class="gv"></span></div><div class="actions"><button class="btn sm" data-dl>PNG</button><button class="btn sm" data-edit>Editar texto</button></div></div>`;
+  for(const ad of S.ads){
+    const el=document.createElement('article');el.className='ad';
+    el.innerHTML=`<div class="cv">${fmts.map((f,i)=>`<figure data-i="${i}" style="flex:${(f.w/f.h).toFixed(3)} 1 0"><canvas></canvas><figcaption><span>${esc(f.nome)}</span>${downloads?`<button class="dlb" data-dl="${i}" title="Descarregar PNG">PNG</button>`:''}</figcaption></figure>`).join('')}</div><div class="meta"><div class="row" style="justify-content:space-between"><span class="chip accent">${esc(ang(ad.angulo))}</span><span class="mono muted">${ad.id}</span></div><div class="t"></div><div class="small muted tx"></div><div class="small gvw"><strong>Vídeo:</strong> <span class="gv"></span></div><div class="actions"><button class="btn sm" data-edit>Editar texto</button></div></div>`;
     $('.t',el).textContent=ad.titulo;$('.tx',el).textContent=ad.texto;$('.gv',el).textContent=ad.gancho_video;
-    const cv=$('canvas',el);drawAd(cv,ad,f);
-    $('[data-dl]',el).onclick=()=>savePng(cv,`${slug(S.brief.marca)}_${ad.id}_${f.id}.png`);
+    fmts.forEach((f,i)=>{count++;const cv=$(`figure[data-i="${i}"] canvas`,el);drawAd(cv,ad,f);const b=$(`[data-dl="${i}"]`,el);if(b)b.onclick=()=>savePng(cv,`${slug(S.brief.marca)}_${ad.id}_${f.id}.png`)});
     $('[data-edit]',el).onclick=()=>editAd(ad);
-    if(!downloads)$('[data-dl]',el).hidden=true;
     host.append(el);
   }
   $('#adCount').textContent=`${S.ads.length} textos × ${fmts.length} formatos = ${count} peças`;
@@ -1205,7 +1295,7 @@ function renderLeads(){
   let L=S.leads.filter(l=>(!fs||l.sector===fs)&&(!fl||l.local===fl)&&(!fe||l.estado===fe)&&(!q||(l.nome+' '+l.morada).toLowerCase().includes(q))&&(!soAt||(!l.inativo&&l.ativoVerif!==false)));
   const pot=l=>l.analise?.prioridade??l.potencial??0;
   if(ord==='nome')L.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));else if(ord==='prio')L.sort((a,b)=>pot(b)-pot(a)||a.nome.localeCompare(b.nome,'pt'));
-  $('#leadCount').textContent=`${L.length} de ${S.leads.length}`;
+  $('#leadCount').textContent=L.length===S.leads.length?`${L.length}`:`${L.length} de ${S.leads.length}`;
   if(!S.leads.length){host.innerHTML=`<div class="card flat"><h3>Sem leads</h3><p class="muted">Escolhe a zona e o tipo de negócio e carrega em «Pesquisar empresas». As empresas ficam guardadas no projeto e podes filtrá-las por sector, local e estado.</p></div>`;return}
   if(!L.length){host.innerHTML=`<div class="card flat"><p class="muted">Nenhuma lead corresponde aos filtros.</p></div>`;return}
   const est={novo:['Novo',''],analisado:['Analisado','accent'],contactado:['Contactado','warn'],cliente:['Cliente','good'],descartado:['Descartado','bad']};
@@ -1224,7 +1314,7 @@ function renderLeads(){
     $('h3',el).textContent=l.nome;$('.addr',el).textContent=[l.morada,l.telefone].filter(Boolean).join(' · ');$('.desc',el).textContent=l.descricao+(l.sinais&&!a?' · '+l.sinais:'');if(l.atividade){const d=document.createElement('p');d.className='small';d.style.cssText='color:var(--good);margin-top:4px';d.textContent='● Em actividade: '+l.atividade;$('.desc',el).after(d)}
     if(a){const sc=[['Logótipo','logo'],['Identidade visual','identidade'],['Redes sociais','redes'],['Comunicação','comunicacao'],['Site','site']];
       $('.an',el).innerHTML=`<div class="scores">${sc.map(([n,k])=>`<div class="score"><div class="l">${n}</div><div class="b">${[1,2,3,4,5].map(i=>`<i class="${i<=a[k].nota?'f':''}"></i>`).join('')}</div><div class="o"></div></div>`).join('')}</div>
-        <div class="grid g2"><div><h4>Oportunidades</h4><ul class="clean">${a.oportunidades.map(o=>`<li>${esc(o)}</li>`).join('')}</ul></div><div><h4>Abordagem sugerida</h4><p class="small"></p><div class="row" style="margin-top:6px"><button class="btn sm" data-copy>Copiar</button><button class="btn sm" data-rewrite>Reescrever</button></div></div></div>`;
+        <div class="grid g2"><div><h4>Oportunidades</h4><ul class="clean">${a.oportunidades.map(o=>`<li>${esc(o)}</li>`).join('')}</ul></div><details class="abord"><summary>Abordagem sugerida</summary><p class="small"></p><div class="row" style="margin-top:10px"><button class="btn sm" data-copy>Copiar</button><button class="btn sm" data-rewrite>Reescrever</button></div></details></div>`;
       $$('.score .o',el).forEach((o,i)=>o.textContent=a[sc[i][1]].obs);$('.an p',el).textContent=cleanMsg(a.abordagem);$('.an p',el).style.whiteSpace='pre-line';$('[data-copy]',el).onclick=()=>copyText(cleanMsg(a.abordagem));$('[data-rewrite]',el).onclick=e=>rewriteApproach(l,e.target)}
     $('.st',el).onchange=e=>{l.estado=e.target.value;commit();renderLeads()};
     $('[data-an]',el).onclick=()=>analyseLead(l,el);
@@ -1984,6 +2074,10 @@ load();
 
 initAI();
 renderLaunch();
+
+/* refino: separadores da pesquisa e menu Projeto */
+document.querySelectorAll('[data-find]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-find]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});document.querySelectorAll('.find .pane').forEach(p=>p.hidden=p.dataset.pane!==b.dataset.find)}));
+(()=>{const m=document.getElementById('projMenu');if(!m)return;m.querySelectorAll('.pm button').forEach(b=>b.addEventListener('click',()=>m.open=false));document.addEventListener('click',e=>{if(m.open&&!m.contains(e.target))m.open=false})})();
 </script>
 </body>
 </html>
