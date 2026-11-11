@@ -448,6 +448,14 @@ h2{font-size:clamp(36px,4.2vw,60px)}
   .find-hd .seg{width:100%}.seg button{flex:1}
 }
 @media (max-width:520px){.brand h1{font-size:22px}.top-actions .btn.sm{padding:0 11px;font-size:14px}}
+
+/* destaque da marca Órbita no topo */
+.brand{gap:14px}
+.brand .mark-img{width:52px;height:52px;border-radius:13px;box-shadow:0 6px 18px rgba(12,12,14,.22)}
+.brand-txt{display:flex;flex-direction:column;gap:5px}
+.brand h1{font:800 36px/.85 var(--display)!important;letter-spacing:-.065em;color:var(--ink)}
+.brand-txt small{display:block!important;font:600 11px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--magenta-deep);margin:0}
+@media (max-width:520px){.brand .mark-img{width:42px;height:42px;border-radius:11px}.brand h1{font-size:28px!important}.brand-txt small{font-size:9px}}
 </style>
 </head>
 <body>
@@ -456,7 +464,7 @@ h2{font-size:clamp(36px,4.2vw,60px)}
   <div class="top-row">
     <div class="brand">
       <img class="mark-img" src="icons/orbita-icon-192.png" alt="" width="40" height="40">
-      <div><h1><em>Ó</em>rbita</h1><small>JIF studio · Damos a volta à tua marca</small></div>
+      <div class="brand-txt"><h1>órbita</h1><small>Campanhas · JIF studio</small></div>
     </div>
     <div class="top-actions">
       <div class="status-line" id="statusLine"></div>
