@@ -19,14 +19,14 @@ body{display:flex;color:#fff;font-family:"IBM Plex Serif",serif}
 @media (max-width:520px){.q{padding:22px 58px 20px 20px}.q::before{font-size:150px;bottom:-40px;right:10px}}
 </style></head><body>
 <figure class="q" aria-live="polite" style="margin:0">
-<span class="eb">Citação · muda de 3 em 3 horas</span>
+
 <blockquote class="t" id="t"></blockquote><p class="o" id="o"></p>
 <figcaption class="by"><strong id="a"></strong><span id="r"></span></figcaption>
 <button type="button" class="nx" id="nx" aria-label="Outra citação" title="Outra citação">↻</button>
 </figure>
-<script src="../entrevista/citacoes.js?v=1"></script>
-<script>(function(){var Q=window.JIF_CITACOES,slot=function(){return Math.floor(Date.now()/108e5)},cur=slot(),i=cur%Q.length;
+<script src="../entrevista/citacoes.js?v=2"></script>
+<script>(function(){var Q=window.JIF_CITACOES,slot=window.JIF_SLOT,cur=slot(),i=window.JIF_PICK(cur,Q.length);
 function show(k){var q=Q[k];t.textContent='“'+q[0]+'”';o.textContent=q[1]===q[0]?'':q[1];o.lang=q[4]||(q[1].indexOf('Weniger')===0?'de':'en');a.textContent=q[2];r.textContent=q[3]}
 var t=document.getElementById('t'),o=document.getElementById('o'),a=document.getElementById('a'),r=document.getElementById('r');
-show(i);setInterval(function(){var n=slot();if(n!==cur){cur=n;i=n%Q.length;show(i)}},6e4);document.getElementById('nx').onclick=function(){i=(i+1)%Q.length;show(i)}})();</script>
+show(i);setInterval(function(){var n=slot();if(n!==cur){cur=n;i=window.JIF_PICK(n,Q.length);show(i)}},6e4);document.getElementById('nx').onclick=function(){i=window.JIF_RAND(i,Q.length);show(i)}})();</script>
 </body></html>

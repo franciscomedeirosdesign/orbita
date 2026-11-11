@@ -370,7 +370,7 @@ html,body{overflow-x:hidden}
       <h1>Conhecer a marca antes de lhe dar a <span class="acc">volta.</span></h1>
       <p class="lead">Segue o caminho por ordem, mas deixa a conversa respirar. As notas ficam guardadas neste dispositivo.</p>
       <figure class="quote" id="quote" aria-live="polite">
-        <span class="quote__eb">Citação · muda de 3 em 3 horas</span>
+        
         <blockquote class="quote__t" id="qT"></blockquote>
         <p class="quote__o" id="qO" lang="en"></p>
         <figcaption class="quote__by"><strong id="qA"></strong><span id="qR"></span></figcaption>
@@ -624,9 +624,9 @@ document.querySelectorAll('.sec').forEach(s=>io.observe(s));
 })();
 </script>
 <script>if(matchMedia("(prefers-reduced-motion: reduce)").matches)document.querySelectorAll(".av-mark,.av-big").forEach(function(v){v.pauseAnimations&&v.pauseAnimations()})</script>
-<script src="citacoes.js?v=1"></script>
-<script>(function(){var Q=window.JIF_CITACOES;var slot=function(){return Math.floor(Date.now()/108e5)},cur=slot(),i=cur%Q.length;
+<script src="citacoes.js?v=2"></script>
+<script>(function(){var Q=window.JIF_CITACOES;var slot=window.JIF_SLOT,cur=slot(),i=window.JIF_PICK(cur,Q.length);
 function show(k){var q=Q[k];document.getElementById('qT').textContent='“'+q[0]+'”';var o=document.getElementById('qO');o.textContent=q[1]===q[0]?'':q[1];o.lang=q[4]||(q[1].indexOf('Weniger')===0?'de':'en');document.getElementById('qA').textContent=q[2];document.getElementById('qR').textContent=q[3];}
-show(i);setInterval(function(){var n=slot();if(n!==cur){cur=n;i=n%Q.length;show(i)}},6e4);document.getElementById('qNx').onclick=function(){i=(i+1)%Q.length;show(i)};})();</script>
+show(i);setInterval(function(){var n=slot();if(n!==cur){cur=n;i=window.JIF_PICK(n,Q.length);show(i)}},6e4);document.getElementById('qNx').onclick=function(){i=window.JIF_RAND(i,Q.length);show(i)};})();</script>
 </body>
 </html>
