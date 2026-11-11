@@ -318,6 +318,19 @@ html,body{overflow-x:hidden}
 .hero-mark .av-big{width:100%;height:100%;display:block;border-radius:39px;filter:drop-shadow(0 24px 40px rgba(0,0,0,.35))}
 @media (max-width:900px){.hero-mark{width:112px;height:112px}}
 @media (max-width:620px){.brand{gap:10px}.brand .av-mark{width:38px;height:38px;border-radius:10px}}
+
+/* Citação do dia */
+.quote{position:relative;margin:var(--space-8,32px) 0;padding:28px 72px 26px 32px;border-radius:var(--radius-lg,20px);background:radial-gradient(120% 140% at 85% 0%,#2E3138 0%,#0C0C0E 70%);color:#fff;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.quote::before{content:"“";position:absolute;right:22px;bottom:-58px;font:italic 400 220px/1 var(--font-accent);color:var(--magenta);opacity:.9;pointer-events:none}
+.quote__eb{display:block;font:700 12px/1 var(--font-display);letter-spacing:.16em;text-transform:uppercase;color:var(--magenta);margin-bottom:14px}
+.quote__t{margin:0;font:800 clamp(22px,2.3vw,30px)/1.15 var(--font-display);letter-spacing:-.025em;max-width:30ch}
+.quote__o{margin:10px 0 0;font:italic 400 15px/1.4 var(--font-accent);color:rgba(255,255,255,.55);max-width:60ch}
+.quote__o:empty{display:none}
+.quote__by{margin-top:18px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font:600 14px/1.3 var(--font-display)}
+.quote__by span{font:400 14px/1.3 var(--font-body,serif);color:rgba(255,255,255,.6)}
+.quote__nx{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);background:transparent;color:#fff;font-size:18px;cursor:pointer;transition:border-color .2s,transform .4s}
+.quote__nx:hover{border-color:var(--magenta);transform:rotate(180deg)}
+@media (max-width:620px){.quote{padding:24px 60px 22px 20px}.quote::before{font-size:160px;bottom:-42px;right:12px}}
 </style>
 </head>
 <body>
@@ -356,6 +369,13 @@ html,body{overflow-x:hidden}
       <p class="eyebrow">Entrevista ao cliente · JIF</p>
       <h1>Conhecer a marca antes de lhe dar a <span class="acc">volta.</span></h1>
       <p class="lead">Segue o caminho por ordem, mas deixa a conversa respirar. As notas ficam guardadas neste dispositivo.</p>
+      <figure class="quote" id="quote" aria-live="polite">
+        <span class="quote__eb">Citação do dia</span>
+        <blockquote class="quote__t" id="qT"></blockquote>
+        <p class="quote__o" id="qO" lang="en"></p>
+        <figcaption class="quote__by"><strong id="qA"></strong><span id="qR"></span></figcaption>
+        <button type="button" class="quote__nx" id="qNx" aria-label="Outra citação" title="Outra citação">↻</button>
+      </figure>
       <div class="meta">
         <label class="fld"><span>Cliente / marca</span><input data-m="cliente" placeholder="Nome da marca"></label>
         <label class="fld"><span>Pessoa entrevistada</span><input data-m="pessoa" placeholder="Nome e cargo"></label>
@@ -604,5 +624,8 @@ document.querySelectorAll('.sec').forEach(s=>io.observe(s));
 })();
 </script>
 <script>if(matchMedia("(prefers-reduced-motion: reduce)").matches)document.querySelectorAll(".av-mark,.av-big").forEach(function(v){v.pauseAnimations&&v.pauseAnimations()})</script>
+<script>(function(){var Q=[["O design é o embaixador silencioso da tua marca.", "Design is the silent ambassador of your brand.", "Paul Rand", "designer gráfico (IBM, ABC, UPS)"], ["Menos, mas melhor.", "Weniger, aber besser.", "Dieter Rams", "designer industrial (Braun)"], ["Uma marca é a intuição que uma pessoa tem sobre um produto, serviço ou empresa.", "A brand is a person's gut feeling about a product, service, or company.", "Marty Neumeier", "autor de The Brand Gap"], ["Quando todos fazem zig, faz zag.", "When everybody zigs, zag.", "Marty Neumeier", "autor de Zag"], ["Os estilos vêm e vão. O bom design é uma linguagem, não um estilo.", "Styles come and go. Good design is a language, not a style.", "Massimo Vignelli", "designer (Unimark, metro de Nova Iorque)"], ["Se consegues desenhar uma coisa, consegues desenhar tudo.", "If you can design one thing, you can design everything.", "Massimo Vignelli", "designer"], ["Os pormenores não são pormenores. São eles que fazem o design.", "The details are not the details. They make the design.", "Charles Eames", "designer"], ["Reconhecer a necessidade é a condição primeira do design.", "Recognizing the need is the primary condition for design.", "Charles Eames", "designer"], ["O design é pensamento tornado visível.", "Design is thinking made visual.", "Saul Bass", "designer (AT&T, United Airlines)"], ["Há três respostas a um design: sim, não e UAU! O uau é o alvo.", "There are three responses to a piece of design – yes, no, and WOW! Wow is the one to aim for.", "Milton Glaser", "designer (I ♥ NY)"], ["Os produtos fazem-se na fábrica; as marcas criam-se na cabeça das pessoas.", "Products are made in the factory, but brands are created in the mind.", "Walter Landor", "fundador da Landor"], ["Branding é diferenciação deliberada.", "Branding is deliberate differentiation.", "Debbie Millman", "designer e autora"], ["O conteúdo vem antes do design. Design sem conteúdo não é design, é decoração.", "Content precedes design. Design in the absence of content is not design, it's decoration.", "Jeffrey Zeldman", "designer web"], ["A simplicidade não é o objetivo. É o subproduto de uma boa ideia e de expectativas modestas.", "Simplicity is not the goal. It is the by-product of a good idea and modest expectations.", "Paul Rand", "designer gráfico"], ["O design é o método de juntar forma e conteúdo.", "Design is the method of putting form and content together.", "Paul Rand", "designer gráfico"], ["Bom design é o mínimo de design possível.", "Good design is as little design as possible.", "Dieter Rams", "designer industrial"], ["O design não é uma coisa que se faz. É uma maneira de viver.", "Design is not a thing you do. It's a way of life.", "Alan Fletcher", "cofundador da Pentagram"], ["É pelos erros que se cresce. É preciso ser mau para chegar a ser bom.", "It's through mistakes that you actually can grow. You have to get bad in order to get good.", "Paula Scher", "sócia da Pentagram"], ["Se não vende, não é criativo.", "If it doesn't sell, it isn't creative.", "David Ogilvy", "fundador da Ogilvy"], ["O consumidor não é parvo. É a tua mulher.", "The consumer isn't a moron; she is your wife.", "David Ogilvy", "fundador da Ogilvy"], ["O design é tão simples; é por isso que é tão complicado.", "Design is so simple, that's why it is so complicated.", "Paul Rand", "designer gráfico"], ["O design é um plano para organizar elementos da melhor forma para cumprir um propósito.", "Design is a plan for arranging elements in such a way as best to accomplish a particular purpose.", "Charles Eames", "designer"]];var d=new Date(),day=Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))/864e5),i=day%Q.length;
+function show(k){var q=Q[k];document.getElementById('qT').textContent='“'+q[0]+'”';var o=document.getElementById('qO');o.textContent=q[1]===q[0]?'':q[1];o.lang=q[2]==='Dieter Rams'&&q[1].indexOf('Weniger')===0?'de':'en';document.getElementById('qA').textContent=q[2];document.getElementById('qR').textContent=q[3];}
+show(i);document.getElementById('qNx').onclick=function(){i=(i+1)%Q.length;show(i)};})();</script>
 </body>
 </html>
