@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Citação · JIF studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Old+Standard+TT:ital@1&family=IBM+Plex+Serif:wght@400&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#0C0C0E}
+body{display:flex;color:#fff;font-family:"IBM Plex Serif",serif}
+.q{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 76px 26px 32px;background:radial-gradient(120% 140% at 85% 0%,#2E3138 0%,#0C0C0E 70%);overflow:hidden}
+.q::before{content:"“";position:absolute;right:22px;bottom:-60px;font:italic 400 220px/1 "Old Standard TT",serif;color:#FC3888;pointer-events:none}
+.eb{font:700 12px/1 "Inter Tight",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#FC3888;margin-bottom:14px}
+.t{margin:0;font:800 clamp(20px,3.4vw,30px)/1.15 "Inter Tight",sans-serif;letter-spacing:-.025em;max-width:32ch}
+.o{margin:10px 0 0;font:italic 400 15px/1.4 "Old Standard TT",serif;color:rgba(255,255,255,.55);max-width:60ch}
+.o:empty{display:none}
+.by{margin-top:16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font:600 14px/1.3 "Inter Tight",sans-serif}
+.by span{font:400 14px/1.3 "IBM Plex Serif",serif;color:rgba(255,255,255,.6)}
+.nx{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);background:transparent;color:#fff;font-size:17px;cursor:pointer;transition:border-color .2s,transform .4s}
+.nx:hover{border-color:#FC3888;transform:rotate(180deg)}
+@media (max-width:520px){.q{padding:22px 58px 20px 20px}.q::before{font-size:150px;bottom:-40px;right:10px}}
+</style></head><body>
+<figure class="q" aria-live="polite" style="margin:0">
+<span class="eb">Citação · muda de 3 em 3 horas</span>
+<blockquote class="t" id="t"></blockquote><p class="o" id="o"></p>
+<figcaption class="by"><strong id="a"></strong><span id="r"></span></figcaption>
+<button type="button" class="nx" id="nx" aria-label="Outra citação" title="Outra citação">↻</button>
+</figure>
+<script src="../entrevista/citacoes.js?v=1"></script>
+<script>(function(){var Q=window.JIF_CITACOES,slot=function(){return Math.floor(Date.now()/108e5)},cur=slot(),i=cur%Q.length;
+function show(k){var q=Q[k];t.textContent='“'+q[0]+'”';o.textContent=q[1]===q[0]?'':q[1];o.lang=q[4]||(q[1].indexOf('Weniger')===0?'de':'en');a.textContent=q[2];r.textContent=q[3]}
+var t=document.getElementById('t'),o=document.getElementById('o'),a=document.getElementById('a'),r=document.getElementById('r');
+show(i);setInterval(function(){var n=slot();if(n!==cur){cur=n;i=n%Q.length;show(i)}},6e4);document.getElementById('nx').onclick=function(){i=(i+1)%Q.length;show(i)}})();</script>
+</body></html>
